@@ -1,0 +1,121 @@
+<?php
+
+return [
+    // Navigation
+    'dashboard' => 'Tableau de bord',
+    'items' => 'Articles',
+    'requests' => 'Demandes',
+    'purchase_orders' => 'Bons de commande',
+    'invoices' => 'Factures',
+    'logout' => 'Déconnexion',
+    'login' => 'Connexion',
+    
+    // Common
+    'welcome' => 'Bienvenue',
+    'search' => 'Rechercher',
+    'filter' => 'Filtrer',
+    'add' => 'Ajouter',
+    'edit' => 'Modifier',
+    'delete' => 'Supprimer',
+    'save' => 'Enregistrer',
+    'cancel' => 'Annuler',
+    'close' => 'Fermer',
+    'view' => 'Voir',
+    'actions' => 'Actions',
+    'status' => 'Statut',
+    'date' => 'Date',
+    'total' => 'Total',
+    'price' => 'Prix',
+    'quantity' => 'Quantité',
+    'description' => 'Description',
+    'image' => 'Image',
+    'submit' => 'Soumettre',
+    'update' => 'Mettre à jour',
+    'create' => 'Créer',
+    'approve' => 'Approuver',
+    'reject' => 'Rejeter',
+    'fulfill' => 'Remplir',
+    
+    // Currency
+    'currency' => 'DH',
+    'currency_full' => 'Dirham Marocain',
+    
+    // Dashboard
+    'total_items' => 'Total des articles',
+    'low_stock_items' => 'Articles en rupture',
+    'pending_requests' => 'Demandes en attente',
+    'monthly_spending' => 'Dépenses mensuelles',
+    'monthly_consumption' => 'Consommation mensuelle',
+    'consumption_by_department' => 'Consommation par département',
+    'top_consumed_items' => 'Top 10 des articles consommés',
+    'low_stock_alerts' => 'Alertes de stock faible',
+    'reports' => 'Rapports',
+    
+    // Items
+    'items_management' => 'Gestion des articles',
+    'manage_inventory' => 'Gérer les articles et les niveaux de stock',
+    'add_item' => '+ Ajouter un article',
+    'designation' => 'Désignation',
+    'unit' => 'Unité',
+    'unit_price' => 'Prix unitaire',
+    'in_stock' => 'En stock',
+    'low_stock' => 'Stock faible',
+    'category' => 'Catégorie',
+    'low_stock_threshold' => 'Seuil de stock faible',
+    'item_added_success' => 'Article ajouté avec succès!',
+    'item_updated_success' => 'Article mis à jour avec succès!',
+    'item_deleted_success' => 'Article supprimé avec succès!',
+    'error_saving_item' => 'Erreur lors de l\'enregistrement',
+    'error_deleting_item' => 'Erreur lors de la suppression',
+    
+    // Requests
+    'create_request' => '+ Créer une demande',
+    'request_created_success' => 'Demande créée avec succès!',
+    'request_approved' => 'Demande approuvée!',
+    'request_rejected' => 'Demande rejetée!',
+    'request_fulfilled' => 'Demande remplie avec succès!',
+    'requester' => 'Demandeur',
+    'department' => 'Département',
+    'pending' => 'En attente',
+    'approved' => 'Approuvé',
+    'rejected' => 'Rejeté',
+    'fulfilled' => 'Rempli',
+    
+    // Purchase Orders
+    'create_purchase_order' => '+ Créer un bon de commande',
+    'supplier' => 'Fournisseur',
+    'po_created_success' => 'Bon de commande créé avec succès!',
+    'po_updated_success' => 'Bon de commande mis à jour!',
+    'po_approved' => 'Bon de commande approuvé!',
+    'po_rejected' => 'Bon de commande rejeté!',
+    
+    // Invoices
+    'create_invoice' => '+ Créer une facture',
+    'invoice_created_success' => 'Facture créée avec succès! Les articles ont été ajoutés à l\'inventaire.',
+    'invoice_updated_success' => 'Facture mise à jour avec succès!',
+    'approved_pos_awaiting' => 'Bons de commande approuvés en attente de factures',
+    
+    // Reports
+    'consumed_materials_report' => 'Inventaire des matières consommées',
+    'department_consumption_report' => 'Rapport de consommation par département',
+    'download_excel' => 'Télécharger Excel',
+    'start_date' => 'Date de début',
+    'end_date' => 'Date de fin',
+    'select_items' => 'Sélectionner des articles',
+    'all_items' => 'Tous les articles',
+    'items_selected' => 'article(s) sélectionné(s)',
+    
+    // Notifications
+    'success' => 'Succès',
+    'error' => 'Erreur',
+    'warning' => 'Attention',
+    'info' => 'Information',
+    'select_dates' => 'Veuillez sélectionner les deux dates',
+    'invalid_date_range' => 'La date de début doit être avant la date de fin',
+    'error_downloading_report' => 'Erreur lors du téléchargement. Veuillez réessayer.',
+    
+    // Categories
+    'office_supplies' => 'Fournitures de bureau',
+    'hygiene_products' => 'Produits d\'hygiène',
+    'others' => 'Autres',
+];
