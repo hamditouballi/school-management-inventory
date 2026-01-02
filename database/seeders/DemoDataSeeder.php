@@ -16,20 +16,25 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-        $teacher = User::where('username', 'teacher_nursery')->first();
-        $teacher2 = User::where('username', 'teacher_primary')->first();
-        $stockManager = User::where('username', 'stock_manager')->first();
-        $financeManager = User::where('username', 'finance_manager')->first();
+         $teacherPE1 = User::where('username', 'teacher_pe1')->first();
+    $teacherPE2 = User::where('username', 'teacher_pe2')->first();
 
-        // Create 6 sample requests
-        $requests = [
-            ['user' => $teacher, 'status' => 'fulfilled', 'created' => now()->subDays(20)],
-            ['user' => $teacher2, 'status' => 'fulfilled', 'created' => now()->subDays(18)],
-            ['user' => $teacher, 'status' => 'fulfilled', 'created' => now()->subDays(15)],
-            ['user' => $teacher2, 'status' => 'approved', 'created' => now()->subDays(10)],
-            ['user' => $teacher, 'status' => 'pending', 'created' => now()->subDays(3)],
-            ['user' => $teacher2, 'status' => 'pending', 'created' => now()->subDays(1)],
-        ];
+    $stockManager = User::where('username', 'stock_manager')->first();
+    $financeManager = User::where('username', 'finance_manager')->first();
+
+    if (!$teacherPE1 || !$teacherPE2 || !$stockManager || !$financeManager) {
+        throw new \Exception('Required demo users not found. Run UserSeeder first.');
+    }
+
+    // Create 6 sample requests
+    $requests = [
+        ['user' => $teacherPE1, 'status' => 'fulfilled', 'created' => now()->subDays(20)],
+        ['user' => $teacherPE2, 'status' => 'fulfilled', 'created' => now()->subDays(18)],
+        ['user' => $teacherPE1, 'status' => 'fulfilled', 'created' => now()->subDays(15)],
+        ['user' => $teacherPE2, 'status' => 'approved', 'created' => now()->subDays(10)],
+        ['user' => $teacherPE1, 'status' => 'pending', 'created' => now()->subDays(3)],
+        ['user' => $teacherPE2, 'status' => 'pending', 'created' => now()->subDays(1)],
+    ];
 
         foreach ($requests as $reqData) {
             $request = RequestModel::create([
