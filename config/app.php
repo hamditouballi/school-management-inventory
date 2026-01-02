@@ -96,7 +96,7 @@ return [
     'available_locales' => [
         'en' => ['name' => 'English', 'dir' => 'ltr'],
         'fr' => ['name' => 'Français', 'dir' => 'ltr'],
-        'ar' => ['name' => 'العربية', 'dir' => 'rtl'],
+        'ar' => ['name' => 'العربية', 'dir' => 'ltr'],
     ],
 
     /*

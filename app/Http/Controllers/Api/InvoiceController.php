@@ -16,18 +16,18 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         // Handle items from JSON string (FormData submission)
-        $items = $request->has('items') && is_string($request->input('items')) 
-            ? json_decode($request->input('items'), true) 
+        $items = $request->has('items') && is_string($request->input('items'))
+            ? json_decode($request->input('items'), true)
             : $request->input('items');
-        
+
         $request->merge(['items' => $items]);
-        
+
         $validated = $request->validate([
             'supplier' => 'required|string',
             'date' => 'required|date',
             'items' => 'required|array|min:1',
-            'items.*.item_id' => 'nullable|exists:items,id',
-            'items.*.item_name' => 'required|string',
+            'items.*.item_name' => 'required_without:items.*.item_id|string',
+            'items.*.item_id'   => 'nullable|exists:items,id',
             'items.*.description' => 'nullable|string',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit' => 'nullable|string',
@@ -63,7 +63,7 @@ class InvoiceController extends Controller
                 if ($request->hasFile($imageField)) {
                     $imagePath = $request->file($imageField)->store('invoice_items', 'public');
                 }
-                
+
                 // Create invoice item
                 \App\Models\InvoiceItem::create([
                     'invoice_id' => $invoice->id,
@@ -74,7 +74,7 @@ class InvoiceController extends Controller
                     'unit_price' => $itemData['unit_price'],
                     'image_path' => $imagePath,
                 ]);
-                
+
                 // Add/update item in items table
                 if (isset($itemData['item_id']) && $itemData['item_id']) {
                     // Existing item - update quantity
@@ -89,7 +89,7 @@ class InvoiceController extends Controller
                 } else {
                     // New item - check by name first
                     $existingItem = \App\Models\Item::where('designation', $itemData['item_name'])->first();
-                    
+
                     if ($existingItem) {
                         // Item with same name exists - increase quantity
                         $existingItem->increment('quantity', $itemData['quantity']);
@@ -127,12 +127,12 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         // Handle items from JSON string (FormData submission)
-        $items = $request->has('items') && is_string($request->input('items')) 
-            ? json_decode($request->input('items'), true) 
+        $items = $request->has('items') && is_string($request->input('items'))
+            ? json_decode($request->input('items'), true)
             : $request->input('items');
-        
+
         $request->merge(['items' => $items]);
-        
+
         $validated = $request->validate([
             'supplier' => 'required|string',
             'date' => 'required|date',
@@ -170,7 +170,7 @@ class InvoiceController extends Controller
                 if ($request->hasFile($imageField)) {
                     $imagePath = $request->file($imageField)->store('invoice_items', 'public');
                 }
-                
+
                 // Create invoice item
                 \App\Models\InvoiceItem::create([
                     'invoice_id' => $invoice->id,

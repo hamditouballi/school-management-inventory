@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            $table->string('image_path')->nullable()->after('amount');
+            $table->string('image_path')->nullable();
         });
     }
 
