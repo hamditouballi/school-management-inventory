@@ -13,7 +13,6 @@
         body { direction: rtl; }
         .rtl-flip { transform: scaleX(-1); }
     </style>
-    @endif
 </head>
 <body class="bg-gray-100">
     <nav class="bg-green-600 text-white shadow-lg">
