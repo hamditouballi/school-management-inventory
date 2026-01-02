@@ -35,7 +35,9 @@ return [
     'approve' => 'Approuver',
     'reject' => 'Rejeter',
     'fulfill' => 'Remplir',
-    
+    'username' => "Nom d'utilisateur",
+    'password' => 'Mot de passe',
+
     // Currency
     'currency' => 'DH',
     'currency_full' => 'Dirham Marocain',
@@ -118,4 +120,18 @@ return [
     'office_supplies' => 'Fournitures de bureau',
     'hygiene_products' => 'Produits d\'hygiène',
     'others' => 'Autres',
+
+    // Login / UI specific (added)
+    'manager_login' => 'Connexion Responsable',
+    'administrative_login' => 'Connexion Enseignant',
+    'sign_in' => 'Se connecter',
+    'demo' => 'Démo',
+    'welcome_back' => 'Content de vous revoir !',
+    'manager_portal' => 'Portail Responsable - RH, Stock & Finance',
+    'manager_login_btn' => 'Connexion Responsable',
+    'hello_administrative' => 'Bonjour, Enseignant !',
+    'administrative_portal' => "Accédez à votre espace d'enseignement",
+    'administrative_login_btn' => 'Connexion Enseignant',
+    'stock_manager' => 'Responsable Stock',
+    'finance_manager' => 'Responsable Finances',
 ];

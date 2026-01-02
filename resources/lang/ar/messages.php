@@ -35,7 +35,9 @@ return [
     'approve' => 'موافقة',
     'reject' => 'رفض',
     'fulfill' => 'تنفيذ',
-    
+    'username' => 'اسم المستخدم',
+    'password' => 'كلمة المرور',
+
     // Currency
     'currency' => 'د.م.',
     'currency_full' => 'درهم مغربي',
@@ -118,4 +120,19 @@ return [
     'office_supplies' => 'لوازم المكتب',
     'hygiene_products' => 'منتجات النظافة',
     'others' => 'أخرى',
+
+    // Login / UI
+    'manager_login' => 'تسجيل دخول المسؤول',
+    'administrative_login' => 'تسجيل دخول الإداري',
+    'sign_in' => 'دخول',
+    'welcome_back' => 'مرحبا بعودتك!',
+    'manager_portal' => 'بوابة المسؤول (الموارد البشرية، المخزون، المالية)',
+    'manager_login_btn' => 'دخول المسؤول',
+    'hello_administrative' => 'مرحبا أيها الإداري!',
+    'administrative_portal' => 'الدخول إلى البوابة الإدارية',
+    'administrative_login_btn' => 'دخول الإداري',
+
+    // Roles
+    'stock_manager' => 'مسؤول المخزون',
+    'finance_manager' => 'مسؤول المالية',
 ];

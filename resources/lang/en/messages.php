@@ -35,7 +35,9 @@ return [
     'approve' => 'Approve',
     'reject' => 'Reject',
     'fulfill' => 'Fulfill',
-    
+    'username' => 'Username',
+    'password' => 'Password',
+
     // Currency
     'currency' => 'DH',
     'currency_full' => 'Moroccan Dirham',
@@ -118,4 +120,18 @@ return [
     'office_supplies' => 'Office Supplies',
     'hygiene_products' => 'Hygiene Products',
     'others' => 'Others',
+
+    // Login / UI specific (added)
+    'manager_login' => 'Manager Login',
+    'administrative_login' => 'administrative Login',
+    'sign_in' => 'Sign In',
+    'demo' => 'Demo',
+    'welcome_back' => 'Welcome Back!',
+    'manager_portal' => 'Manager Portal - HR, Stock & Finance',
+    'manager_login_btn' => 'Manager Login',
+    'hello_administrative' => 'Hello, administrative!',
+    'administrative_portal' => 'Access your teaching portal',
+    'administrative_login_btn' => 'administrative Login',
+    'stock_manager' => 'Stock Manager',
+    'finance_manager' => 'Finance Manager',
 ];

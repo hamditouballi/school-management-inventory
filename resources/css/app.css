@@ -1,3 +1,45 @@
+@font-face {
+    font-family: 'FredokaLocal';
+    src: url('/fonts/fredoka/Fredoka-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'FredokaLocal';
+    src: url('/fonts/fredoka/Fredoka-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'FredokaLocal';
+    src: url('/fonts/fredoka/Fredoka-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'FredokaLocal';
+    src: url('/fonts/fredoka/Fredoka-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* logo font */
+.font-logo {
+    font-family: 'Fredoka', sans-serif;
+}
+
+.fredoka-uniquifier {
+  font-family: "Fredoka", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,6 +55,12 @@
         transform: translateY(0);
     }
 }
+
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
 
 .fade-in {
     animation: fadeIn 0.5s ease-out;
