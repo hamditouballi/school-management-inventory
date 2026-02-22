@@ -90,7 +90,14 @@ return [
     'po_updated_success' => 'تم تحديث أمر الشراء بنجاح!',
     'po_approved' => 'تمت الموافقة على أمر الشراء!',
     'po_rejected' => 'تم رفض أمر الشراء!',
-    
+    'pending_hr' => 'معلق  ',
+    'approved_hr' => 'موافق عليه  ',
+    'rejected_hr' => 'مرفوض  ',
+    'ordered' => 'مُطلَب',
+
+    'view_and_manage_purchase_orders' => 'عرض وإدارة أوامر الشراء',
+    'view_and_manage_invoices' => 'عرض وإدارة الفواتير',
+
     // Invoices
     'create_invoice' => '+ إنشاء فاتورة',
     'invoice_created_success' => 'تم إنشاء الفاتورة بنجاح! تمت إضافة المواد إلى المخزون.',
@@ -106,6 +113,9 @@ return [
     'select_items' => 'اختيار المواد',
     'all_items' => 'جميع المواد',
     'items_selected' => 'مادة مختارة',
+    'date_from' => 'تاريخ الطلب',
+    'view_and_manage_item_requests' => 'عرض وإدارة طلبات المواد',
+    
     
     // Notifications
     'success' => 'نجاح',

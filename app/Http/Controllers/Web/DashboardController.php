@@ -11,7 +11,7 @@ class DashboardController extends Controller
     {
         // Prevent teachers from accessing dashboard
         if (auth()->user()->role === 'teacher') {
-            return redirect()->route('requests.index')
+            return redirect()->route('requests.page')
                 ->with('error', 'You do not have access to the dashboard.');
         }
         

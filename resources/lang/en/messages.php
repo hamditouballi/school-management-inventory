@@ -9,7 +9,7 @@ return [
     'invoices' => 'Invoices',
     'logout' => 'Logout',
     'login' => 'Login',
-    
+
     // Common
     'welcome' => 'Welcome',
     'search' => 'Search',
@@ -41,7 +41,7 @@ return [
     // Currency
     'currency' => 'DH',
     'currency_full' => 'Moroccan Dirham',
-    
+
     // Dashboard
     'total_items' => 'Total Items',
     'low_stock_items' => 'Low Stock Items',
@@ -52,7 +52,7 @@ return [
     'top_consumed_items' => 'Top 10 Consumed Items',
     'low_stock_alerts' => 'Low Stock Alerts',
     'reports' => 'Reports',
-    
+
     // Items
     'items_management' => 'Items Management',
     'manage_inventory' => 'Manage inventory items and stock levels',
@@ -69,7 +69,7 @@ return [
     'item_deleted_success' => 'Item deleted successfully!',
     'error_saving_item' => 'Error saving item',
     'error_deleting_item' => 'Error deleting item',
-    
+
     // Requests
     'create_request' => '+ Create Request',
     'request_created_success' => 'Request created successfully!',
@@ -82,7 +82,7 @@ return [
     'approved' => 'Approved',
     'rejected' => 'Rejected',
     'fulfilled' => 'Fulfilled',
-    
+
     // Purchase Orders
     'create_purchase_order' => '+ Create Purchase Order',
     'supplier' => 'Supplier',
@@ -90,13 +90,17 @@ return [
     'po_updated_success' => 'Purchase order updated successfully!',
     'po_approved' => 'Purchase order approved!',
     'po_rejected' => 'Purchase order rejected!',
-    
+    'pending_hr' => 'Pending HR',
+    'approved_hr' => 'Approved HR',
+    'rejected_hr' => 'Rejected HR',
+    'ordered' => 'Ordered',
+
     // Invoices
     'create_invoice' => '+ Create Invoice',
     'invoice_created_success' => 'Invoice created successfully! Items have been added to inventory.',
     'invoice_updated_success' => 'Invoice updated successfully!',
     'approved_pos_awaiting' => 'Approved Purchase Orders Awaiting Invoices',
-    
+
     // Reports
     'consumed_materials_report' => 'Inventory of Consumed Materials',
     'department_consumption_report' => 'Department Consumption Report',
@@ -106,7 +110,12 @@ return [
     'select_items' => 'Select Items',
     'all_items' => 'All Items',
     'items_selected' => 'item(s) selected',
-    
+    'date_from' => 'From Date',
+    'view_and_manage_item_requests' => 'View and manage item requests',
+    'view_and_manage_purchase_orders' => 'View and manage purchase orders',
+    'view_and_manage_invoices' => 'View and manage invoices',
+
+
     // Notifications
     'success' => 'Success',
     'error' => 'Error',
@@ -115,7 +124,7 @@ return [
     'select_dates' => 'Please select both start and end dates',
     'invalid_date_range' => 'Start date must be before end date',
     'error_downloading_report' => 'Error downloading report. Please try again.',
-    
+
     // Categories
     'office_supplies' => 'Office Supplies',
     'hygiene_products' => 'Hygiene Products',

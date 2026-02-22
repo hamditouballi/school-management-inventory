@@ -6,7 +6,7 @@
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">{{ __('messages.requests') }}</h1>
-            <p class="text-gray-600">View and manage item requests</p>
+            <p class="text-gray-600">{{ __('messages.view_and_manage_item_requests') }}</p>
         </div>
         @if (auth()->user()->role !== 'stock_manager')
             <button onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
@@ -20,7 +20,7 @@
         <div class="grid grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium mb-1">{{ __('messages.search') }}</label>
-                <input type="text" id="searchInput" placeholder="{{ __('messages.search') }} by requester or department..."
+                <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}"
                     class="w-full px-3 py-2 border rounded" oninput="applyFilters()">
             </div>
             <div>
@@ -34,7 +34,9 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1">Date From</label>
+                <label class="block text-sm font-medium mb-1">
+                    {{ __('messages.date_from') }}
+                </label>
                 <input type="date" id="dateFrom" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
             </div>
         </div>
@@ -50,7 +52,9 @@
                             {{ __('messages.requester') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.department') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.items') }}
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.status') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -280,23 +284,33 @@
                 <td class="px-6 py-4">${deptName}</td>
                 <td class="px-6 py-4">
                     <button onclick="viewRequestDetails(${req.id})" class="text-green-600 hover:underline">
-                        ${requestItems.length} item(s)
+                        ${requestItems.length} {{ __('messages.items') }}
                     </button>
                 </td>
                 <td class="px-6 py-4">
-                    <span class="px-2 py-1 text-xs rounded ${statusColors[req.status] || 'bg-gray-100 text-gray-800'}">${req.status}</span>
+                    <span class="px-2 py-1 text-xs rounded ${statusColors[req.status] || 'bg-gray-100 text-gray-800'}">${
+                        req.status == "pending" 
+                            ? "{{ __('messages.pending') }}" 
+                            : req.status == "approved" 
+                                ? "{{ __('messages.approved') }}" 
+                                : req.status == "rejected" 
+                                    ? "{{ __('messages.rejected') }}" 
+                                    : req.status == "fulfilled" 
+                                        ? "{{ __('messages.fulfilled') }}" 
+                                        : req.status
+                    }</span>
                 </td>
                 <td class="px-6 py-4">${dateCreated ? new Date(dateCreated).toLocaleDateString() : 'N/A'}</td>
                 ${canManage && req.status === 'pending' ? `
-                                                                                                                                        <td class="px-6 py-4">
-                                                                                                                                            <button onclick="approveRequest(${req.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve') }}</button>
-                                                                                                                                            <button onclick="rejectRequest(${req.id})" class="text-red-600 hover:text-red-800">{{ __('messages.reject') }}</button>
-                                                                                                                                        </td>
-                                                                                                                                        ` : canManage && req.status === 'approved' ? `
-                                                                                                                                        <td class="px-6 py-4">
-                                                                                                                                            <button onclick="fulfillRequest(${req.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.fulfill') }}</button>
-                                                                                                                                        </td>
-                                                                                                                                        ` : canManage ? '<td class="px-6 py-4">-</td>' : ''}
+                                                                                                                                                                <td class="px-6 py-4">
+                                                                                                                                                                    <button onclick="approveRequest(${req.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve') }}</button>
+                                                                                                                                                                    <button onclick="rejectRequest(${req.id})" class="text-red-600 hover:text-red-800">{{ __('messages.reject') }}</button>
+                                                                                                                                                                </td>
+                                                                                                                                                                ` : canManage && req.status === 'approved' ? `
+                                                                                                                                                                <td class="px-6 py-4">
+                                                                                                                                                                    <button onclick="fulfillRequest(${req.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.fulfill') }}</button>
+                                                                                                                                                                </td>
+                                                                                                                                                                ` : canManage ? '<td class="px-6 py-4">-</td>' : ''}
             </tr>
         `;
                     }).join('');
@@ -546,19 +560,19 @@
                 <div>
                     <h4 class="font-semibold mb-3">Requested Items</h4>
                     ${requestItems.length === 0 ? '<p class="text-gray-500">No items</p>' : `
-                                                                                                                                                <table class="min-w-full">
-                                                                                                                                                    <thead class="bg-gray-50">
-                                                                                                                                                        <tr>
-                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
-                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Price</th>
-                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
-                                                                                                                                                        </tr>
-                                                                                                                                                    </thead>
-                                                                                                                                                    <tbody class="divide-y">
-                                                                                                                                                        ${requestItems.map(ri => {
-                                                                                                                                                            const item = ri.item || {};
-                                                                                                                                                            return `
+                                                                                                                                                                        <table class="min-w-full">
+                                                                                                                                                                            <thead class="bg-gray-50">
+                                                                                                                                                                                <tr>
+                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
+                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
+                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Price</th>
+                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
+                                                                                                                                                                                </tr>
+                                                                                                                                                                            </thead>
+                                                                                                                                                                            <tbody class="divide-y">
+                                                                                                                                                                                ${requestItems.map(ri => {
+                                                                                                                                                                                    const item = ri.item || {};
+                                                                                                                                                                                    return `
                                     <tr>
                                         <td class="px-4 py-2">
                                             ${item.image_path ? 
@@ -576,15 +590,15 @@
             `}
                 </div>
                 ${canManage ? `
-                                                                                                                                            <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                                                                ${req.status === 'pending' ? `
+                                                                                                                                                                    <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                                                                                                                                                                        ${req.status === 'pending' ? `
                             <button onclick="approveRequest(${req.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve') }}</button>
                             <button onclick="rejectRequest(${req.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
                         ` : req.status === 'approved' ? `
                             <button onclick="fulfillRequest(${req.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.fulfill') }}</button>
                         ` : ''}
-                                                                                                                                            </div>
-                                                                                                                                        ` : ''}
+                                                                                                                                                                    </div>
+                                                                                                                                                                ` : ''}
             `;
             document.getElementById('detailsContent').innerHTML = html;
             })
@@ -622,17 +636,17 @@
                 <p class="text-xs text-gray-500 mb-2">Available: ${parseFloat(item.quantity).toFixed(2)}</p>
                 <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
-                                                                                                                                            <div class="flex items-center gap-2">
-                                                                                                                                                <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                                                                                                                                                <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
-                                                                                                                                                <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
-                                                                                                                                            </div>
-                                                                                                                                        ` : `
-                                                                                                                                            <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                Add to Cart
-                                                                                                                                            </button>
-                                                                                                                                        `}
+                                                                                                                                                                    <div class="flex items-center gap-2">
+                                                                                                                                                                        <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                                                                                                                                                                        <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
+                                                                                                                                                                        <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                                                                                                                                                                        <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
+                                                                                                                                                                    </div>
+                                                                                                                                                                ` : `
+                                                                                                                                                                    <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                                                                                                        Add to Cart
+                                                                                                                                                                    </button>
+                                                                                                                                                                `}
             </div>
         `;
                 }).join('');
@@ -664,17 +678,17 @@
                 <p class="text-xs text-gray-500 mb-2">Available: ${parseFloat(item.quantity).toFixed(2)}</p>
                 <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
-                                                                                                                                            <div class="flex items-center gap-2">
-                                                                                                                                                <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                                                                                                                                                <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
-                                                                                                                                                <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
-                                                                                                                                            </div>
-                                                                                                                                        ` : `
-                                                                                                                                            <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                Add to Cart
-                                                                                                                                            </button>
-                                                                                                                                        `}
+                                                                                                                                                                    <div class="flex items-center gap-2">
+                                                                                                                                                                        <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                                                                                                                                                                        <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
+                                                                                                                                                                        <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                                                                                                                                                                        <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
+                                                                                                                                                                    </div>
+                                                                                                                                                                ` : `
+                                                                                                                                                                    <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                                                                                                        Add to Cart
+                                                                                                                                                                    </button>
+                                                                                                                                                                `}
             </div>
         `;
                 }).join('');

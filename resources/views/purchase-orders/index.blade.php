@@ -6,7 +6,9 @@
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">{{ __('messages.purchase_orders') }}</h1>
-            <p class="text-gray-600">Manage purchase orders and approvals</p>
+            <p class="text-gray-600">
+                {{ __('messages.view_and_manage_purchase_orders') }}
+            </p>
         </div>
         @if (auth()->user()->role === 'stock_manager')
             <button onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
@@ -19,12 +21,16 @@
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <div class="grid grid-cols-3 gap-4">
             <div>
-                <label class="block text-sm font-medium mb-1">Search</label>
-                <input type="text" id="searchInput" placeholder="Search by supplier..."
+                <label class="block text-sm font-medium mb-1">
+                    {{ __('messages.search') }}
+                </label>
+                <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}"
                     class="w-full px-3 py-2 border rounded" oninput="applyFilters()">
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1">Status</label>
+                <label class="block text-sm font-medium mb-1">
+                    {{ __('messages.status') }}
+                </label>
                 <select id="statusFilter" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
                     <option value="">All Statuses</option>
                     <option value="pending_hr">Pending HR</option>
@@ -34,7 +40,9 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1">Date From</label>
+                <label class="block text-sm font-medium mb-1">
+                    {{ __('messages.date_from') }}
+                </label>
                 <input type="date" id="dateFrom" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
             </div>
         </div>
@@ -49,7 +57,9 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.supplier') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.items') }}
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Amount</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
@@ -243,11 +253,21 @@
                 <td class="px-6 py-4">${po.supplier}</td>
                 <td class="px-6 py-4">
                     <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:underline">
-                        ${poItems.length} item(s) (${totalQty.toFixed(2)} units)
+                        ${poItems.length} {{ __('messages.items') }} (${totalQty.toFixed(2)} {{ __('messages.unit') }})
                     </button>
                 </td>
                 <td class="px-6 py-4">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</td>
-                <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${po.status.replace('_', ' ').toUpperCase()}</span></td>
+                <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${
+                    po.status.replace('_', ' ').toUpperCase() == "PENDING HR" 
+                    ? "{{ __('messages.pending_hr') }}" 
+                    : po.status.replace('_', ' ').toUpperCase() == "APPROVED HR" 
+                        ? "{{ __('messages.approved_hr') }}" 
+                        : po.status.replace('_', ' ').toUpperCase() == "REJECTED HR" 
+                            ? "{{ __('messages.rejected_hr') }}" 
+                            : po.status.replace('_', ' ').toUpperCase() == "ORDERED" 
+                                ? "{{ __('messages.ordered') }}" 
+                                : po.status.toUpperCase()
+                    }</span></td>
                 <td class="px-6 py-4">${new Date(po.date).toLocaleDateString()}</td>
                 ${(isHRManager || isStockManager) ? `
                                                                                                                                                                                                         <td class="px-6 py-4">

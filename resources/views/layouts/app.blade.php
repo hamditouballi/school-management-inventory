@@ -51,7 +51,7 @@
 
             <!-- LOGO -->
             <a href="{{ auth()->check() && auth()->user()->role === 'teacher'
-                        ? route('requests.index')
+                        ? route('requests.page')
                         : route('dashboard') }}"
                class="flex items-center space-x-3">
                 <img src="{{ asset('images/logo-al-amine.png') }}"
@@ -83,7 +83,7 @@
                 @endif
 
                 @if(in_array(auth()->user()->role,['stock_manager','hr_manager']))
-                    <a href="{{ route('items.index') }}"
+                    <a href="{{ route('items.page') }}"
                        class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                        {{ request()->routeIs('items.*')
                           ? 'bg-red-600 text-white shadow-md scale-105'
@@ -92,7 +92,7 @@
                     </a>
                 @endif
 
-                <a href="{{ route('requests.index') }}"
+                <a href="{{ route('requests.page') }}"
                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                    {{ request()->routeIs('requests.*')
                       ? 'bg-red-600 text-white shadow-md scale-105'
@@ -101,7 +101,7 @@
                 </a>
 
                 @if(in_array(auth()->user()->role,['stock_manager','hr_manager']))
-                    <a href="{{ route('purchase-orders.index') }}"
+                    <a href="{{ route('purchase-orders.page') }}"
                        class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                        {{ request()->routeIs('purchase-orders.*')
                           ? 'bg-red-600 text-white shadow-md scale-105'
@@ -111,7 +111,7 @@
                 @endif
 
                 @if(in_array(auth()->user()->role,['finance_manager','hr_manager']))
-                    <a href="{{ route('invoices.index') }}"
+                    <a href="{{ route('invoices.page') }}"
                        class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                        {{ request()->routeIs('invoices.*')
                           ? 'bg-red-600 text-white shadow-md scale-105'
@@ -206,7 +206,7 @@
                 @endif
 
                 @if(in_array(auth()->user()->role,['stock_manager','hr_manager']))
-                    <a href="{{ route('items.index') }}"
+                    <a href="{{ route('items.page') }}"
                        class="block px-4 py-2 rounded-lg
                        {{ request()->routeIs('items.*')
                           ? 'bg-red-600 text-white'
@@ -215,7 +215,7 @@
                     </a>
                 @endif
 
-                <a href="{{ route('requests.index') }}"
+                <a href="{{ route('requests.page') }}"
                    class="block px-4 py-2 rounded-lg
                    {{ request()->routeIs('requests.*')
                       ? 'bg-red-600 text-white'
@@ -224,7 +224,7 @@
                 </a>
 
                 @if(in_array(auth()->user()->role,['stock_manager','hr_manager']))
-                    <a href="{{ route('purchase-orders.index') }}"
+                    <a href="{{ route('purchase-orders.page') }}"
                        class="block px-4 py-2 rounded-lg
                        {{ request()->routeIs('purchase-orders.*')
                           ? 'bg-red-600 text-white'
@@ -234,7 +234,7 @@
                 @endif
 
                 @if(in_array(auth()->user()->role,['finance_manager','hr_manager']))
-                    <a href="{{ route('invoices.index') }}"
+                    <a href="{{ route('invoices.page') }}"
                        class="block px-4 py-2 rounded-lg
                        {{ request()->routeIs('invoices.*')
                           ? 'bg-red-600 text-white'

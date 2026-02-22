@@ -9,7 +9,7 @@ return [
     'invoices' => 'Factures',
     'logout' => 'Déconnexion',
     'login' => 'Connexion',
-    
+
     // Common
     'welcome' => 'Bienvenue',
     'search' => 'Rechercher',
@@ -41,7 +41,7 @@ return [
     // Currency
     'currency' => 'DH',
     'currency_full' => 'Dirham Marocain',
-    
+
     // Dashboard
     'total_items' => 'Total des articles',
     'low_stock_items' => 'Articles en rupture',
@@ -52,7 +52,7 @@ return [
     'top_consumed_items' => 'Top 10 des articles consommés',
     'low_stock_alerts' => 'Alertes de stock faible',
     'reports' => 'Rapports',
-    
+
     // Items
     'items_management' => 'Gestion des articles',
     'manage_inventory' => 'Gérer les articles et les niveaux de stock',
@@ -69,7 +69,7 @@ return [
     'item_deleted_success' => 'Article supprimé avec succès!',
     'error_saving_item' => 'Erreur lors de l\'enregistrement',
     'error_deleting_item' => 'Erreur lors de la suppression',
-    
+
     // Requests
     'create_request' => '+ Créer une demande',
     'request_created_success' => 'Demande créée avec succès!',
@@ -82,7 +82,7 @@ return [
     'approved' => 'Approuvé',
     'rejected' => 'Rejeté',
     'fulfilled' => 'Rempli',
-    
+
     // Purchase Orders
     'create_purchase_order' => '+ Créer un bon de commande',
     'supplier' => 'Fournisseur',
@@ -90,13 +90,19 @@ return [
     'po_updated_success' => 'Bon de commande mis à jour!',
     'po_approved' => 'Bon de commande approuvé!',
     'po_rejected' => 'Bon de commande rejeté!',
+    'pending_hr' => 'En attente',
+    'approved_hr' => 'Approuvé',
+    'rejected_hr' => 'Rejeté',
+    'ordered' => 'Commandé',
+    'view_and_manage_purchase_orders' => 'Voir et gérer les bons de commande',
+    'view_and_manage_invoices' => 'Voir et gérer les factures',
     
     // Invoices
     'create_invoice' => '+ Créer une facture',
     'invoice_created_success' => 'Facture créée avec succès! Les articles ont été ajoutés à l\'inventaire.',
     'invoice_updated_success' => 'Facture mise à jour avec succès!',
     'approved_pos_awaiting' => 'Bons de commande approuvés en attente de factures',
-    
+
     // Reports
     'consumed_materials_report' => 'Inventaire des matières consommées',
     'department_consumption_report' => 'Rapport de consommation par département',
@@ -106,7 +112,9 @@ return [
     'select_items' => 'Sélectionner des articles',
     'all_items' => 'Tous les articles',
     'items_selected' => 'article(s) sélectionné(s)',
-    
+    'date_from' => 'Date de début',
+    'view_and_manage_item_requests' => 'Voir et gérer les demandes d\'articles',
+
     // Notifications
     'success' => 'Succès',
     'error' => 'Erreur',
@@ -115,7 +123,7 @@ return [
     'select_dates' => 'Veuillez sélectionner les deux dates',
     'invalid_date_range' => 'La date de début doit être avant la date de fin',
     'error_downloading_report' => 'Erreur lors du téléchargement. Veuillez réessayer.',
-    
+
     // Categories
     'office_supplies' => 'Fournitures de bureau',
     'hygiene_products' => 'Produits d\'hygiène',
