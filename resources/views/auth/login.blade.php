@@ -361,7 +361,8 @@
                 <input type="hidden" name="user_type" value="manager">
                 <h2>{{ __('messages.manager_login') }}</h2>
 
-                <input type="text" name="username" placeholder="{{ __('messages.username') }}" value="{{ old('username') }}" required autocomplete="username">
+                <input id="managerUsername" type="text" name="username" placeholder="{{ __('messages.username') }}" value="{{ old('username') }}" required autocomplete="username">
+                <p class="error-message" id="managerError"></p>
                 @error('username') <p class="error-message">{{ $message }}</p> @enderror
 
                 <input type="password" name="password" placeholder="{{ __('messages.password') }}" required autocomplete="current-password">
@@ -385,7 +386,8 @@
                 <input type="hidden" name="user_type" value="administrative">
                 <h2>{{ __('messages.administrative_login') }}</h2>
 
-                <input type="text" name="username" placeholder="{{ __('messages.username') }}" value="{{ old('username') }}" required autocomplete="username">
+                <input id="adminUsername" type="text" name="username" placeholder="{{ __('messages.username') }}" value="{{ old('username') }}" required autocomplete="username">
+                <p class="error-message" id="adminError"></p>
                 @error('username') <p class="error-message">{{ $message }}</p> @enderror
 
                 <input type="password" name="password" placeholder="{{ __('messages.password') }}" required autocomplete="current-password">
@@ -487,5 +489,47 @@
         if (administrative) administrative.setAttribute('aria-hidden', isRight ? 'false' : 'true');
     })();
 })();
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    // Allowed manager usernames
+    const managerUsers = [
+        "hr_manager",
+        "pm1_manager",
+        "pm2_manager",
+        "finance_manager",
+        "stock_manager"
+    ];
+
+    const managerForm = document.querySelector("#managerContainer form");
+    const adminForm = document.querySelector("#administrativeContainer form");
+
+    const managerInput = document.getElementById("managerUsername");
+    const adminInput = document.getElementById("adminUsername");
+
+    const managerError = document.getElementById("managerError");
+    const adminError = document.getElementById("adminError");
+
+    // Manager login validation
+    managerForm.addEventListener("submit", function (e) {
+        const username = managerInput.value.trim();
+
+        if (!managerUsers.includes(username)) {
+            e.preventDefault();
+            managerError.textContent = "This account cannot login as Manager.";
+        }
+    });
+
+    // Administrative login validation
+    adminForm.addEventListener("submit", function (e) {
+        const username = adminInput.value.trim();
+
+        if (managerUsers.includes(username)) {
+            e.preventDefault();
+            adminError.textContent = "Managers must use Manager login.";
+        }
+    });
+
+});
 </script>
 @endsection
