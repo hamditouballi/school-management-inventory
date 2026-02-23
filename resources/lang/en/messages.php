@@ -94,12 +94,15 @@ return [
     'approved_hr' => 'Approved HR',
     'rejected_hr' => 'Rejected HR',
     'ordered' => 'Ordered',
+    'amount' => 'total amount',
+
 
     // Invoices
     'create_invoice' => '+ Create Invoice',
     'invoice_created_success' => 'Invoice created successfully! Items have been added to inventory.',
     'invoice_updated_success' => 'Invoice updated successfully!',
     'approved_pos_awaiting' => 'Approved Purchase Orders Awaiting Invoices',
+    'no_approved_pos_awaiting' => 'No approved purchase orders awaiting invoices.',
 
     // Reports
     'consumed_materials_report' => 'Inventory of Consumed Materials',

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('items', function (Blueprint $table) {
             $table->text('description')->nullable()->after('designation');
-            $table->decimal('low_stock_threshold', 10, 2)->default(50)->after('unit');
+            $table->decimal('low_stock_threshold', 10, 2)->default(1)->after('unit');
         });
     }
 

@@ -94,6 +94,7 @@ return [
     'approved_hr' => 'موافق عليه  ',
     'rejected_hr' => 'مرفوض  ',
     'ordered' => 'مُطلَب',
+     'amount' => 'المبلغ الإجمالي',
 
     'view_and_manage_purchase_orders' => 'عرض وإدارة أوامر الشراء',
     'view_and_manage_invoices' => 'عرض وإدارة الفواتير',
@@ -103,6 +104,7 @@ return [
     'invoice_created_success' => 'تم إنشاء الفاتورة بنجاح! تمت إضافة المواد إلى المخزون.',
     'invoice_updated_success' => 'تم تحديث الفاتورة بنجاح!',
     'approved_pos_awaiting' => 'أوامر الشراء الموافق عليها في انتظار الفواتير',
+    'no_approved_pos_awaiting' => 'لا توجد أوامر شراء موافق عليها في انتظار الفواتير.',
     
     // Reports
     'consumed_materials_report' => 'جرد المواد المستهلكة',

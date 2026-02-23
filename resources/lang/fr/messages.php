@@ -96,12 +96,14 @@ return [
     'ordered' => 'Commandé',
     'view_and_manage_purchase_orders' => 'Voir et gérer les bons de commande',
     'view_and_manage_invoices' => 'Voir et gérer les factures',
+     'amount' => 'montant total',
     
     // Invoices
     'create_invoice' => '+ Créer une facture',
     'invoice_created_success' => 'Facture créée avec succès! Les articles ont été ajoutés à l\'inventaire.',
     'invoice_updated_success' => 'Facture mise à jour avec succès!',
     'approved_pos_awaiting' => 'Bons de commande approuvés en attente de factures',
+    'no_approved_pos_awaiting' => 'Aucun bon de commande approuvé en attente de factures.',
 
     // Reports
     'consumed_materials_report' => 'Inventaire des matières consommées',

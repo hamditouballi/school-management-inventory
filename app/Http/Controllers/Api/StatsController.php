@@ -14,15 +14,15 @@ class StatsController extends Controller
     public function consumption(Request $request)
     {
         $months = $request->get('months', 12);
-        
+
         $data = BonDeSortie::select(
             DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
             DB::raw('SUM(quantity) as total_quantity')
         )
-        ->where('date', '>=', now()->subMonths($months))
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+            ->where('date', '>=', now()->subMonths($months))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
         return response()->json($data);
     }
@@ -47,10 +47,10 @@ class StatsController extends Controller
             DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
             DB::raw('SUM(price * quantity) as total_spent')
         )
-        ->where('date', '>=', now()->subMonths($months))
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get();
+            ->where('date', '>=', now()->subMonths($months))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
 
         return response()->json($data);
     }
@@ -71,7 +71,7 @@ class StatsController extends Controller
 
     public function lowStock(Request $request)
     {
-        $threshold = $request->get('threshold', 50);
+        $threshold = $request->get('threshold', 1);
 
         $items = Item::where('quantity', '<', $threshold)
             ->orderBy('quantity', 'asc')
@@ -84,7 +84,7 @@ class StatsController extends Controller
     {
         return response()->json([
             'total_items' => Item::count(),
-            'low_stock_items' => Item::where('quantity', '<', 50)->count(),
+            'low_stock_items' => Item::where('quantity', '<', 1)->count(),
             'pending_requests' => \App\Models\Request::where('status', 'pending')->count(),
             'pending_purchase_orders' => \App\Models\PurchaseOrder::where('status', 'pending_hr')->count(),
             'total_spent_this_month' => Invoice::whereYear('date', now()->year)

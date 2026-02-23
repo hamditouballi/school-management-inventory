@@ -53,18 +53,26 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.image') }}
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.supplier') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.items') }}
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.amount') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.status') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.date') }}
+                        </th>
                         @if (in_array(auth()->user()->role, ['hr_manager', 'stock_manager']))
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.actions') }}</th>
                         @endif
                     </tr>
                 </thead>

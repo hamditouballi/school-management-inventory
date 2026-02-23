@@ -20,7 +20,7 @@
     @if (auth()->user()->role === 'finance_manager')
         <!-- Approved Purchase Orders Section -->
         <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Approved Purchase Orders Awaiting Invoices</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">{{ __('messages.approved_pos_awaiting') }}</h2>
             <div id="approvedPOsContainer">
                 <p class="text-gray-500">Loading...</p>
             </div>
@@ -32,15 +32,15 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.image') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Supplier</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.supplier') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.description') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.quantity') }}</th>
                         {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th> --}}
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.total') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.date') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200" id="invoiceBody">
@@ -178,7 +178,7 @@
             function renderApprovedPOs() {
                 const container = document.getElementById('approvedPOsContainer');
                 if (allApprovedPOs.length === 0) {
-                    container.innerHTML = '<p class="text-gray-500">No approved purchase orders awaiting invoices.</p>';
+                    container.innerHTML = '<p class="text-gray-500">{{ __('messages.no_approved_pos_awaiting') }}</p>';
                     return;
                 }
 
