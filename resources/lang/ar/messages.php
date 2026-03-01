@@ -82,6 +82,7 @@ return [
     'approved' => 'موافق عليه',
     'rejected' => 'مرفوض',
     'fulfilled' => 'منفذ',
+    'hr_approved' => 'موافق عليه',
     
     // Purchase Orders
     'create_purchase_order' => '+ إنشاء أمر شراء',
@@ -95,9 +96,22 @@ return [
     'rejected_hr' => 'مرفوض  ',
     'ordered' => 'مُطلَب',
      'amount' => 'المبلغ الإجمالي',
+     'approve_initial' => 'موافقة أولية',
+    'reject' => 'رفض',
+    'select_final' => 'اختيار نهائي',
+    'edit' => 'تعديل',
+    'view' => 'عرض',
+    'add_proposals' => 'إضافة عروض',
+    'pending_initial_approval' => 'موافقة أولية معلقة',
+    'initial_approved' => 'موافقة أولية',
+    'pending_final_approval' => 'موافقة نهائية معلقة',
+    'final_approved' => 'موافقة نهائية',
+    'invoice_id' => 'رقم الفاتورة',
+    'finance_manager' => 'المدير المالي',
 
     'view_and_manage_purchase_orders' => 'عرض وإدارة أوامر الشراء',
     'view_and_manage_invoices' => 'عرض وإدارة الفواتير',
+    'invoice_image' => 'صورة الفاتورة',
 
     // Invoices
     'create_invoice' => '+ إنشاء فاتورة',
@@ -105,6 +119,11 @@ return [
     'invoice_updated_success' => 'تم تحديث الفاتورة بنجاح!',
     'approved_pos_awaiting' => 'أوامر الشراء الموافق عليها في انتظار الفواتير',
     'no_approved_pos_awaiting' => 'لا توجد أوامر شراء موافق عليها في انتظار الفواتير.',
+    'invoice_details' => 'تفاصيل الفاتورة',
+    'subtotal' => 'المجموع الفرعي',
+    'type' => 'النوع',
+    'incoming' => 'استلام',
+    'return' => 'إرجاع',
     
     // Reports
     'consumed_materials_report' => 'جرد المواد المستهلكة',

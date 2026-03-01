@@ -82,6 +82,7 @@ return [
     'approved' => 'Approuvé',
     'rejected' => 'Rejeté',
     'fulfilled' => 'Rempli',
+    'hr_approved' => 'Approuvé',
 
     // Purchase Orders
     'create_purchase_order' => '+ Créer un bon de commande',
@@ -97,6 +98,19 @@ return [
     'view_and_manage_purchase_orders' => 'Voir et gérer les bons de commande',
     'view_and_manage_invoices' => 'Voir et gérer les factures',
      'amount' => 'montant total',
+     'approve_initial' => 'Approuver Initial',
+    'reject' => 'Rejeter',
+    'select_final' => 'Sélectionner Final',
+    'edit' => 'Modifier',
+    'view' => 'Voir',
+    'add_proposals' => 'Ajouter des propositions',
+    'pending_initial_approval' => 'En attente d\'approbation initiale',
+    'initial_approved' => 'Approuvé initialement',
+    'pending_final_approval' => 'En attente d\'approbation finale',
+    'final_approved' => 'Approuvé final',
+    'invoice_id' => 'ID de la facture',
+    'finance_manager' => 'Responsable financier',
+    'invoice_image' => 'Image de la facture',
     
     // Invoices
     'create_invoice' => '+ Créer une facture',
@@ -104,6 +118,8 @@ return [
     'invoice_updated_success' => 'Facture mise à jour avec succès!',
     'approved_pos_awaiting' => 'Bons de commande approuvés en attente de factures',
     'no_approved_pos_awaiting' => 'Aucun bon de commande approuvé en attente de factures.',
+    'invoice_details' => 'Détails de la facture',
+    'subtotal' => 'Sous-total',
 
     // Reports
     'consumed_materials_report' => 'Inventaire des matières consommées',

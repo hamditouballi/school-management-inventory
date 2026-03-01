@@ -32,15 +32,24 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.image') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.image') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.supplier') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.description') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.quantity') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.type') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.supplier') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.description') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.quantity') }}</th>
                         {{-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Unit Price</th> --}}
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.total') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.date') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.actions') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.total') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.date') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200" id="invoiceBody">
@@ -56,7 +65,7 @@
     <div id="detailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Invoice Details</h3>
+                <h3 class="text-xl font-bold">{{ __('messages.invoice_details') }}</h3>
                 <button onclick="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -77,7 +86,14 @@
             <form id="createInvoiceForm" onsubmit="createInvoice(event)">
                 <input type="hidden" id="editInvoiceId" value="">
                 <div class="space-y-4 mb-4">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.type') }} *</label>
+                            <select id="type" name="type" required class="w-full px-3 py-2 border rounded">
+                                <option value="incoming">{{ __('messages.incoming') }}</option>
+                                <option value="return">{{ __('messages.return') }}</option>
+                            </select>
+                        </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Supplier *</label>
                             <input type="text" id="supplier" name="supplier" required
@@ -164,7 +180,7 @@
 
                         // Filter approved POs that don't have invoices yet
                         allApprovedPOs = pos.filter(po =>
-                            po.status === 'approved_hr' && !poIdsWithInvoices.has(po.id)
+                            po.status === 'final_approved' && !poIdsWithInvoices.has(po.id)
                         );
                         renderApprovedPOs();
                     })
@@ -187,31 +203,31 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">PO #</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Supplier</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Date</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Items</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Total</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Action</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">ID</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.supplier') }}</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.date') }}</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.items') }}</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.total') }}</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.actions') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y">
                     ${allApprovedPOs.map(po => {
                         const items = po.purchase_order_items || [];
                         return `
-                                                                                                                                                                                                                                                                                                                    <tr class="hover:bg-gray-50">
-                                                                                                                                                                                                                                                                                                                        <td class="px-4 py-2">#${po.id}</td>
-                                                                                                                                                                                                                                                                                                                        <td class="px-4 py-2">${po.supplier}</td>
-                                                                                                                                                                                                                                                                                                                        <td class="px-4 py-2">${new Date(po.date).toLocaleDateString()}</td>
-                                                                                                                                                                                                                                                                                                                        <td class="px-4 py-2">${items.length} item(s)</td>
-                                                                                                                                                                                                                                                                                                                        <td class="px-4 py-2 font-semibold">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</td>
-                                                                                                                                                                                                                                                                                                                        <td class="px-4 py-2">
-                                                                                                                                                                                                                                                                                                                            <button onclick="createInvoiceFromPO(${po.id})" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                                                                                                                                                                                                {{ __('messages.create_invoice') }}
-                                                                                                                                                                                                                                                                                                                            </button>
-                                                                                                                                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                                                                                                                                    </tr>
-                                                                                                                                                                                                                                                                                                                `;
+                                                                                <tr class="hover:bg-gray-50">
+                                                                                    <td class="px-4 py-2">#${po.id}</td>
+                                                                                    <td class="px-4 py-2">${po.supplier}</td>
+                                                                                    <td class="px-4 py-2">${new Date(po.date).toLocaleDateString()}</td>
+                                                                                    <td class="px-4 py-2">${items.length} item(s)</td>
+                                                                                    <td class="px-4 py-2 font-semibold">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <button onclick="createInvoiceFromPO(${po.id})" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                            {{ __('messages.create_invoice') }}
+                                                                                        </button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            `;
                     }).join('')}
                 </tbody>
             </table>
@@ -252,12 +268,17 @@
                     return `
         <tr class="hover:bg-gray-50">
             <td class="px-6 py-4">
-                ${displayImage ? 
-                    `<img src="/storage/${displayImage}" class="w-12 h-12 object-cover rounded cursor-pointer" onclick="viewInvoiceDetails(${inv.id})">` : 
-                    '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Image</div>'
-                }
+                <img src="${displayImage ? '/storage/' + displayImage : '/images/placeholder.png'}" 
+                     class="w-12 h-12 object-cover rounded cursor-pointer" 
+                     onclick="viewInvoiceDetails(${inv.id})"
+                     onerror="this.src='/images/placeholder.png'">
             </td>
             <td class="px-6 py-4">#${inv.id}</td>
+            <td class="px-6 py-4">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${inv.type === 'return' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                    ${inv.type === 'return' ? '{{ __('messages.return') }}' : '{{ __('messages.incoming') }}'}
+                </span>
+            </td>
             <td class="px-6 py-4">${inv.supplier}</td>
             <td class="px-6 py-4">
                 <button onclick="viewInvoiceDetails(${inv.id})" class="text-green-600 hover:underline">
@@ -304,6 +325,7 @@
                         // Pre-fill supplier and date
                         document.getElementById('supplier').value = po.supplier;
                         document.getElementById('date').value = new Date().toISOString().split('T')[0];
+                        document.getElementById('type').value = 'incoming';
 
                         // Clear and populate items with checkboxes
                         document.getElementById('invoiceItemsList').innerHTML = '';
@@ -336,6 +358,7 @@
 
                         document.getElementById('supplier').value = inv.supplier;
                         document.getElementById('date').value = inv.date;
+                        document.getElementById('type').value = inv.type || 'incoming';
 
                         // Show existing invoice image if available
                         if (inv.image_path) {
@@ -358,7 +381,7 @@
                                 const radio = document.querySelector(
                                     `input[name="item_type_${index}"][value="new"]`);
                                 // radio.checked = true;
-                                toggleInvoiceItemType(index, 'new');
+                                // toggleInvoiceItemType(index, 'new');
 
                                 document.getElementById(`item_name_${index}`).value = item.item_name;
                                 // document.getElementById(`item_description_${index}`).value = item.description || '';
@@ -366,11 +389,17 @@
                                 document.getElementById(`item_unit_${index}`).value = item.unit || 'unit';
                                 document.getElementById(`item_price_${index}`).value = item.unit_price;
 
+                                const preview = document.getElementById(`item_image_preview_${index}`);
+                                const existingImageInput = document.getElementById(`item_existing_image_${index}`);
+
                                 if (item.image_path) {
-                                    const preview = document.getElementById(`item_image_preview_${index}`);
                                     preview.src = `/storage/${item.image_path}`;
-                                    preview.classList.remove('hidden');
+                                    if (existingImageInput) existingImageInput.value = item.image_path;
+                                } else {
+                                    preview.src = '/images/placeholder.png';
+                                    if (existingImageInput) existingImageInput.value = '';
                                 }
+                                preview.classList.remove('hidden');
                             });
                         }
 
@@ -415,15 +444,25 @@
                     <div>
                         <label class="block text-xs font-medium mb-1">Unit *</label>
                         <input type="text"
-       id="item_unit_${currentIndex}"
-       name="items[${currentIndex}][unit]"
-       class="w-full px-3 py-2 border rounded text-sm bg-gray-100"
-       readonly>
+                               id="item_unit_${currentIndex}"
+                               name="items[${currentIndex}][unit]"
+                               class="w-full px-3 py-2 border rounded text-sm bg-gray-100"
+                               readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-medium mb-1">Unit Price *</label>
                         <input type="number" id="item_price_${currentIndex}" name="items[${currentIndex}][unit_price]" value="${poItem.unit_price}" required min="0" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                     </div>
+                </div>
+                <!-- Added Item Image Input -->
+                <div class="mt-3">
+                    <label class="block text-xs font-medium mb-1">Item Image (Optional)</label>
+                    <input type="hidden" id="item_existing_image_${currentIndex}" name="items[${currentIndex}][image_path]" value="${poItem.item?.image_path || ''}">
+                    <input type="file" id="item_image_${currentIndex}" accept="image/*" class="w-full px-3 py-1 border rounded text-xs" onchange="previewInvoiceItemImage(${currentIndex})">
+                    <img id="item_image_preview_${currentIndex}" 
+                         src="${poItem.item?.image_path ? '/storage/' + poItem.item.image_path : '/images/placeholder.png'}" 
+                         class="mt-2 w-20 h-20 object-cover rounded border"
+                         onerror="this.src='/images/placeholder.png'">
                 </div>
             </div>
         </div>
@@ -499,7 +538,13 @@
                 </div>
             </div>
             <div>
-
+                 <label class="block text-xs font-medium mb-1">Item Image (Optional)</label>
+                 <input type="hidden" id="item_existing_image_${currentIndex}" name="items[${currentIndex}][image_path]" value="">
+                 <input type="file" id="item_image_${currentIndex}" accept="image/*" class="w-full px-3 py-1 border rounded text-xs" onchange="previewInvoiceItemImage(${currentIndex})">
+                 <img id="item_image_preview_${currentIndex}" 
+                      src="/images/placeholder.png" 
+                      class="mt-2 w-20 h-20 object-cover rounded border"
+                      onerror="this.src='/images/placeholder.png'">
             </div>
         </div>
     `;
@@ -513,38 +558,69 @@
                 button.closest('.border').remove();
             }
 
+            // function toggleInvoiceItemType(index, type) {
+            //     const existingDiv = document.getElementById(`existing_item_${index}`);
+            //     const newDiv = document.getElementById(`new_item_${index}`);
+            //     // const descriptionDiv = document.getElementById(`item_description_div_${index}`);
+            //     const itemSelect = document.getElementById(`inventory_item_${index}`);
+            //     const itemNameInput = document.getElementById(`item_name_${index}`);
+            //     // const itemDescription = document.getElementById(`item_description_${index}`);
+            //     const itemPrice = document.getElementById(`item_price_${index}`);
+            //     const itemQuantity = document.getElementById(`item_quantity_${index}`);
+
+            //     if (type === 'existing') {
+            //         existingDiv.classList.remove('hidden');
+            //         newDiv.classList.add('hidden');
+            //         // descriptionDiv.classList.add('hidden');
+            //         itemSelect.required = true;
+            //         itemNameInput.required = false;
+            //         itemNameInput.value = '';
+            //         // itemDescription.value = '';
+            //         itemPrice.value = '';
+            //         itemQuantity.value = '';
+            //         // document.getElementById(`item_image_preview_${index}`).classList.add('hidden');
+            //     } else {
+            //         existingDiv.classList.add('hidden');
+            //         newDiv.classList.remove('hidden');
+            //         // descriptionDiv.classList.remove('hidden');
+            //         itemSelect.required = false;
+            //         itemSelect.value = '';
+            //         itemNameInput.required = true;
+            //         itemPrice.value = '';
+            //         itemQuantity.value = '';
+            //         // itemDescription.value = '';
+            //         // document.getElementById(`item_image_preview_${index}`).classList.add('hidden');
+            //     }
+            // }
+
             function toggleInvoiceItemType(index, type) {
                 const existingDiv = document.getElementById(`existing_item_${index}`);
                 const newDiv = document.getElementById(`new_item_${index}`);
-                const descriptionDiv = document.getElementById(`item_description_div_${index}`);
                 const itemSelect = document.getElementById(`inventory_item_${index}`);
                 const itemNameInput = document.getElementById(`item_name_${index}`);
-                // const itemDescription = document.getElementById(`item_description_${index}`);
                 const itemPrice = document.getElementById(`item_price_${index}`);
                 const itemQuantity = document.getElementById(`item_quantity_${index}`);
 
                 if (type === 'existing') {
-                    existingDiv.classList.remove('hidden');
-                    newDiv.classList.add('hidden');
-                    // descriptionDiv.classList.add('hidden');
-                    itemSelect.required = true;
-                    itemNameInput.required = false;
-                    itemNameInput.value = '';
-                    // itemDescription.value = '';
-                    itemPrice.value = '';
-                    itemQuantity.value = '';
-                    document.getElementById(`item_image_preview_${index}`).classList.add('hidden');
+                    if (existingDiv) existingDiv.classList.remove('hidden');
+                    if (newDiv) newDiv.classList.add('hidden');
+
+                    if (itemSelect) itemSelect.required = true;
+                    if (itemNameInput) itemNameInput.required = false;
+
+                    if (itemNameInput) itemNameInput.value = '';
+                    if (itemPrice) itemPrice.value = '';
+                    if (itemQuantity) itemQuantity.value = '';
                 } else {
-                    existingDiv.classList.add('hidden');
-                    newDiv.classList.remove('hidden');
-                    // descriptionDiv.classList.remove('hidden');
-                    itemSelect.required = false;
-                    itemSelect.value = '';
-                    itemNameInput.required = true;
-                    itemPrice.value = '';
-                    itemQuantity.value = '';
-                    // itemDescription.value = '';
-                    document.getElementById(`item_image_preview_${index}`).classList.add('hidden');
+                    if (existingDiv) existingDiv.classList.add('hidden');
+                    if (newDiv) newDiv.classList.remove('hidden');
+
+                    if (itemSelect) itemSelect.required = false;
+                    if (itemNameInput) itemNameInput.required = true;
+
+                    if (itemSelect) itemSelect.value = '';
+                    if (itemPrice) itemPrice.value = '';
+                    if (itemQuantity) itemQuantity.value = '';
                 }
             }
 
@@ -567,11 +643,16 @@
 
                 // image
                 const preview = document.getElementById(`item_image_preview_${index}`);
+                const hiddenImageInput = document.getElementById(`item_existing_image_${index}`);
+
                 if (item.image_path) {
                     preview.src = `/storage/${item.image_path}`;
                     preview.classList.remove('hidden');
+                    if (hiddenImageInput) hiddenImageInput.value = item.image_path;
                 } else {
-                    preview.classList.add('hidden');
+                    preview.src = '/images/placeholder.png';
+                    preview.classList.remove('hidden');
+                    if (hiddenImageInput) hiddenImageInput.value = '';
                 }
                 console.log(item);
             }
@@ -630,16 +711,27 @@
                         itemName = formData.get(`items[${i}][item_name]`);
                     }
 
+                    // Fallback to designation if itemId exists but itemName doesn't (existing item selection)
+                    if (itemId && !itemName) {
+                        const select = document.getElementById(`inventory_item_${i}`);
+                        if (select && select.value) {
+                            const option = select.options[select.selectedIndex];
+                            itemName = option.getAttribute('data-designation');
+                        }
+                    }
+
                     const description = formData.get(`items[${i}][description]`);
                     const quantity = formData.get(`items[${i}][quantity]`);
                     const unit = formData.get(`items[${i}][unit]`);
                     const unitPrice = formData.get(`items[${i}][unit_price]`);
+                    const imagePath = formData.get(`items[${i}][image_path]`);
 
                     if ((itemId || itemName) && quantity && unitPrice) {
                         const item = {
                             quantity: parseFloat(quantity),
                             unit: unit || 'unit',
-                            unit_price: parseFloat(unitPrice)
+                            unit_price: parseFloat(unitPrice),
+                            image_path: imagePath || null
                         };
 
                         if (itemId) {
@@ -655,6 +747,7 @@
                 }
 
                 const invoiceFormData = new FormData();
+                invoiceFormData.append('type', formData.get('type') || 'incoming');
                 invoiceFormData.append('supplier', formData.get('supplier'));
                 invoiceFormData.append('date', formData.get('date'));
                 invoiceFormData.append('items', JSON.stringify(items));
@@ -726,54 +819,59 @@
                         const html = `
                 <div class="space-y-4">
                     ${inv.image_path ? `
-                                                                                                                                                                                                                                                                                                                <div class="mb-4">
-                                                                                                                                                                                                                                                                                                                    <p class="text-sm text-gray-500 mb-2">Invoice Image</p>
-                                                                                                                                                                                                                                                                                                                    <img src="/storage/${inv.image_path}" class="w-full max-w-md rounded border">
-                                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                                            ` : ''}
+                                                                                    <div class="mb-4">
+                                                                                        <p class="text-sm text-gray-500 mb-2">{{ __('messages.invoice_image') }}</p>
+                                                                                        <img src="/storage/${inv.image_path}" class="w-full max-w-md rounded border">
+                                                                                    </div>
+                                                                                ` : ''}
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500">Invoice ID</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.invoice_id') }}</p>
                             <p class="font-semibold">#${inv.id}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Date</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.date') }}</p>
                             <p class="font-semibold">${new Date(inv.date).toLocaleDateString()}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Supplier</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.type') }}</p>
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${inv.type === 'return' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                ${inv.type === 'return' ? '{{ __('messages.return') }}' : '{{ __('messages.incoming') }}'}
+                            </span>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">{{ __('messages.supplier') }}</p>
                             <p class="font-semibold">${inv.supplier}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Finance Manager</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.finance_manager') }}</p>
                             <p class="font-semibold">${inv.responsible_finance?.name || 'N/A'}</p>
                         </div>
                     </div>
                     <div class="pt-4 border-t">
-                        <h4 class="font-semibold mb-3">Items</h4>
+                        <h4 class="font-semibold mb-3">{{ __('messages.items') }}</h4>
                         ${items.length === 0 ? '<p class="text-gray-500">No items</p>' : `
-                                                                                                                                                                                                                                                                                                                    <table class="min-w-full">
-                                                                                                                                                                                                                                                                                                                        <thead class="bg-gray-50">
-                                                                                                                                                                                                                                                                                                                            <tr>
-                                                                                                                                                                                                                                                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
-                                                                                                                                                                                                                                                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                                                                                                                                                                                                                                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
-                                                                                                                                                                                                                                                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Unit</th>
-                                                                                                                                                                                                                                                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Unit Price</th>
-                                                                                                                                                                                                                                                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Subtotal</th>
-                                                                                                                                                                                                                                                                                                                            </tr>
-                                                                                                                                                                                                                                                                                                                        </thead>
-                                                                                                                                                                                                                                                                                                                        <tbody class="divide-y">
-                                                                                                                                                                                                                                                                                                                            ${items.map(item => `
+                                                                                    <table class="min-w-full">
+                                                                                        <thead class="bg-gray-50">
+                                                                                            <tr>
+                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.image') }}</th>
+                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.items') }}</th>
+                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.quantity') }}</th>
+                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.unit') }}</th>
+                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.unit_price') }}</th>
+                                                                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.subtotal') }}</th>
+                                                                                            </tr>
+                                                                                        </thead>
+                                                                                        <tbody class="divide-y">
+                                                                                            ${items.map(item => `
                                         <tr>
                                             <td class="px-4 py-2">
-                                                ${item.image_path ? 
-                                                    `<img src="/storage/${item.image_path}" class="w-16 h-16 object-cover rounded">` : 
-                                                    '<div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Img</div>'
-                                                }
+                                                <img src="${item.image_path ? '/storage/' + item.image_path : '/images/placeholder.png'}" 
+                                                     class="w-16 h-16 object-cover rounded" 
+                                                     onerror="this.src='/images/placeholder.png'">
                                             </td>
                                             <td class="px-4 py-2">
-                                                
+                                               ${item.item_name} 
                                             </td>
                                             <td class="px-4 py-2">${parseFloat(item.quantity).toFixed(2)}</td>
                                             <td class="px-4 py-2">${item.unit || 'unit'}</td>
@@ -781,9 +879,9 @@
                                             <td class="px-4 py-2 font-semibold">{{ __('messages.currency') }} ${item.subtotal.toFixed(2)}</td>
                                         </tr>
                                     `).join('')}
-                                                                                                                                                                                                                                                                                                                        </tbody>
-                                                                                                                                                                                                                                                                                                                    </table>
-                                                                                                                                                                                                                                                                                                                `}
+                                                                                                                                                                                                                                                                                                                                                                                </tbody>
+                                                                                                                                                                                                                                                                                                                                                                            </table>
+                                                                                                                                                                                                                                                                                                                                                                        `}
                         <div class="mt-4 pt-4 border-t text-right">
                             <p class="text-lg font-bold text-green-600">Total: {{ __('messages.currency') }} ${parseFloat(total).toFixed(2)}</p>
                         </div>

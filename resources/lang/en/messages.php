@@ -82,6 +82,7 @@ return [
     'approved' => 'Approved',
     'rejected' => 'Rejected',
     'fulfilled' => 'Fulfilled',
+    'hr_approved' => 'HR Approved',
 
     // Purchase Orders
     'create_purchase_order' => '+ Create Purchase Order',
@@ -95,6 +96,19 @@ return [
     'rejected_hr' => 'Rejected HR',
     'ordered' => 'Ordered',
     'amount' => 'total amount',
+    'approve_initial' => 'Approve Initial',
+    'reject' => 'Reject',
+    'select_final' => 'Select Final',
+    'edit' => 'Edit',
+    'view' => 'View',
+    'add_proposals' => 'Add Proposals',
+    'pending_initial_approval' => 'Pending Initial Approval',
+    'initial_approved' => 'Initial Approved',
+    'pending_final_approval' => 'Pending Final Approval',
+    'final_approved' => 'Final Approved',
+    'invoice_id' => 'Invoice ID',
+    'finance_manager' => 'Finance Manager',
+    'invoice_image' => 'Invoice Image',
 
 
     // Invoices
@@ -103,6 +117,11 @@ return [
     'invoice_updated_success' => 'Invoice updated successfully!',
     'approved_pos_awaiting' => 'Approved Purchase Orders Awaiting Invoices',
     'no_approved_pos_awaiting' => 'No approved purchase orders awaiting invoices.',
+    'invoice_details' => 'Invoice Details',
+    'subtotal' => 'Subtotal',
+    'type' => 'Type',
+    'incoming' => 'Incoming',
+    'return' => 'Return',
 
     // Reports
     'consumed_materials_report' => 'Inventory of Consumed Materials',

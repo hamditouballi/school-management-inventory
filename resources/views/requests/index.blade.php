@@ -28,7 +28,7 @@
                 <select id="statusFilter" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
                     <option value="">All Statuses</option>
                     <option value="pending">{{ __('messages.pending') }}</option>
-                    <option value="approved">{{ __('messages.approved') }}</option>
+                    <option value="hr_approved">{{ __('messages.hr_approved') }}</option>
                     <option value="rejected">{{ __('messages.rejected') }}</option>
                     <option value="fulfilled">{{ __('messages.fulfilled') }}</option>
                 </select>
@@ -59,7 +59,7 @@
                             {{ __('messages.status') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.date') }}</th>
-                        @if (auth()->user()->role === 'stock_manager')
+                        @if (auth()->user()->role === 'hr_manager' || auth()->user()->role === 'stock_manager')
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                 {{ __('messages.actions') }}</th>
                         @endif
@@ -257,7 +257,8 @@
                 const pageRequests = filteredRequests.slice(start, end);
 
                 const tbody = document.getElementById('requestsBody');
-                const canManage = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
+                const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
+                const isHrManager = {{ auth()->user()->role === 'hr_manager' ? 'true' : 'false' }};
 
                 if (pageRequests.length === 0) {
                     tbody.innerHTML =
@@ -266,7 +267,7 @@
                     tbody.innerHTML = pageRequests.map(req => {
                         const statusColors = {
                             pending: 'bg-yellow-100 text-yellow-800',
-                            approved: 'bg-blue-100 text-blue-800',
+                            hr_approved: 'bg-blue-100 text-blue-800',
                             rejected: 'bg-red-100 text-red-800',
                             fulfilled: 'bg-green-100 text-green-800'
                         };
@@ -291,8 +292,8 @@
                     <span class="px-2 py-1 text-xs rounded ${statusColors[req.status] || 'bg-gray-100 text-gray-800'}">${
                         req.status == "pending" 
                             ? "{{ __('messages.pending') }}" 
-                            : req.status == "approved" 
-                                ? "{{ __('messages.approved') }}" 
+                            : req.status == "hr_approved" 
+                                ? "{{ __('messages.hr_approved') }}" 
                                 : req.status == "rejected" 
                                     ? "{{ __('messages.rejected') }}" 
                                     : req.status == "fulfilled" 
@@ -301,16 +302,16 @@
                     }</span>
                 </td>
                 <td class="px-6 py-4">${dateCreated ? new Date(dateCreated).toLocaleDateString() : 'N/A'}</td>
-                ${canManage && req.status === 'pending' ? `
-                                                                                                                                                                <td class="px-6 py-4">
-                                                                                                                                                                    <button onclick="approveRequest(${req.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve') }}</button>
-                                                                                                                                                                    <button onclick="rejectRequest(${req.id})" class="text-red-600 hover:text-red-800">{{ __('messages.reject') }}</button>
-                                                                                                                                                                </td>
-                                                                                                                                                                ` : canManage && req.status === 'approved' ? `
-                                                                                                                                                                <td class="px-6 py-4">
-                                                                                                                                                                    <button onclick="fulfillRequest(${req.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.fulfill') }}</button>
-                                                                                                                                                                </td>
-                                                                                                                                                                ` : canManage ? '<td class="px-6 py-4">-</td>' : ''}
+                ${isHrManager && req.status === 'pending' ? `
+                            <td class="px-6 py-4">
+                                <button onclick="approveRequest(${req.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve') }}</button>
+                                <button onclick="rejectRequest(${req.id})" class="text-red-600 hover:text-red-800">{{ __('messages.reject') }}</button>
+                            </td>
+                        ` : isStockManager && req.status === 'hr_approved' ? `
+                            <td class="px-6 py-4">
+                                <button onclick="fulfillRequest(${req.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.fulfill') }}</button>
+                            </td>
+                        ` : (isHrManager || isStockManager) ? '<td class="px-6 py-4">-</td>' : ''}
             </tr>
         `;
                     }).join('');
@@ -468,7 +469,7 @@
             }
 
             function approveRequest(id) {
-                updateStatus(id, 'approved');
+                updateStatus(id, 'hr_approved');
             }
 
             function rejectRequest(id) {
@@ -517,7 +518,8 @@
                 document.getElementById('detailsModal').classList.remove('hidden');
                 document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">Loading...</p>';
 
-                const canManage = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
+                const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
+                const isHrManager = {{ auth()->user()->role === 'hr_manager' ? 'true' : 'false' }};
 
                 fetch(`/api/requests/${id}`, {
                         headers
@@ -527,7 +529,7 @@
                         const requestItems = req.request_items || req.requestItems || [];
                         const statusColors = {
                             pending: 'bg-yellow-100 text-yellow-800',
-                            approved: 'bg-blue-100 text-blue-800',
+                            hr_approved: 'bg-blue-100 text-blue-800',
                             rejected: 'bg-red-100 text-red-800',
                             fulfilled: 'bg-green-100 text-green-800'
                         };
@@ -560,19 +562,19 @@
                 <div>
                     <h4 class="font-semibold mb-3">Requested Items</h4>
                     ${requestItems.length === 0 ? '<p class="text-gray-500">No items</p>' : `
-                                                                                                                                                                        <table class="min-w-full">
-                                                                                                                                                                            <thead class="bg-gray-50">
-                                                                                                                                                                                <tr>
-                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
-                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Price</th>
-                                                                                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
-                                                                                                                                                                                </tr>
-                                                                                                                                                                            </thead>
-                                                                                                                                                                            <tbody class="divide-y">
-                                                                                                                                                                                ${requestItems.map(ri => {
-                                                                                                                                                                                    const item = ri.item || {};
-                                                                                                                                                                                    return `
+                                                                                                                                                                                <table class="min-w-full">
+                                                                                                                                                                                    <thead class="bg-gray-50">
+                                                                                                                                                                                        <tr>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Price</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
+                                                                                                                                                                                        </tr>
+                                                                                                                                                                                    </thead>
+                                                                                                                                                                                    <tbody class="divide-y">
+                                                                                                                                                                                        ${requestItems.map(ri => {
+                                                                                                                                                                                            const item = ri.item || {};
+                                                                                                                                                                                            return `
                                     <tr>
                                         <td class="px-4 py-2">
                                             ${item.image_path ? 
@@ -589,16 +591,16 @@
             }
             `}
                 </div>
-                ${canManage ? `
-                                                                                                                                                                    <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                                                                                        ${req.status === 'pending' ? `
+                ${(isHrManager || isStockManager) ? `
+                            <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                                ${isHrManager && req.status === 'pending' ? `
                             <button onclick="approveRequest(${req.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve') }}</button>
                             <button onclick="rejectRequest(${req.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
-                        ` : req.status === 'approved' ? `
+                        ` : isStockManager && req.status === 'hr_approved' ? `
                             <button onclick="fulfillRequest(${req.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.fulfill') }}</button>
                         ` : ''}
-                                                                                                                                                                    </div>
-                                                                                                                                                                ` : ''}
+                            </div>
+                        ` : ''}
             `;
             document.getElementById('detailsContent').innerHTML = html;
             })
@@ -636,17 +638,17 @@
                 <p class="text-xs text-gray-500 mb-2">Available: ${parseFloat(item.quantity).toFixed(2)}</p>
                 <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
-                                                                                                                                                                    <div class="flex items-center gap-2">
-                                                                                                                                                                        <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                                                                                                                                                                        <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
-                                                                                                                                                                        <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                                                                                                                                                        <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
-                                                                                                                                                                    </div>
-                                                                                                                                                                ` : `
-                                                                                                                                                                    <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                                        Add to Cart
-                                                                                                                                                                    </button>
-                                                                                                                                                                `}
+                                                                                                                                                                            <div class="flex items-center gap-2">
+                                                                                                                                                                                <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                                                                                                                                                                                <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
+                                                                                                                                                                                <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                                                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
+                                                                                                                                                                            </div>
+                                                                                                                                                                        ` : `
+                                                                                                                                                                            <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                                                                                                                Add to Cart
+                                                                                                                                                                            </button>
+                                                                                                                                                                        `}
             </div>
         `;
                 }).join('');
@@ -670,7 +672,7 @@
             <div class="border rounded-lg p-3 hover:shadow-md transition ${inCart ? 'ring-2 ring-indigo-500' : ''}">
                 <div class="aspect-square mb-2 overflow-hidden rounded">
                     ${item.image_path ? 
-                        `<img src="/storage/${item.image_path}" class="w-full h-full object-cover">` : 
+                        `<img src="/storage/${item.image_path}" loading="lazy" class="w-full h-full object-cover">` : 
                         '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>'
                     }
                 </div>
@@ -678,17 +680,17 @@
                 <p class="text-xs text-gray-500 mb-2">Available: ${parseFloat(item.quantity).toFixed(2)}</p>
                 <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
-                                                                                                                                                                    <div class="flex items-center gap-2">
-                                                                                                                                                                        <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
-                                                                                                                                                                        <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
-                                                                                                                                                                        <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                                                                                                                                                        <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
-                                                                                                                                                                    </div>
-                                                                                                                                                                ` : `
-                                                                                                                                                                    <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                                        Add to Cart
-                                                                                                                                                                    </button>
-                                                                                                                                                                `}
+                                                                                                                                                                            <div class="flex items-center gap-2">
+                                                                                                                                                                                <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                                                                                                                                                                                <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
+                                                                                                                                                                                <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                                                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
+                                                                                                                                                                            </div>
+                                                                                                                                                                        ` : `
+                                                                                                                                                                            <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                                                                                                                Add to Cart
+                                                                                                                                                                            </button>
+                                                                                                                                                                        `}
             </div>
         `;
                 }).join('');

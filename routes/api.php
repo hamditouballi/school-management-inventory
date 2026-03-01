@@ -28,8 +28,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/requests/{requestModel}/fulfill', [RequestController::class, 'fulfill']);
 
     // Purchase Orders
-    Route::apiResource('purchase-orders', PurchaseOrderController::class);
     Route::put('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus']);
+    Route::post('/purchase-orders/{purchaseOrder}/initial-approval', [PurchaseOrderController::class, 'initialApproval']);
+    Route::post('/purchase-orders/{purchaseOrder}/proposals', [PurchaseOrderController::class, 'addProposals']);
+    Route::post('/purchase-orders/{purchaseOrder}/final-approval', [PurchaseOrderController::class, 'finalApproval']);
+    Route::apiResource('purchase-orders', PurchaseOrderController::class);
 
     // Invoices
     Route::apiResource('invoices', InvoiceController::class);

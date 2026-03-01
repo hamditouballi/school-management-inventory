@@ -33,10 +33,12 @@
                 </label>
                 <select id="statusFilter" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
                     <option value="">All Statuses</option>
-                    <option value="pending_hr">Pending HR</option>
-                    <option value="approved_hr">Approved HR</option>
-                    <option value="rejected_hr">Rejected HR</option>
-                    <option value="ordered">Ordered</option>
+                    <option value="pending_initial_approval">{{ __('messages.pending_initial_approval') }}</option>
+                    <option value="initial_approved">{{ __('messages.initial_approved') }}</option>
+                    <option value="pending_final_approval">{{ __('messages.pending_final_approval') }}</option>
+                    <option value="final_approved">{{ __('messages.final_approved') }}</option>
+                    <option value="rejected">{{ __('messages.rejected') }}</option>
+                    <option value="ordered">{{ __('messages.ordered') }}</option>
                 </select>
             </div>
             <div>
@@ -72,7 +74,8 @@
                             {{ __('messages.date') }}
                         </th>
                         @if (in_array(auth()->user()->role, ['hr_manager', 'stock_manager']))
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.actions') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                {{ __('messages.actions') }}</th>
                         @endif
                     </tr>
                 </thead>
@@ -119,11 +122,8 @@
                 <input type="hidden" id="poId" value="">
                 <div class="space-y-4 mb-4">
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Supplier *</label>
-                            <input type="text" id="poSupplier" name="supplier" required
-                                class="w-full px-3 py-2 border rounded">
-                        </div>
+                        <label class="block text-sm font-medium mb-1" style="display:none;">Supplier *</label>
+                        <input type="hidden" id="poSupplier" name="supplier" value="">
                         <div>
                             <label class="block text-sm font-medium mb-1">Date *</label>
                             <input type="date" id="poDate" name="date" required
@@ -233,10 +233,12 @@
                 const pagePOs = filteredPOs.slice(start, end);
 
                 const statusColors = {
-                    pending_hr: 'bg-yellow-100 text-yellow-800',
-                    approved_hr: 'bg-green-100 text-green-800',
-                    rejected_hr: 'bg-red-100 text-red-800',
-                    ordered: 'bg-blue-100 text-blue-800'
+                    pending_initial_approval: 'bg-yellow-100 text-yellow-800',
+                    initial_approved: 'bg-blue-100 text-blue-800',
+                    pending_final_approval: 'bg-orange-100 text-orange-800',
+                    final_approved: 'bg-green-100 text-green-800',
+                    rejected: 'bg-red-100 text-red-800',
+                    ordered: 'bg-purple-100 text-purple-800'
                 };
 
                 const tbody = document.getElementById('poBody');
@@ -266,30 +268,38 @@
                 </td>
                 <td class="px-6 py-4">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</td>
                 <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${
-                    po.status.replace('_', ' ').toUpperCase() == "PENDING HR" 
-                    ? "{{ __('messages.pending_hr') }}" 
-                    : po.status.replace('_', ' ').toUpperCase() == "APPROVED HR" 
-                        ? "{{ __('messages.approved_hr') }}" 
-                        : po.status.replace('_', ' ').toUpperCase() == "REJECTED HR" 
-                            ? "{{ __('messages.rejected_hr') }}" 
-                            : po.status.replace('_', ' ').toUpperCase() == "ORDERED" 
-                                ? "{{ __('messages.ordered') }}" 
-                                : po.status.toUpperCase()
+                    po.status.replace(/_/g, ' ').toUpperCase() == "PENDING INITIAL APPROVAL" 
+                    ? "{{ __('messages.pending_initial_approval') }}" 
+                    : po.status.replace(/_/g, ' ').toUpperCase() == "INITIAL APPROVED" 
+                        ? "{{ __('messages.initial_approved') }}" 
+                        : po.status.replace(/_/g, ' ').toUpperCase() == "PENDING FINAL APPROVAL" 
+                            ? "{{ __('messages.pending_final_approval') }}" 
+                            : po.status.replace(/_/g, ' ').toUpperCase() == "FINAL APPROVED" 
+                                ? "{{ __('messages.final_approved') }}" 
+                                : po.status.replace(/_/g, ' ').toUpperCase() == "REJECTED" 
+                                    ? "{{ __('messages.rejected') }}" 
+                                    : po.status.replace(/_/g, ' ').toUpperCase() == "ORDERED" 
+                                        ? "{{ __('messages.ordered') }}" 
+                                        : po.status.toUpperCase()
                     }</span></td>
                 <td class="px-6 py-4">${new Date(po.date).toLocaleDateString()}</td>
                 ${(isHRManager || isStockManager) ? `
-                                                                                                                                                                                                        <td class="px-6 py-4">
-                                                                                                                                                                                                            ${isHRManager && po.status === 'pending_hr' ? `
-                        <button onclick="approvePO(${po.id})" class="text-green-600 hover:text-green-800 mr-2">Approve</button>
-                        <button onclick="rejectPO(${po.id})" class="text-red-600 hover:text-red-800">Reject</button>
-                    ` : isStockManager && po.status === 'pending_hr' ? `
-                        <button onclick="editPO(${po.id})" class="text-blue-600 hover:text-blue-800 mr-2">Edit</button>
-                        <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">View</button>
-                    ` : isStockManager ? `
-                        <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">View</button>
-                    ` : '-'}
-                                                                                                                                                                                                        </td>
-                                                                                                                                                                                                        ` : ''}
+                                                                                                            <td class="px-6 py-4">
+                                                                                                                ${isHRManager && po.status === 'pending_initial_approval' ? `
+                            <button onclick="approveInitial(${po.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve_initial') }}</button>
+                            <button onclick="rejectInitial(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.reject') }}</button>
+                        ` : isHRManager && po.status === 'pending_final_approval' ? `
+                            <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.select_final') }}</button>
+                        ` : isStockManager && po.status === 'pending_initial_approval' ? `
+                            <button onclick="editPO(${po.id})" class="text-blue-600 hover:text-blue-800 mr-2">{{ __('messages.edit') }}</button>
+                            <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
+                        ` : isStockManager && po.status === 'initial_approved' ? `
+                            <button onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800">{{ __('messages.add_proposals') }}</button>
+                        ` : `
+                            <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
+                        `}
+                                                                                                            </td>
+                                                                                                        ` : ''}
             </tr>
         `;
                     }).join('');
@@ -382,8 +392,6 @@
                             }
 
                             document.querySelector(`input[name="items[${index}][quantity]"]`).value = item.quantity;
-                            document.querySelector(`input[name="items[${index}][unit_price]"]`).value = item
-                                .unit_price;
                         });
 
                         document.getElementById('createModal').classList.remove('hidden');
@@ -424,13 +432,13 @@
                 <select name="items[${currentIndex}][item_id]" onchange="setActive(this)" class="w-full px-3 py-2 border rounded text-sm">
     <option value="">Select Item...</option>
     ${allItems.map(item => `
-                                <option
-          value="${item.id}"
-          data-item="${encodeURIComponent(JSON.stringify(item))}">
-          ${item.designation} - ${item.price}
-        </option>
+                                                                                                                        <option
+                                                                                                  value="${item.id}"
+                                                                                                  data-item="${encodeURIComponent(JSON.stringify(item))}">
+                                                                                                  ${item.designation} - ${item.price}
+                                                                                                </option>
 
-                            `).join('')}
+                                                                                                                    `).join('')}
 </select>
             </div>
             <div id="new_item_${currentIndex}" class="hidden space-y-2">
@@ -461,10 +469,6 @@
   id="unit_${currentIndex}"
   disabled
   class="w-full px-3 py-2 border rounded text-sm">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium mb-1">Unit Price *</label>
-                    <input type="number" name="items[${currentIndex}][unit_price]" required min="0" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                 </div>
             </div>
         </div>
@@ -541,12 +545,10 @@
                     const newItemName = formData.get(`items[${i}][new_item_name]`);
                     const unit = formData.get(`items[${i}][unit]`);
                     const quantity = formData.get(`items[${i}][quantity]`);
-                    const unitPrice = formData.get(`items[${i}][unit_price]`);
 
-                    if ((itemId || newItemName) && quantity && unitPrice) {
+                    if ((itemId || newItemName) && quantity) {
                         const itemData = {
-                            quantity: parseFloat(quantity),
-                            unit_price: parseFloat(unitPrice)
+                            quantity: parseFloat(quantity)
                         };
 
                         if (itemId) {
@@ -561,7 +563,6 @@
                 }
 
                 const poFormData = new FormData();
-                poFormData.append('supplier', formData.get('supplier'));
                 poFormData.append('date', formData.get('date'));
                 poFormData.append('items', JSON.stringify(items));
 
@@ -625,11 +626,11 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Status</p>
-                            <span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${po.status.replace('_', ' ').toUpperCase()}</span>
+                            <span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${po.status.replace(/_/g, ' ').toUpperCase()}</span>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.supplier') }}</p>
-                            <p class="font-semibold">${po.supplier}</p>
+                            <p class="font-semibold">${po.supplier || 'Pending Selection'}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Date</p>
@@ -644,18 +645,16 @@
                 <div>
                     <h4 class="font-semibold mb-3">Items</h4>
                     ${poItems.length === 0 ? '<p class="text-gray-500">No items</p>' : `
-                                                                                                                                                                                                                <table class="min-w-full">
-                                                                                                                                                                                                                    <thead class="bg-gray-50">
-                                                                                                                                                                                                                        <tr>
-                                                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
-                                                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
-                                                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Unit Price</th>
-                                                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Subtotal</th>
-                                                                                                                                                                                                                        </tr>
-                                                                                                                                                                                                                    </thead>
-                                                                                                                                                                                                                    <tbody class="divide-y">
-                                                                                                                                                                                                                        ${poItems.map(item => `
+                                                                                                        <table class="min-w-full mb-6">
+                                                                                                            <thead class="bg-gray-50">
+                                                                                                                <tr>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
+                                                                                                                </tr>
+                                                                                                            </thead>
+                                                                                                            <tbody class="divide-y">
+                                                                                                                ${poItems.map(item => `
                                     <tr>
                                         <td class="px-4 py-2">
                                             ${item.item?.image_path ? 
@@ -668,20 +667,91 @@
                                             ${item.new_item_name && !item.item ? '<span class="ml-2 text-xs text-gray-500">(New Item)</span>' : ''}
                                         </td>
                                         <td class="px-4 py-2">${parseFloat(item.quantity).toFixed(2)}</td>
-                                        <td class="px-4 py-2">{{ __('messages.currency') }} ${parseFloat(item.unit_price).toFixed(2)}</td>
-                                        <td class="px-4 py-2">{{ __('messages.currency') }} ${(parseFloat(item.quantity) * parseFloat(item.unit_price)).toFixed(2)}</td>
                                     </tr>
                                 `).join('')}
-                                                                                                                                                                                                                    </tbody>
-                                                                                                                                                                                                                </table>
-                                                                                                                                                                                                            `}
+                                                                                                            </tbody>
+                                                                                                        </table>
+                                                                                                    `}
                 </div>
-                ${isHRManager && po.status === 'pending_hr' ? `
-                                                                                                                                                                                                            <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                                                                                                                                <button onclick="approvePO(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Approve</button>
-                                                                                                                                                                                                                <button onclick="rejectPO(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Reject</button>
-                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                        ` : ''}
+
+                <!-- Proposals Section -->
+                ${po.proposals && po.proposals.length > 0 ? `
+                                                                                                    <div class="mt-6 pt-4 border-t">
+                                                                                                        <h4 class="font-semibold mb-3">Supplier Proposals</h4>
+                                                                                                        <div class="grid gap-4" id="finalSelectionForm">
+                                                                                                            ${po.proposals.map(prop => `
+                                <label class="border p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-50 ${prop.is_selected ? 'bg-green-50 border-green-200' : 'bg-white'}">
+                                    <div class="flex items-center gap-4">
+                                        ${isHRManager && po.status === 'pending_final_approval' ? `
+                                                                                                            <input type="radio" name="selected_proposal" value="${prop.id}" class="w-5 h-5 text-blue-600">
+                                                                                                        ` : ''}
+                                        <div>
+                                            <h5 class="font-bold">${prop.supplier_name}</h5>
+                                            <p class="text-sm text-gray-600">Unit Price: <span class="font-semibold">{{ __('messages.currency') }} ${parseFloat(prop.price).toFixed(2)}</span></p>
+                                            <p class="text-sm text-gray-600">Quality: ${prop.quality_rating || 'N/A'}/10</p>
+                                            ${prop.notes ? `<p class="text-xs text-gray-500 mt-1">${prop.notes}</p>` : ''}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        ${prop.is_selected ? `<span class="px-3 py-1 bg-green-100 text-green-800 rounded font-semibold text-sm">Selected Final</span>` : ''}
+                                    </div>
+                                </label>
+                            `).join('')}
+                                                                                                        </div>
+                                                                                                        ${isHRManager && po.status === 'pending_final_approval' ? `
+                                            <div class="mt-6 pt-4 border-t flex justify-end">
+                                                <button onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">Accept</button>
+                                            </div>
+                                        ` : ''}
+                                                                                                    </div>
+                                                                                                ` : ''}
+
+                <!-- Add Proposals Form for Stock Manager -->
+                ${isStockManager && po.status === 'initial_approved' ? `
+                                                                                                    <div class="mt-6 pt-4 border-t">
+                                                                                                        <h4 class="font-semibold mb-3 text-orange-600">Add Supplier Proposals</h4>
+                                                                                                        <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
+                                                                                                            <div id="proposalsList" class="space-y-4 mb-4">
+                                                                                                                <!-- First proposal always visible -->
+                                                                                                                <div class="border p-4 rounded bg-orange-50 proposal-entry">
+                                                                                                                    <div class="grid grid-cols-2 gap-4">
+                                                                                                                        <div><label class="block text-xs font-semibold">Supplier Name *</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                                        <div><label class="block text-xs font-semibold">Unit Price *</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                                        <div>
+                                                                                                                            <label class="block text-xs font-semibold">Quality Rating *</label>
+                                                                                                                            <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
+                                                                                                                                <option value="">Select (1-10)</option>
+                                                                                                                                <option value="1">1</option>
+                                                                                                                                <option value="2">2</option>
+                                                                                                                                <option value="3">3</option>
+                                                                                                                                <option value="4">4</option>
+                                                                                                                                <option value="5">5</option>
+                                                                                                                                <option value="6">6</option>
+                                                                                                                                <option value="7">7</option>
+                                                                                                                                <option value="8">8</option>
+                                                                                                                                <option value="9">9</option>
+                                                                                                                                <option value="10">10</option>
+                                                                                                                            </select>
+                                                                                                                        </div>
+                                                                                                                        <div><label class="block text-xs font-semibold">Notes</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                            <div class="mt-6 pt-4 border-t flex justify-between items-center">
+                                                                                                                <button type="button" onclick="addProposalField()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-semibold text-sm">Add Supplier</button>
+                                                                                                                <button type="submit" class="z-10 px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 w-32">Accept</button>
+                                                                                                            </div>
+                                                                                                        </form>
+                                                                                                    </div>
+                                                                                                ` : ''}
+
+                <!-- Action Buttons -->
+                ${isHRManager && po.status === 'pending_initial_approval' ? `
+                                                                                                    <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                                                                                                        <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Approve Initial</button>
+                                                                                                        <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Reject</button>
+                                                                                                    </div>
+                                                                                                ` : ''}
             `;
                         document.getElementById('detailsContent').innerHTML = html;
                     })
@@ -695,33 +765,128 @@
                 document.getElementById('detailsModal').classList.add('hidden');
             }
 
-            function approvePO(id) {
-                // if (confirm('Approve this purchase order?')) {
-                updatePOStatus(id, 'approved_hr');
-                // }
+            function addProposalField() {
+                const list = document.getElementById('proposalsList');
+                const html = `
+                    <div class="border p-4 rounded bg-orange-50 mt-4 proposal-entry">
+                        <div class="flex justify-end mb-2"><button type="button" onclick="this.closest('.proposal-entry').remove()" class="text-xs text-red-600">Remove</button></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-semibold">Supplier Name *</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                            <div><label class="block text-xs font-semibold">Unit Price *</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                            <div>
+                                <label class="block text-xs font-semibold">Quality Rating *</label>
+                                <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
+                                    <option value="">Select (1-10)</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-xs font-semibold">Notes</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
+                        </div>
+                    </div>
+                `;
+                list.insertAdjacentHTML('beforeend', html);
             }
 
-            function rejectPO(id) {
-                if (confirm('Reject this purchase order?')) {
-                    updatePOStatus(id, 'rejected_hr');
+            function submitProposals(e, poId) {
+                e.preventDefault();
+                const form = e.target;
+                const suppliers = form.querySelectorAll('input[name="supplier_name[]"]');
+                const prices = form.querySelectorAll('input[name="price[]"]');
+                const ratings = form.querySelectorAll('select[name="quality_rating[]"]');
+                const notes = form.querySelectorAll('input[name="notes[]"]');
+
+                let proposals = [];
+                for (let i = 0; i < suppliers.length; i++) {
+                    proposals.push({
+                        supplier_name: suppliers[i].value,
+                        price: prices[i].value,
+                        quality_rating: ratings[i].value,
+                        notes: notes[i].value
+                    });
                 }
-            }
 
-            function updatePOStatus(id, status) {
-                fetch(`/api/purchase-orders/${id}/status`, {
-                        method: 'PUT',
+                fetch(`/api/purchase-orders/${poId}/proposals`, {
+                        method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            status
+                            proposals
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        closeDetailsModal();
+                        loadPOs();
+                        Notification.success('Proposals added successfully! Awaiting HR selection.');
+                    })
+                    .catch(err => Notification.error('Error submitting proposals'));
+            }
+
+            function submitFinalSelection(poId) {
+                const selectedRadio = document.querySelector('input[name="selected_proposal"]:checked');
+
+                if (!selectedRadio) {
+                    Notification.error('Please select a supplier proposal first.');
+                    return;
+                }
+
+                if (confirm('Select this supplier as the final choice?')) {
+                    fetch(`/api/purchase-orders/${poId}/final-approval`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                proposal_id: selectedRadio.value
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            closeDetailsModal();
+                            loadPOs();
+                            Notification.success('Supplier successfully selected!');
+                        })
+                        .catch(err => Notification.error('Error selecting supplier'));
+                }
+            }
+
+            function approveInitial(id) {
+                updateInitialApproval(id, 'approve');
+            }
+
+            function rejectInitial(id) {
+                if (confirm('Reject this purchase order?')) {
+                    updateInitialApproval(id, 'reject');
+                }
+            }
+
+            function updateInitialApproval(id, action) {
+                fetch(`/api/purchase-orders/${id}/initial-approval`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            action
                         })
                     })
                     .then(() => {
                         closeDetailsModal();
                         loadPOs();
-                        Notification.success(`Purchase order ${status.replace('_hr', '')}!`);
+                        Notification.success(`Purchase order ${action}d successfully!`);
                     })
                     .catch(err => Notification.error('Error updating status'));
             }
