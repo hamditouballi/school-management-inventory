@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\hamditou\school-inventory-system\phpunit.xml" tests="18" assertions="65" errors="0" failures="4" skipped="0" time="17.110948">
+    <testsuite name="Unit" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="1.945372">
+      <testsuite name="Tests\Unit\InvoiceTest" file="tests\Unit\InvoiceTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="1.945372">
+        <testcase name="invoice calculates total amount correctly from items" file="tests\Unit\InvoiceTest.php::invoice calculates total amount correctly from items" class="Tests\Unit\InvoiceTest" classname="Tests.Unit.InvoiceTest" assertions="1" time="1.930681"/>
+        <testcase name="invoice has a type cast for date" file="tests\Unit\InvoiceTest.php::invoice has a type cast for date" class="Tests\Unit\InvoiceTest" classname="Tests.Unit.InvoiceTest" assertions="1" time="0.014691"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="16" assertions="63" errors="0" failures="4" skipped="0" time="15.165576">
+      <testsuite name="Tests\Feature\AuthTest" file="tests\Feature\AuthTest.php" tests="5" assertions="11" errors="0" failures="0" skipped="0" time="2.436631">
+        <testcase name="it allows a user to login with valid credentials" file="tests\Feature\AuthTest.php::it allows a user to login with valid credentials" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="4" time="0.735788"/>
+        <testcase name="it rejects login with invalid credentials" file="tests\Feature\AuthTest.php::it rejects login with invalid credentials" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="2" time="0.599245"/>
+        <testcase name="it prevents unauthorized users from accessing protected routes" file="tests\Feature\AuthTest.php::it prevents unauthorized users from accessing protected routes" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="2" time="0.348536"/>
+        <testcase name="it allows an authenticated user to access protected routes" file="tests\Feature\AuthTest.php::it allows an authenticated user to access protected routes" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="1" time="0.375419"/>
+        <testcase name="it ensures role-based isolation works correctly" file="tests\Feature\AuthTest.php::it ensures role-based isolation works correctly" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="2" time="0.377643"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\InvoiceCrudTest" file="tests\Feature\InvoiceCrudTest.php" tests="7" assertions="19" errors="0" failures="0" skipped="0" time="0.216376">
+        <testcase name="it can list all invoices" file="tests\Feature\InvoiceCrudTest.php::it can list all invoices" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="2" time="0.036960"/>
+        <testcase name="it can create a new invoice with items" file="tests\Feature\InvoiceCrudTest.php::it can create a new invoice with items" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="4" time="0.037599"/>
+        <testcase name="it returns validation errors when creating an invoice with invalid data" file="tests\Feature\InvoiceCrudTest.php::it returns validation errors when creating an invoice with invalid data" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="5" time="0.025332"/>
+        <testcase name="it can show a specific invoice" file="tests\Feature\InvoiceCrudTest.php::it can show a specific invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="2" time="0.029850"/>
+        <testcase name="it returns 404 when showing a non-existent invoice" file="tests\Feature\InvoiceCrudTest.php::it returns 404 when showing a non-existent invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="1" time="0.030930"/>
+        <testcase name="it can update an existing invoice" file="tests\Feature\InvoiceCrudTest.php::it can update an existing invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="3" time="0.030504"/>
+        <testcase name="it can delete an invoice" file="tests\Feature\InvoiceCrudTest.php::it can delete an invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="2" time="0.025200"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\FinanceManagerScenarioTest" file="tests\Feature\Scenarios\FinanceManagerScenarioTest.php" tests="1" assertions="7" errors="0" failures="1" skipped="0" time="1.769255">
+        <testcase name="finance manager full workflow scenario" file="tests\Feature\Scenarios\FinanceManagerScenarioTest.php::finance manager full workflow scenario" class="Tests\Feature\Scenarios\FinanceManagerScenarioTest" classname="Tests.Feature.Scenarios.FinanceManagerScenarioTest" assertions="7" time="1.769255">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">finance manager full workflow scenarioExpected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.&#13;
+&#13;
+The following exception occurred during the last request:
+
+PDOException: SQLSTATE[HY000]: General error: 1 no such function: DATE_FORMAT in C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php:407
+Stack trace:
+#0 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php(407): PDO-&gt;prepare('select DATE_FOR...')
+#1 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php(812): Illuminate\Database\Connection-&gt;Illuminate\Database\{closure}('select DATE_FOR...', Array)
+#2 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php(779): Illuminate\Database\Connection-&gt;runQueryCallback('select DATE_FOR...', Array, Object(Closure))
+#3 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php(398): Illuminate\Database\Connection-&gt;run('select DATE_FOR...', Array, Object(Closure))
+#4 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3106): Illuminate\Database\Connection-&gt;select('select DATE_FOR...', Array, true)
+#5 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3091): Illuminate\Database\Query\Builder-&gt;runSelect()
+#6 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3676): Illuminate\Database\Query\Builder-&gt;Illuminate\Database\Query\{closure}()
+#7 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3090): Illuminate\Database\Query\Builder-&gt;onceWithColumns(Array, Object(Closure))
+#8 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php(811): Illuminate\Database\Query\Builder-&gt;get(Array)
+#9 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php(793): Illuminate\Database\Eloquent\Builder-&gt;getModels(Array)
+#10 C:\Users\hamditou\school-inventory-system\app\Http\Controllers\Api\StatsController.php(53): Illuminate\Database\Eloquent\Builder-&gt;get()
+#11 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php(47): App\Http\Controllers\Api\StatsController-&gt;spending(Object(Illuminate\Http\Request))
+#12 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(266): Illuminate\Routing\ControllerDispatcher-&gt;dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Api\StatsController), 'spending')
+#13 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(212): Illuminate\Routing\Route-&gt;runController()
+#14 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(808): Illuminate\Routing\Route-&gt;run()
+#15 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Routing\Router-&gt;Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#16 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(51): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#17 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(64): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#19 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')
+#20 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#21 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#22 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#23 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#24 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#25 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(201): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#26 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#27 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#28 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#29 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#31 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#32 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#34 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#35 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#36 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#37 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(62): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#38 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#39 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#40 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#41 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#42 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#43 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#44 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(176): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#45 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(145): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#46 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#47 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('GET', '/api/stats/spen...', Array, Array, Array, Array, '[]')
+#48 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(381): Illuminate\Foundation\Testing\TestCase-&gt;json('GET', '/api/stats/spen...', Array, Array, 0)
+#49 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\FinanceManagerScenarioTest.php(93): Illuminate\Foundation\Testing\TestCase-&gt;getJson('/api/stats/spen...')
+#50 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;{closure}()
+#51 [internal function]: P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;Pest\Factories\{closure}()
+#52 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#53 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;Pest\Concerns\{closure}()
+#54 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#55 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;__callClosure(Object(Closure), Array)
+#56 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;__runTest(Object(Closure))
+#57 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;__pest_evaluable_finance_manager_full_workflow_scenario()
+#58 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
+#59 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#60 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\FinanceManagerScenarioTest))
+#61 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#62 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#63 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#64 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#65 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#66 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#67 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#68 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(192): {closure}()
+#69 {main}
+
+Next Illuminate\Database\QueryException: SQLSTATE[HY000]: General error: 1 no such function: DATE_FORMAT (Connection: sqlite, SQL: select DATE_FORMAT(date, "%Y-%m") as month, SUM(price * quantity) as total_spent from "invoices" where "date" &gt;= 2025-02-28 09:29:58 group by "month" order by "month" asc) in C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php:825
+Stack trace:
+#0 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php(779): Illuminate\Database\Connection-&gt;runQueryCallback('select DATE_FOR...', Array, Object(Closure))
+#1 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Connection.php(398): Illuminate\Database\Connection-&gt;run('select DATE_FOR...', Array, Object(Closure))
+#2 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3106): Illuminate\Database\Connection-&gt;select('select DATE_FOR...', Array, true)
+#3 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3091): Illuminate\Database\Query\Builder-&gt;runSelect()
+#4 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3676): Illuminate\Database\Query\Builder-&gt;Illuminate\Database\Query\{closure}()
+#5 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3090): Illuminate\Database\Query\Builder-&gt;onceWithColumns(Array, Object(Closure))
+#6 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php(811): Illuminate\Database\Query\Builder-&gt;get(Array)
+#7 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php(793): Illuminate\Database\Eloquent\Builder-&gt;getModels(Array)
+#8 C:\Users\hamditou\school-inventory-system\app\Http\Controllers\Api\StatsController.php(53): Illuminate\Database\Eloquent\Builder-&gt;get()
+#9 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php(47): App\Http\Controllers\Api\StatsController-&gt;spending(Object(Illuminate\Http\Request))
+#10 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(266): Illuminate\Routing\ControllerDispatcher-&gt;dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Api\StatsController), 'spending')
+#11 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(212): Illuminate\Routing\Route-&gt;runController()
+#12 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(808): Illuminate\Routing\Route-&gt;run()
+#13 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Routing\Router-&gt;Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#14 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(51): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#15 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#16 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(64): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#17 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')
+#18 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#19 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#20 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#21 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#22 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#23 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(201): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#24 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#25 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#26 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#27 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#32 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#34 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#35 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(62): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#36 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#37 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#38 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#39 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#40 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#41 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#42 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(176): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#43 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(145): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#44 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#45 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('GET', '/api/stats/spen...', Array, Array, Array, Array, '[]')
+#46 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(381): Illuminate\Foundation\Testing\TestCase-&gt;json('GET', '/api/stats/spen...', Array, Array, 0)
+#47 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\FinanceManagerScenarioTest.php(93): Illuminate\Foundation\Testing\TestCase-&gt;getJson('/api/stats/spen...')
+#48 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;{closure}()
+#49 [internal function]: P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;Pest\Factories\{closure}()
+#50 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#51 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;Pest\Concerns\{closure}()
+#52 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#53 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;__callClosure(Object(Closure), Array)
+#54 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;__runTest(Object(Closure))
+#55 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\FinanceManagerScenarioTest-&gt;__pest_evaluable_finance_manager_full_workflow_scenario()
+#56 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
+#57 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#58 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\FinanceManagerScenarioTest))
+#59 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#60 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#61 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#62 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#63 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#64 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#65 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#66 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(192): {closure}()
+#67 {main}
+
+----------------------------------------------------------------------------------
+
+SQLSTATE[HY000]: General error: 1 no such function: DATE_FORMAT (Connection: sqlite, SQL: select DATE_FORMAT(date, "%Y-%m") as month, SUM(price * quantity) as total_spent from "invoices" where "date" &gt;= 2025-02-28 09:29:58 group by "month" order by "month" asc)&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
+at tests\Feature\Scenarios\FinanceManagerScenarioTest.php:94</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\HRManagerScenarioTest" file="tests\Feature\Scenarios\HRManagerScenarioTest.php" tests="1" assertions="13" errors="0" failures="1" skipped="0" time="10.210871">
+        <testcase name="hr manager full workflow scenario" file="tests\Feature\Scenarios\HRManagerScenarioTest.php::hr manager full workflow scenario" class="Tests\Feature\Scenarios\HRManagerScenarioTest" classname="Tests.Feature.Scenarios.HRManagerScenarioTest" assertions="13" time="10.210871">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">hr manager full workflow scenarioExpected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.&#13;
+&#13;
+The following exception occurred during the last request:
+
+Error: Call to a member function delete() on null in C:\Users\hamditou\school-inventory-system\app\Http\Controllers\Api\AuthController.php:38
+Stack trace:
+#0 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php(47): App\Http\Controllers\Api\AuthController-&gt;logout(Object(Illuminate\Http\Request))
+#1 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(266): Illuminate\Routing\ControllerDispatcher-&gt;dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Api\AuthController), 'logout')
+#2 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(212): Illuminate\Routing\Route-&gt;runController()
+#3 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(808): Illuminate\Routing\Route-&gt;run()
+#4 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Routing\Router-&gt;Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#5 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(51): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#6 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#7 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(64): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#8 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')
+#9 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#10 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#11 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#12 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#13 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#14 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(201): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#15 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#16 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#17 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#19 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#20 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#21 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#23 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#25 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(62): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#27 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#31 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#32 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#33 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(176): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#34 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(145): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#35 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#36 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('POST', '/api/logout', Array, Array, Array, Array, '[]')
+#37 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(411): Illuminate\Foundation\Testing\TestCase-&gt;json('POST', '/api/logout', Array, Array, 0)
+#38 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\HRManagerScenarioTest.php(94): Illuminate\Foundation\Testing\TestCase-&gt;postJson('/api/logout')
+#39 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\HRManagerScenarioTest-&gt;{closure}()
+#40 [internal function]: P\Tests\Feature\Scenarios\HRManagerScenarioTest-&gt;Pest\Factories\{closure}()
+#41 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#42 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\HRManagerScenarioTest-&gt;Pest\Concerns\{closure}()
+#43 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#44 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\HRManagerScenarioTest-&gt;__callClosure(Object(Closure), Array)
+#45 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\HRManagerScenarioTest-&gt;__runTest(Object(Closure))
+#46 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\HRManagerScenarioTest-&gt;__pest_evaluable_hr_manager_full_workflow_scenario()
+#47 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
+#48 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#49 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\HRManagerScenarioTest))
+#50 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#51 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#52 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#53 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#54 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#55 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#56 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#57 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(192): {closure}()
+#58 {main}
+
+----------------------------------------------------------------------------------
+
+Call to a member function delete() on null&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
+at tests\Feature\Scenarios\HRManagerScenarioTest.php:95</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\StockManagerScenarioTest" file="tests\Feature\Scenarios\StockManagerScenarioTest.php" tests="1" assertions="8" errors="0" failures="1" skipped="0" time="0.411743">
+        <testcase name="stock manager full workflow scenario" file="tests\Feature\Scenarios\StockManagerScenarioTest.php::stock manager full workflow scenario" class="Tests\Feature\Scenarios\StockManagerScenarioTest" classname="Tests.Feature.Scenarios.StockManagerScenarioTest" assertions="8" time="0.411743">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">stock manager full workflow scenarioExpected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.&#13;
+&#13;
+The following exception occurred during the last request:
+
+Error: Call to a member function delete() on null in C:\Users\hamditou\school-inventory-system\app\Http\Controllers\Api\AuthController.php:38
+Stack trace:
+#0 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php(47): App\Http\Controllers\Api\AuthController-&gt;logout(Object(Illuminate\Http\Request))
+#1 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(266): Illuminate\Routing\ControllerDispatcher-&gt;dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Api\AuthController), 'logout')
+#2 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(212): Illuminate\Routing\Route-&gt;runController()
+#3 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(808): Illuminate\Routing\Route-&gt;run()
+#4 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Routing\Router-&gt;Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#5 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(51): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#6 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#7 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(64): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#8 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')
+#9 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#10 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#11 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#12 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#13 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#14 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(201): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#15 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#16 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#17 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#19 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#20 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#21 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#23 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#25 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(62): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#27 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#31 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#32 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#33 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(176): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#34 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(145): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#35 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#36 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('POST', '/api/logout', Array, Array, Array, Array, '[]')
+#37 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(411): Illuminate\Foundation\Testing\TestCase-&gt;json('POST', '/api/logout', Array, Array, 0)
+#38 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\StockManagerScenarioTest.php(81): Illuminate\Foundation\Testing\TestCase-&gt;postJson('/api/logout')
+#39 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\StockManagerScenarioTest-&gt;{closure}()
+#40 [internal function]: P\Tests\Feature\Scenarios\StockManagerScenarioTest-&gt;Pest\Factories\{closure}()
+#41 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#42 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\StockManagerScenarioTest-&gt;Pest\Concerns\{closure}()
+#43 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#44 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\StockManagerScenarioTest-&gt;__callClosure(Object(Closure), Array)
+#45 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\StockManagerScenarioTest-&gt;__runTest(Object(Closure))
+#46 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\StockManagerScenarioTest-&gt;__pest_evaluable_stock_manager_full_workflow_scenario()
+#47 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
+#48 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#49 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\StockManagerScenarioTest))
+#50 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#51 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#52 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#53 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#54 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#55 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#56 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#57 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(192): {closure}()
+#58 {main}
+
+----------------------------------------------------------------------------------
+
+Call to a member function delete() on null&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
+at tests\Feature\Scenarios\StockManagerScenarioTest.php:82</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\TeacherScenarioTest" file="tests\Feature\Scenarios\TeacherScenarioTest.php" tests="1" assertions="5" errors="0" failures="1" skipped="0" time="0.120700">
+        <testcase name="teacher full workflow scenario" file="tests\Feature\Scenarios\TeacherScenarioTest.php::teacher full workflow scenario" class="Tests\Feature\Scenarios\TeacherScenarioTest" classname="Tests.Feature.Scenarios.TeacherScenarioTest" assertions="5" time="0.120700">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">teacher full workflow scenarioExpected response status code [200] but received 500.
+Failed asserting that 500 is identical to 200.&#13;
+&#13;
+The following exception occurred during the last request:
+
+Error: Call to a member function delete() on null in C:\Users\hamditou\school-inventory-system\app\Http\Controllers\Api\AuthController.php:38
+Stack trace:
+#0 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\ControllerDispatcher.php(47): App\Http\Controllers\Api\AuthController-&gt;logout(Object(Illuminate\Http\Request))
+#1 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(266): Illuminate\Routing\ControllerDispatcher-&gt;dispatch(Object(Illuminate\Routing\Route), Object(App\Http\Controllers\Api\AuthController), 'logout')
+#2 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Route.php(212): Illuminate\Routing\Route-&gt;runController()
+#3 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(808): Illuminate\Routing\Route-&gt;run()
+#4 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Routing\Router-&gt;Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#5 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(51): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#6 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#7 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(64): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#8 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure), 'sanctum')
+#9 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#10 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#11 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#12 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#13 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#14 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(201): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#15 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(170): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#16 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#17 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#19 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#20 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#21 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#23 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(110): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#25 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(62): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#27 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#30 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#31 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(209): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#32 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(127): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#33 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(176): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#34 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(145): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#35 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#36 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('POST', '/api/logout', Array, Array, Array, Array, '[]')
+#37 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(411): Illuminate\Foundation\Testing\TestCase-&gt;json('POST', '/api/logout', Array, Array, 0)
+#38 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\TeacherScenarioTest.php(42): Illuminate\Foundation\Testing\TestCase-&gt;postJson('/api/logout')
+#39 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;{closure}()
+#40 [internal function]: P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;Pest\Factories\{closure}()
+#41 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#42 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;Pest\Concerns\{closure}()
+#43 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#44 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;__callClosure(Object(Closure), Array)
+#45 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;__runTest(Object(Closure))
+#46 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;__pest_evaluable_teacher_full_workflow_scenario()
+#47 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
+#48 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#49 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\TeacherScenarioTest))
+#50 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#51 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#52 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#53 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#54 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\TextUI\Application.php(211): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#55 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#56 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#57 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\bin\pest(192): {closure}()
+#58 {main}
+
+----------------------------------------------------------------------------------
+
+Call to a member function delete() on null&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
+at tests\Feature\Scenarios\TeacherScenarioTest.php:43</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

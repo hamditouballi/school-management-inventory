@@ -1,0 +1,222 @@
+{
+    "testsuite": {
+        "@attributes": {
+            "name": "C:\\Users\\hamditou\\school-inventory-system\\phpunit.xml",
+            "tests": "14",
+            "assertions": "32",
+            "errors": "0",
+            "failures": "1",
+            "skipped": "0",
+            "time": "5.257415"
+        },
+        "testsuite": [
+            {
+                "@attributes": {
+                    "name": "Unit",
+                    "tests": "2",
+                    "assertions": "2",
+                    "errors": "0",
+                    "failures": "1",
+                    "skipped": "0",
+                    "time": "2.370952"
+                },
+                "testsuite": {
+                    "@attributes": {
+                        "name": "Tests\\Unit\\InvoiceTest",
+                        "file": "tests\\Unit\\InvoiceTest.php",
+                        "tests": "2",
+                        "assertions": "2",
+                        "errors": "0",
+                        "failures": "1",
+                        "skipped": "0",
+                        "time": "2.370952"
+                    },
+                    "testcase": [
+                        {
+                            "@attributes": {
+                                "name": "invoice calculates total amount correctly from items",
+                                "file": "tests\\Unit\\InvoiceTest.php::invoice calculates total amount correctly from items",
+                                "class": "Tests\\Unit\\InvoiceTest",
+                                "classname": "Tests.Unit.InvoiceTest",
+                                "assertions": "1",
+                                "time": "2.346753"
+                            },
+                            "failure": "invoice calculates total amount correctly from itemsFailed asserting that 160 is identical to 160.0.\r\nat tests\\Unit\\InvoiceTest.php:24"
+                        },
+                        {
+                            "@attributes": {
+                                "name": "invoice has a type cast for date",
+                                "file": "tests\\Unit\\InvoiceTest.php::invoice has a type cast for date",
+                                "class": "Tests\\Unit\\InvoiceTest",
+                                "classname": "Tests.Unit.InvoiceTest",
+                                "assertions": "1",
+                                "time": "0.024199"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@attributes": {
+                    "name": "Feature",
+                    "tests": "12",
+                    "assertions": "30",
+                    "errors": "0",
+                    "failures": "0",
+                    "skipped": "0",
+                    "time": "2.886463"
+                },
+                "testsuite": [
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\AuthTest",
+                            "file": "tests\\Feature\\AuthTest.php",
+                            "tests": "5",
+                            "assertions": "11",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "2.638713"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it allows a user to login with valid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows a user to login with valid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "4",
+                                    "time": "0.704481"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it rejects login with invalid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it rejects login with invalid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.779207"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it prevents unauthorized users from accessing protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it prevents unauthorized users from accessing protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.385738"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it allows an authenticated user to access protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows an authenticated user to access protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "1",
+                                    "time": "0.382005"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it ensures role-based isolation works correctly",
+                                    "file": "tests\\Feature\\AuthTest.php::it ensures role-based isolation works correctly",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.387283"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\InvoiceCrudTest",
+                            "file": "tests\\Feature\\InvoiceCrudTest.php",
+                            "tests": "7",
+                            "assertions": "19",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.247750"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it can list all invoices",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can list all invoices",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "2",
+                                    "time": "0.046842"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can create a new invoice with items",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can create a new invoice with items",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "4",
+                                    "time": "0.036586"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it returns validation errors when creating an invoice with invalid data",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it returns validation errors when creating an invoice with invalid data",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "5",
+                                    "time": "0.025207"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can show a specific invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can show a specific invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "2",
+                                    "time": "0.024820"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it returns 404 when showing a non-existent invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it returns 404 when showing a non-existent invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "1",
+                                    "time": "0.034409"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can update an existing invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can update an existing invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "3",
+                                    "time": "0.034391"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can delete an invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can delete an invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "2",
+                                    "time": "0.045495"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

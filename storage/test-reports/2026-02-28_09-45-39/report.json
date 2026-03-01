@@ -1,0 +1,435 @@
+{
+    "testsuite": {
+        "@attributes": {
+            "name": "C:\\Users\\hamditou\\school-inventory-system\\phpunit.xml",
+            "tests": "18",
+            "assertions": "66",
+            "errors": "0",
+            "failures": "0",
+            "skipped": "0",
+            "time": "5.670091"
+        },
+        "testsuite": [
+            {
+                "@attributes": {
+                    "name": "Unit",
+                    "tests": "2",
+                    "assertions": "2",
+                    "errors": "0",
+                    "failures": "0",
+                    "skipped": "0",
+                    "time": "2.180181"
+                },
+                "testsuite": {
+                    "@attributes": {
+                        "name": "Tests\\Unit\\InvoiceTest",
+                        "file": "tests\\Unit\\InvoiceTest.php",
+                        "tests": "2",
+                        "assertions": "2",
+                        "errors": "0",
+                        "failures": "0",
+                        "skipped": "0",
+                        "time": "2.180181"
+                    },
+                    "testcase": [
+                        {
+                            "@attributes": {
+                                "name": "invoice calculates total amount correctly from items",
+                                "file": "tests\\Unit\\InvoiceTest.php::invoice calculates total amount correctly from items",
+                                "class": "Tests\\Unit\\InvoiceTest",
+                                "classname": "Tests.Unit.InvoiceTest",
+                                "assertions": "1",
+                                "time": "2.150513"
+                            }
+                        },
+                        {
+                            "@attributes": {
+                                "name": "invoice has a type cast for date",
+                                "file": "tests\\Unit\\InvoiceTest.php::invoice has a type cast for date",
+                                "class": "Tests\\Unit\\InvoiceTest",
+                                "classname": "Tests.Unit.InvoiceTest",
+                                "assertions": "1",
+                                "time": "0.029667"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@attributes": {
+                    "name": "Feature",
+                    "tests": "16",
+                    "assertions": "64",
+                    "errors": "0",
+                    "failures": "0",
+                    "skipped": "0",
+                    "time": "3.489910"
+                },
+                "testsuite": [
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\AuthTest",
+                            "file": "tests\\Feature\\AuthTest.php",
+                            "tests": "5",
+                            "assertions": "11",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "2.764235"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it allows a user to login with valid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows a user to login with valid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "4",
+                                    "time": "0.843842"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it rejects login with invalid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it rejects login with invalid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.718826"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it prevents unauthorized users from accessing protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it prevents unauthorized users from accessing protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.431576"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it allows an authenticated user to access protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows an authenticated user to access protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "1",
+                                    "time": "0.432904"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it ensures role-based isolation works correctly",
+                                    "file": "tests\\Feature\\AuthTest.php::it ensures role-based isolation works correctly",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.337086"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\InvoiceCrudTest",
+                            "file": "tests\\Feature\\InvoiceCrudTest.php",
+                            "tests": "7",
+                            "assertions": "19",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.245051"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it can list all invoices",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can list all invoices",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "2",
+                                    "time": "0.078086"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can create a new invoice with items",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can create a new invoice with items",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "4",
+                                    "time": "0.046077"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it returns validation errors when creating an invoice with invalid data",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it returns validation errors when creating an invoice with invalid data",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "5",
+                                    "time": "0.037660"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can show a specific invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can show a specific invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "2",
+                                    "time": "0.026094"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it returns 404 when showing a non-existent invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it returns 404 when showing a non-existent invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "1",
+                                    "time": "0.016944"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can update an existing invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can update an existing invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "3",
+                                    "time": "0.021259"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can delete an invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can delete an invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "2",
+                                    "time": "0.018930"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\Scenarios\\FinanceManagerScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\FinanceManagerScenarioTest.php",
+                            "tests": "1",
+                            "assertions": "8",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.172258"
+                        },
+                        "testcase": {
+                            "@attributes": {
+                                "name": "finance manager full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\FinanceManagerScenarioTest.php::finance manager full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\FinanceManagerScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.FinanceManagerScenarioTest",
+                                "assertions": "8",
+                                "time": "0.172258"
+                            },
+                            "system-out": "\r\n##STEP_DATA##{\"file\":\"FinanceManagerScenarioTest.php\",\"step\":\"Create Request\",\"status\":\"PASS\",\"duration_ms\":10.49,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"FinanceManagerScenarioTest.php\",\"step\":\"Generate Invoice from PO\",\"status\":\"PASS\",\"duration_ms\":16.82,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"FinanceManagerScenarioTest.php\",\"step\":\"Create manual invoice with image upload\",\"status\":\"PASS\",\"duration_ms\":41.65,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"FinanceManagerScenarioTest.php\",\"step\":\"Generate financial report\",\"status\":\"PASS\",\"duration_ms\":5.13,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"FinanceManagerScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":3.34,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\Scenarios\\HRManagerScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\HRManagerScenarioTest.php",
+                            "tests": "1",
+                            "assertions": "13",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.198710"
+                        },
+                        "testcase": {
+                            "@attributes": {
+                                "name": "hr manager full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\HRManagerScenarioTest.php::hr manager full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\HRManagerScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.HRManagerScenarioTest",
+                                "assertions": "13",
+                                "time": "0.198710"
+                            },
+                            "system-out": "\r\n##STEP_DATA##{\"file\":\"HRManagerScenarioTest.php\",\"step\":\"View reports\",\"status\":\"PASS\",\"duration_ms\":127.4,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"HRManagerScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":1.84,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\Scenarios\\StockManagerScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\StockManagerScenarioTest.php",
+                            "tests": "1",
+                            "assertions": "8",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.064673"
+                        },
+                        "testcase": {
+                            "@attributes": {
+                                "name": "stock manager full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\StockManagerScenarioTest.php::stock manager full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\StockManagerScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.StockManagerScenarioTest",
+                                "assertions": "8",
+                                "time": "0.064673"
+                            },
+                            "system-out": "\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Add new inventory item\",\"status\":\"PASS\",\"duration_ms\":6.79,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Create purchase order\",\"status\":\"PASS\",\"duration_ms\":5.81,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Fulfill a pending teacher request\",\"status\":\"PASS\",\"duration_ms\":11.82,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":1.04,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n"
+                        }
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php",
+                            "tests": "1",
+                            "assertions": "5",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.044984"
+                        },
+                        "testcase": {
+                            "@attributes": {
+                                "name": "teacher full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php::teacher full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.TeacherScenarioTest",
+                                "assertions": "5",
+                                "time": "0.044984"
+                            },
+                            "system-out": "\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"Create item request\",\"status\":\"PASS\",\"duration_ms\":3.89,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"View request status\",\"status\":\"PASS\",\"duration_ms\":5.5,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"Attempt unauthorized action\",\"status\":\"PASS\",\"duration_ms\":5.62,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":1.4,\"timestamp\":\"09:45:46\",\"error\":null}##\r\n"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "scenario_steps": [
+        {
+            "file": "FinanceManagerScenarioTest.php",
+            "step": "Create Request",
+            "status": "PASS",
+            "duration_ms": 10.49,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "FinanceManagerScenarioTest.php",
+            "step": "Generate Invoice from PO",
+            "status": "PASS",
+            "duration_ms": 16.82,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "FinanceManagerScenarioTest.php",
+            "step": "Create manual invoice with image upload",
+            "status": "PASS",
+            "duration_ms": 41.65,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "FinanceManagerScenarioTest.php",
+            "step": "Generate financial report",
+            "status": "PASS",
+            "duration_ms": 5.13,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "FinanceManagerScenarioTest.php",
+            "step": "Logout",
+            "status": "PASS",
+            "duration_ms": 3.34,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "HRManagerScenarioTest.php",
+            "step": "View reports",
+            "status": "PASS",
+            "duration_ms": 127.4,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "HRManagerScenarioTest.php",
+            "step": "Logout",
+            "status": "PASS",
+            "duration_ms": 1.84,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "StockManagerScenarioTest.php",
+            "step": "Add new inventory item",
+            "status": "PASS",
+            "duration_ms": 6.79,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "StockManagerScenarioTest.php",
+            "step": "Create purchase order",
+            "status": "PASS",
+            "duration_ms": 5.81,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "StockManagerScenarioTest.php",
+            "step": "Fulfill a pending teacher request",
+            "status": "PASS",
+            "duration_ms": 11.82,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "StockManagerScenarioTest.php",
+            "step": "Logout",
+            "status": "PASS",
+            "duration_ms": 1.04,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "TeacherScenarioTest.php",
+            "step": "Create item request",
+            "status": "PASS",
+            "duration_ms": 3.89,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "TeacherScenarioTest.php",
+            "step": "View request status",
+            "status": "PASS",
+            "duration_ms": 5.5,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "TeacherScenarioTest.php",
+            "step": "Attempt unauthorized action",
+            "status": "PASS",
+            "duration_ms": 5.62,
+            "timestamp": "09:45:46",
+            "error": null
+        },
+        {
+            "file": "TeacherScenarioTest.php",
+            "step": "Logout",
+            "status": "PASS",
+            "duration_ms": 1.4,
+            "timestamp": "09:45:46",
+            "error": null
+        }
+    ]
+}

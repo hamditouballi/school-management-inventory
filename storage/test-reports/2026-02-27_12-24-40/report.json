@@ -1,0 +1,227 @@
+{
+    "testsuite": {
+        "@attributes": {
+            "name": "C:\\Users\\hamditou\\school-inventory-system\\phpunit.xml",
+            "tests": "14",
+            "assertions": "21",
+            "errors": "6",
+            "failures": "0",
+            "skipped": "0",
+            "time": "9.639535"
+        },
+        "testsuite": [
+            {
+                "@attributes": {
+                    "name": "Unit",
+                    "tests": "2",
+                    "assertions": "0",
+                    "errors": "2",
+                    "failures": "0",
+                    "skipped": "0",
+                    "time": "5.773973"
+                },
+                "testsuite": {
+                    "@attributes": {
+                        "name": "Tests\\Unit\\InvoiceTest",
+                        "file": "tests\\Unit\\InvoiceTest.php",
+                        "tests": "2",
+                        "assertions": "0",
+                        "errors": "2",
+                        "failures": "0",
+                        "skipped": "0",
+                        "time": "5.773973"
+                    },
+                    "testcase": [
+                        {
+                            "@attributes": {
+                                "name": "invoice calculates total amount correctly from items",
+                                "file": "tests\\Unit\\InvoiceTest.php::invoice calculates total amount correctly from items",
+                                "class": "Tests\\Unit\\InvoiceTest",
+                                "classname": "Tests.Unit.InvoiceTest",
+                                "assertions": "0",
+                                "time": "5.696865"
+                            },
+                            "error": "invoice calculates total amount correctly from itemsIlluminate\\Database\\QueryException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1 (Connection: mysql, SQL: insert into `invoices` (`type`, `supplier`, `date`, `id_responsible_finance`, `file_path`, `image_path`, `updated_at`, `created_at`) values (initial, Toy and Sons, 1989-11-15 00:00:00, 1, ?, ?, 2026-02-27 12:24:47, 2026-02-27 12:24:47))\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat tests\\Unit\\InvoiceTest.php:7\nCaused by\nPDOException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1\n\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat tests\\Unit\\InvoiceTest.php:7"
+                        },
+                        {
+                            "@attributes": {
+                                "name": "invoice has a type cast for date",
+                                "file": "tests\\Unit\\InvoiceTest.php::invoice has a type cast for date",
+                                "class": "Tests\\Unit\\InvoiceTest",
+                                "classname": "Tests.Unit.InvoiceTest",
+                                "assertions": "0",
+                                "time": "0.077108"
+                            },
+                            "error": "invoice has a type cast for dateIlluminate\\Database\\QueryException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1 (Connection: mysql, SQL: insert into `invoices` (`type`, `supplier`, `date`, `id_responsible_finance`, `file_path`, `image_path`, `updated_at`, `created_at`) values (initial, Renner and Sons, 2025-01-01 00:00:00, 2, ?, ?, 2026-02-27 12:24:47, 2026-02-27 12:24:47))\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:297\nat tests\\Unit\\InvoiceTest.php:28\nCaused by\nPDOException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1\n\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:297\nat tests\\Unit\\InvoiceTest.php:28"
+                        }
+                    ]
+                }
+            },
+            {
+                "@attributes": {
+                    "name": "Feature",
+                    "tests": "12",
+                    "assertions": "21",
+                    "errors": "4",
+                    "failures": "0",
+                    "skipped": "0",
+                    "time": "3.865562"
+                },
+                "testsuite": [
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\AuthTest",
+                            "file": "tests\\Feature\\AuthTest.php",
+                            "tests": "5",
+                            "assertions": "11",
+                            "errors": "0",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "3.495307"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it allows a user to login with valid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows a user to login with valid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "4",
+                                    "time": "0.934108"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it rejects login with invalid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it rejects login with invalid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "1.063256"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it prevents unauthorized users from accessing protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it prevents unauthorized users from accessing protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.418339"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it allows an authenticated user to access protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows an authenticated user to access protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "1",
+                                    "time": "0.523452"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it ensures role-based isolation works correctly",
+                                    "file": "tests\\Feature\\AuthTest.php::it ensures role-based isolation works correctly",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "2",
+                                    "time": "0.556153"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\InvoiceCrudTest",
+                            "file": "tests\\Feature\\InvoiceCrudTest.php",
+                            "tests": "7",
+                            "assertions": "10",
+                            "errors": "4",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.370255"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it can list all invoices",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can list all invoices",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "0",
+                                    "time": "0.056077"
+                                },
+                                "error": "it can list all invoicesIlluminate\\Database\\QueryException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1 (Connection: mysql, SQL: insert into `invoices` (`type`, `supplier`, `date`, `id_responsible_finance`, `file_path`, `image_path`, `updated_at`, `created_at`) values (final, Shields-Trantow, 1995-03-05 00:00:00, 10, ?, ?, 2026-02-27 12:24:50, 2026-02-27 12:24:50))\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:307\nat tests\\Feature\\InvoiceCrudTest.php:13\nCaused by\nPDOException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1\n\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:307\nat tests\\Feature\\InvoiceCrudTest.php:13"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can create a new invoice with items",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can create a new invoice with items",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "4",
+                                    "time": "0.102351"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it returns validation errors when creating an invoice with invalid data",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it returns validation errors when creating an invoice with invalid data",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "5",
+                                    "time": "0.035411"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can show a specific invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can show a specific invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "0",
+                                    "time": "0.044143"
+                                },
+                                "error": "it can show a specific invoiceIlluminate\\Database\\QueryException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1 (Connection: mysql, SQL: insert into `invoices` (`type`, `supplier`, `date`, `id_responsible_finance`, `file_path`, `image_path`, `updated_at`, `created_at`) values (initial, Ledner Ltd, 1978-05-25 00:00:00, 16, ?, ?, 2026-02-27 12:24:51, 2026-02-27 12:24:51))\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat tests\\Feature\\InvoiceCrudTest.php:59\nCaused by\nPDOException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1\n\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat tests\\Feature\\InvoiceCrudTest.php:59"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it returns 404 when showing a non-existent invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it returns 404 when showing a non-existent invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "1",
+                                    "time": "0.041396"
+                                }
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can update an existing invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can update an existing invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "0",
+                                    "time": "0.043058"
+                                },
+                                "error": "it can update an existing invoiceIlluminate\\Database\\QueryException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1 (Connection: mysql, SQL: insert into `invoices` (`type`, `supplier`, `date`, `id_responsible_finance`, `file_path`, `image_path`, `updated_at`, `created_at`) values (initial, Old Supplier, 1988-12-09 00:00:00, 19, ?, ?, 2026-02-27 12:24:51, 2026-02-27 12:24:51))\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:297\nat tests\\Feature\\InvoiceCrudTest.php:74\nCaused by\nPDOException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1\n\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:297\nat tests\\Feature\\InvoiceCrudTest.php:74"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it can delete an invoice",
+                                    "file": "tests\\Feature\\InvoiceCrudTest.php::it can delete an invoice",
+                                    "class": "Tests\\Feature\\InvoiceCrudTest",
+                                    "classname": "Tests.Feature.InvoiceCrudTest",
+                                    "assertions": "0",
+                                    "time": "0.047818"
+                                },
+                                "error": "it can delete an invoiceIlluminate\\Database\\QueryException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1 (Connection: mysql, SQL: insert into `invoices` (`type`, `supplier`, `date`, `id_responsible_finance`, `file_path`, `image_path`, `updated_at`, `created_at`) values (final, Herman-Collier, 2015-05-31 00:00:00, 21, ?, ?, 2026-02-27 12:24:51, 2026-02-27 12:24:51))\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat tests\\Feature\\InvoiceCrudTest.php:94\nCaused by\nPDOException: SQLSTATE[01000]: Warning: 1265 Data truncated for column 'type' at row 1\n\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:53\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:812\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Connection.php:779\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\MySqlConnection.php:42\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Processors\\MySqlProcessor.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Query\\Builder.php:3766\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Builder.php:2120\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1359\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1324\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Model.php:1163\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:352\nat vendor\\laravel\\framework\\src\\Illuminate\\Collections\\Traits\\EnumeratesValues.php:261\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:347\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Eloquent\\Factories\\Factory.php:303\nat tests\\Feature\\InvoiceCrudTest.php:94"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

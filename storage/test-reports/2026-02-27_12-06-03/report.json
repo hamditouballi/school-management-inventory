@@ -1,0 +1,142 @@
+{
+    "testsuite": {
+        "@attributes": {
+            "name": "C:\\Users\\hamditou\\school-inventory-system\\phpunit.xml",
+            "tests": "6",
+            "assertions": "1",
+            "errors": "5",
+            "failures": "1",
+            "skipped": "0",
+            "time": "0.006431"
+        },
+        "testsuite": [
+            {
+                "@attributes": {
+                    "name": "Unit",
+                    "tests": "1",
+                    "assertions": "1",
+                    "errors": "0",
+                    "failures": "0",
+                    "skipped": "0",
+                    "time": "0.006431"
+                },
+                "testsuite": {
+                    "@attributes": {
+                        "name": "Tests\\Unit\\ExampleTest",
+                        "file": "Example (Tests\\Unit\\Example)",
+                        "tests": "1",
+                        "assertions": "1",
+                        "errors": "0",
+                        "failures": "0",
+                        "skipped": "0",
+                        "time": "0.006431"
+                    },
+                    "testcase": {
+                        "@attributes": {
+                            "name": "That true is true",
+                            "file": "Example (Tests\\Unit\\Example)::That true is true",
+                            "class": "Tests\\Unit\\ExampleTest",
+                            "classname": "Tests.Unit.ExampleTest",
+                            "assertions": "1",
+                            "time": "0.006431"
+                        }
+                    }
+                }
+            },
+            {
+                "@attributes": {
+                    "name": "Feature",
+                    "tests": "5",
+                    "assertions": "0",
+                    "errors": "5",
+                    "failures": "1",
+                    "skipped": "0",
+                    "time": "0.000000"
+                },
+                "testsuite": [
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\AuthTest",
+                            "file": "tests\\Feature\\AuthTest.php",
+                            "tests": "5",
+                            "assertions": "0",
+                            "errors": "5",
+                            "failures": "0",
+                            "skipped": "0",
+                            "time": "0.000000"
+                        },
+                        "testcase": [
+                            {
+                                "@attributes": {
+                                    "name": "it allows a user to login with valid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows a user to login with valid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "0",
+                                    "time": "0.000000"
+                                },
+                                "error": "it allows a user to login with valid credentialsMockery\\Exception\\BadMethodCallException: Received Mockery_1_Illuminate_Console_OutputStyle::askQuestion(), but no expectations were specified\r\nat vendor\\symfony\\console\\Style\\SymfonyStyle.php:234\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:17\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Component.php:118\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:16\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Factory.php:60\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:67\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:66\nat vendor\\laravel\\prompts\\src\\Concerns\\Fallback.php:59\nat vendor\\laravel\\prompts\\src\\Prompt.php:108\nat vendor\\laravel\\prompts\\src\\helpers.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\ConfirmableTrait.php:31\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\FreshCommand.php:61\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:36\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php:43\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:95\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:696\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:213\nat vendor\\symfony\\console\\Command\\Command.php:341\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:182\nat vendor\\symfony\\console\\Application.php:1117\nat vendor\\symfony\\console\\Application.php:356\nat vendor\\symfony\\console\\Application.php:195\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php:166\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php:427\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:332\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:556\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithConsole.php:87\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:66\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:25\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:209\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:97\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\TestCase.php:44"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it rejects login with invalid credentials",
+                                    "file": "tests\\Feature\\AuthTest.php::it rejects login with invalid credentials",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "0",
+                                    "time": "0.000000"
+                                },
+                                "error": "it rejects login with invalid credentialsMockery\\Exception\\BadMethodCallException: Received Mockery_1_Illuminate_Console_OutputStyle::askQuestion(), but no expectations were specified\r\nat vendor\\symfony\\console\\Style\\SymfonyStyle.php:234\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:17\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Component.php:118\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:16\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Factory.php:60\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:67\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:66\nat vendor\\laravel\\prompts\\src\\Concerns\\Fallback.php:59\nat vendor\\laravel\\prompts\\src\\Prompt.php:108\nat vendor\\laravel\\prompts\\src\\helpers.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\ConfirmableTrait.php:31\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\FreshCommand.php:61\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:36\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php:43\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:95\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:696\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:213\nat vendor\\symfony\\console\\Command\\Command.php:341\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:182\nat vendor\\symfony\\console\\Application.php:1117\nat vendor\\symfony\\console\\Application.php:356\nat vendor\\symfony\\console\\Application.php:195\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php:166\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php:427\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:332\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:556\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithConsole.php:87\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:66\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:25\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:209\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:97\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\TestCase.php:44"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it prevents unauthorized users from accessing protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it prevents unauthorized users from accessing protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "0",
+                                    "time": "0.000000"
+                                },
+                                "error": "it prevents unauthorized users from accessing protected routesMockery\\Exception\\BadMethodCallException: Received Mockery_1_Illuminate_Console_OutputStyle::askQuestion(), but no expectations were specified\r\nat vendor\\symfony\\console\\Style\\SymfonyStyle.php:234\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:17\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Component.php:118\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:16\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Factory.php:60\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:67\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:66\nat vendor\\laravel\\prompts\\src\\Concerns\\Fallback.php:59\nat vendor\\laravel\\prompts\\src\\Prompt.php:108\nat vendor\\laravel\\prompts\\src\\helpers.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\ConfirmableTrait.php:31\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\FreshCommand.php:61\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:36\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php:43\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:95\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:696\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:213\nat vendor\\symfony\\console\\Command\\Command.php:341\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:182\nat vendor\\symfony\\console\\Application.php:1117\nat vendor\\symfony\\console\\Application.php:356\nat vendor\\symfony\\console\\Application.php:195\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php:166\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php:427\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:332\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:556\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithConsole.php:87\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:66\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:25\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:209\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:97\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\TestCase.php:44"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it allows an authenticated user to access protected routes",
+                                    "file": "tests\\Feature\\AuthTest.php::it allows an authenticated user to access protected routes",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "0",
+                                    "time": "0.000000"
+                                },
+                                "error": "it allows an authenticated user to access protected routesMockery\\Exception\\BadMethodCallException: Received Mockery_1_Illuminate_Console_OutputStyle::askQuestion(), but no expectations were specified\r\nat vendor\\symfony\\console\\Style\\SymfonyStyle.php:234\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:17\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Component.php:118\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:16\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Factory.php:60\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:67\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:66\nat vendor\\laravel\\prompts\\src\\Concerns\\Fallback.php:59\nat vendor\\laravel\\prompts\\src\\Prompt.php:108\nat vendor\\laravel\\prompts\\src\\helpers.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\ConfirmableTrait.php:31\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\FreshCommand.php:61\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:36\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php:43\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:95\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:696\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:213\nat vendor\\symfony\\console\\Command\\Command.php:341\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:182\nat vendor\\symfony\\console\\Application.php:1117\nat vendor\\symfony\\console\\Application.php:356\nat vendor\\symfony\\console\\Application.php:195\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php:166\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php:427\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:332\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:556\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithConsole.php:87\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:66\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:25\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:209\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:97\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\TestCase.php:44"
+                            },
+                            {
+                                "@attributes": {
+                                    "name": "it ensures role-based isolation works correctly",
+                                    "file": "tests\\Feature\\AuthTest.php::it ensures role-based isolation works correctly",
+                                    "class": "Tests\\Feature\\AuthTest",
+                                    "classname": "Tests.Feature.AuthTest",
+                                    "assertions": "0",
+                                    "time": "0.000000"
+                                },
+                                "error": "it ensures role-based isolation works correctlyMockery\\Exception\\BadMethodCallException: Received Mockery_1_Illuminate_Console_OutputStyle::askQuestion(), but no expectations were specified\r\nat vendor\\symfony\\console\\Style\\SymfonyStyle.php:234\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:17\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Component.php:118\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Confirm.php:16\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\View\\Components\\Factory.php:60\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:67\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Concerns\\ConfiguresPrompts.php:66\nat vendor\\laravel\\prompts\\src\\Concerns\\Fallback.php:59\nat vendor\\laravel\\prompts\\src\\Prompt.php:108\nat vendor\\laravel\\prompts\\src\\helpers.php:126\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\ConfirmableTrait.php:31\nat vendor\\laravel\\framework\\src\\Illuminate\\Database\\Console\\Migrations\\FreshCommand.php:61\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:36\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Util.php:43\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:95\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\BoundMethod.php:35\nat vendor\\laravel\\framework\\src\\Illuminate\\Container\\Container.php:696\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:213\nat vendor\\symfony\\console\\Command\\Command.php:341\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Command.php:182\nat vendor\\symfony\\console\\Application.php:1117\nat vendor\\symfony\\console\\Application.php:356\nat vendor\\symfony\\console\\Application.php:195\nat vendor\\laravel\\framework\\src\\Illuminate\\Console\\Application.php:166\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Console\\Kernel.php:427\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:332\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\PendingCommand.php:556\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithConsole.php:87\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:66\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\RefreshDatabase.php:25\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:209\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\Concerns\\InteractsWithTestCaseLifecycle.php:97\nat vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Testing\\TestCase.php:44"
+                            }
+                        ]
+                    },
+                    {
+                        "@attributes": {
+                            "name": "Tests\\Feature\\ExampleTest",
+                            "file": "Example (Tests\\Feature\\Example)",
+                            "tests": "0",
+                            "assertions": "0",
+                            "errors": "0",
+                            "failures": "1",
+                            "skipped": "0",
+                            "time": "0.000000"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

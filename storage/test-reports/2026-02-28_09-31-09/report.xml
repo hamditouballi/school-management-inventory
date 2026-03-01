@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="C:\Users\hamditou\school-inventory-system\phpunit.xml" tests="18" assertions="66" errors="0" failures="0" skipped="0" time="8.833476">
+    <testsuite name="Unit" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="5.446695">
+      <testsuite name="Tests\Unit\InvoiceTest" file="tests\Unit\InvoiceTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="5.446695">
+        <testcase name="invoice calculates total amount correctly from items" file="tests\Unit\InvoiceTest.php::invoice calculates total amount correctly from items" class="Tests\Unit\InvoiceTest" classname="Tests.Unit.InvoiceTest" assertions="1" time="5.424981"/>
+        <testcase name="invoice has a type cast for date" file="tests\Unit\InvoiceTest.php::invoice has a type cast for date" class="Tests\Unit\InvoiceTest" classname="Tests.Unit.InvoiceTest" assertions="1" time="0.021715"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="16" assertions="64" errors="0" failures="0" skipped="0" time="3.386781">
+      <testsuite name="Tests\Feature\AuthTest" file="tests\Feature\AuthTest.php" tests="5" assertions="11" errors="0" failures="0" skipped="0" time="2.829373">
+        <testcase name="it allows a user to login with valid credentials" file="tests\Feature\AuthTest.php::it allows a user to login with valid credentials" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="4" time="0.554047"/>
+        <testcase name="it rejects login with invalid credentials" file="tests\Feature\AuthTest.php::it rejects login with invalid credentials" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="2" time="1.202677"/>
+        <testcase name="it prevents unauthorized users from accessing protected routes" file="tests\Feature\AuthTest.php::it prevents unauthorized users from accessing protected routes" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="2" time="0.263054"/>
+        <testcase name="it allows an authenticated user to access protected routes" file="tests\Feature\AuthTest.php::it allows an authenticated user to access protected routes" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="1" time="0.524322"/>
+        <testcase name="it ensures role-based isolation works correctly" file="tests\Feature\AuthTest.php::it ensures role-based isolation works correctly" class="Tests\Feature\AuthTest" classname="Tests.Feature.AuthTest" assertions="2" time="0.285274"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\InvoiceCrudTest" file="tests\Feature\InvoiceCrudTest.php" tests="7" assertions="19" errors="0" failures="0" skipped="0" time="0.210770">
+        <testcase name="it can list all invoices" file="tests\Feature\InvoiceCrudTest.php::it can list all invoices" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="2" time="0.038563"/>
+        <testcase name="it can create a new invoice with items" file="tests\Feature\InvoiceCrudTest.php::it can create a new invoice with items" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="4" time="0.029751"/>
+        <testcase name="it returns validation errors when creating an invoice with invalid data" file="tests\Feature\InvoiceCrudTest.php::it returns validation errors when creating an invoice with invalid data" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="5" time="0.031756"/>
+        <testcase name="it can show a specific invoice" file="tests\Feature\InvoiceCrudTest.php::it can show a specific invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="2" time="0.032760"/>
+        <testcase name="it returns 404 when showing a non-existent invoice" file="tests\Feature\InvoiceCrudTest.php::it returns 404 when showing a non-existent invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="1" time="0.025481"/>
+        <testcase name="it can update an existing invoice" file="tests\Feature\InvoiceCrudTest.php::it can update an existing invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="3" time="0.028406"/>
+        <testcase name="it can delete an invoice" file="tests\Feature\InvoiceCrudTest.php::it can delete an invoice" class="Tests\Feature\InvoiceCrudTest" classname="Tests.Feature.InvoiceCrudTest" assertions="2" time="0.024052"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\FinanceManagerScenarioTest" file="tests\Feature\Scenarios\FinanceManagerScenarioTest.php" tests="1" assertions="8" errors="0" failures="0" skipped="0" time="0.074100">
+        <testcase name="finance manager full workflow scenario" file="tests\Feature\Scenarios\FinanceManagerScenarioTest.php::finance manager full workflow scenario" class="Tests\Feature\Scenarios\FinanceManagerScenarioTest" classname="Tests.Feature.Scenarios.FinanceManagerScenarioTest" assertions="8" time="0.074100"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\HRManagerScenarioTest" file="tests\Feature\Scenarios\HRManagerScenarioTest.php" tests="1" assertions="13" errors="0" failures="0" skipped="0" time="0.212252">
+        <testcase name="hr manager full workflow scenario" file="tests\Feature\Scenarios\HRManagerScenarioTest.php::hr manager full workflow scenario" class="Tests\Feature\Scenarios\HRManagerScenarioTest" classname="Tests.Feature.Scenarios.HRManagerScenarioTest" assertions="13" time="0.212252"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\StockManagerScenarioTest" file="tests\Feature\Scenarios\StockManagerScenarioTest.php" tests="1" assertions="8" errors="0" failures="0" skipped="0" time="0.031020">
+        <testcase name="stock manager full workflow scenario" file="tests\Feature\Scenarios\StockManagerScenarioTest.php::stock manager full workflow scenario" class="Tests\Feature\Scenarios\StockManagerScenarioTest" classname="Tests.Feature.Scenarios.StockManagerScenarioTest" assertions="8" time="0.031020"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Scenarios\TeacherScenarioTest" file="tests\Feature\Scenarios\TeacherScenarioTest.php" tests="1" assertions="5" errors="0" failures="0" skipped="0" time="0.029266">
+        <testcase name="teacher full workflow scenario" file="tests\Feature\Scenarios\TeacherScenarioTest.php::teacher full workflow scenario" class="Tests\Feature\Scenarios\TeacherScenarioTest" classname="Tests.Feature.Scenarios.TeacherScenarioTest" assertions="5" time="0.029266"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
