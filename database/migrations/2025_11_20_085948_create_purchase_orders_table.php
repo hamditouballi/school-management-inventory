@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->foreignId('id_responsible_stock')->constrained('users')->onDelete('cascade');
-            $table->enum('status', ['pending_hr', 'approved_hr', 'rejected_hr', 'ordered'])->default('pending_hr');
+            $table->string('status')->default('pending_hr');
             $table->string('supplier');
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->timestamps();

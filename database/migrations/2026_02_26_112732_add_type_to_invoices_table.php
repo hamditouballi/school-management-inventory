@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('requests', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('status')->default('pending');
-            $table->timestamp('dateCreated')->useCurrent();
-            $table->timestamps();
+        Schema::table('invoices', function (Blueprint $table) {
+            $table->enum('type', ['incoming', 'return'])->default('incoming')->after('id');
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('requests');
+        Schema::table('invoices', function (Blueprint $table) {
+            $table->dropColumn('type');
+        });
     }
 };
