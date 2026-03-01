@@ -24,6 +24,7 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'supplier' => 'required|string',
+            'type' => 'required|in:incoming,return',
             'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.item_name' => 'required_without:items.*.item_id|string',
@@ -32,6 +33,7 @@ class InvoiceController extends Controller
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit' => 'nullable|string',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.image_path' => 'nullable|string',
             'purchase_order_id' => 'nullable|exists:purchase_orders,id',
             'id_purchase_order_item' => 'nullable|exists:purchase_order_items,id',
             'file_path' => 'nullable|string',
@@ -42,6 +44,7 @@ class InvoiceController extends Controller
         try {
             $invoiceData = [
                 'supplier' => $validated['supplier'],
+                'type' => $validated['type'],
                 'date' => $validated['date'],
                 'id_responsible_finance' => $request->user()->id,
                 'id_purchase_order' => $validated['purchase_order_id'] ?? null,
@@ -58,16 +61,16 @@ class InvoiceController extends Controller
             // Create invoice items and add/update inventory
             foreach ($validated['items'] as $index => $itemData) {
                 // Handle per-item image upload
-                $imagePath = null;
+                $imagePath = $itemData['image_path'] ?? null;
                 $imageField = "item_image_{$index}";
                 if ($request->hasFile($imageField)) {
-                    $imagePath = $request->file($imageField)->store('invoice_items', 'public');
+                    $imagePath = $request->file($imageField)->store('items', 'public');
                 }
 
                 // Create invoice item
                 \App\Models\InvoiceItem::create([
                     'invoice_id' => $invoice->id,
-                    'item_name' => $itemData['item_name'],
+                    'item_name' => $itemData['item_name'] ?? (\App\Models\Item::find($itemData['item_id'] ?? null)?->designation ?? 'Unknown Item'),
                     'description' => $itemData['description'] ?? null,
                     'quantity' => $itemData['quantity'],
                     'unit' => $itemData['unit'] ?? 'unit',
@@ -80,7 +83,11 @@ class InvoiceController extends Controller
                     // Existing item - update quantity
                     $existingItem = \App\Models\Item::find($itemData['item_id']);
                     if ($existingItem) {
-                        $existingItem->increment('quantity', $itemData['quantity']);
+                        if ($validated['type'] === 'return') {
+                            $existingItem->decrement('quantity', $itemData['quantity']);
+                        } else {
+                            $existingItem->increment('quantity', $itemData['quantity']);
+                        }
                         // Update image if new one provided
                         if ($imagePath) {
                             $existingItem->update(['image_path' => $imagePath]);
@@ -91,17 +98,22 @@ class InvoiceController extends Controller
                     $existingItem = \App\Models\Item::where('designation', $itemData['item_name'])->first();
 
                     if ($existingItem) {
-                        // Item with same name exists - increase quantity
-                        $existingItem->increment('quantity', $itemData['quantity']);
+                        // Item with same name exists - update quantity
+                        if ($validated['type'] === 'return') {
+                            $existingItem->decrement('quantity', $itemData['quantity']);
+                        } else {
+                            $existingItem->increment('quantity', $itemData['quantity']);
+                        }
                         if ($imagePath) {
                             $existingItem->update(['image_path' => $imagePath]);
                         }
                     } else {
                         // Create completely new item
+                        $initialQuantity = $validated['type'] === 'return' ? -$itemData['quantity'] : $itemData['quantity'];
                         \App\Models\Item::create([
                             'designation' => $itemData['item_name'],
                             'description' => $itemData['description'] ?? null,
-                            'quantity' => $itemData['quantity'],
+                            'quantity' => $initialQuantity,
                             'price' => $itemData['unit_price'],
                             'unit' => $itemData['unit'] ?? 'unit',
                             'low_stock_threshold' => 50,
@@ -135,6 +147,7 @@ class InvoiceController extends Controller
 
         $validated = $request->validate([
             'supplier' => 'required|string',
+            'type' => 'required|in:incoming,return',
             'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.item_id' => 'nullable|exists:items,id',
@@ -143,6 +156,7 @@ class InvoiceController extends Controller
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit' => 'nullable|string',
             'items.*.unit_price' => 'required|numeric|min:0',
+            'items.*.image_path' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
         ]);
 
@@ -151,6 +165,7 @@ class InvoiceController extends Controller
             // Update invoice basic info
             $invoice->update([
                 'supplier' => $validated['supplier'],
+                'type' => $validated['type'],
                 'date' => $validated['date'],
             ]);
 
@@ -165,16 +180,16 @@ class InvoiceController extends Controller
             // Create new invoice items
             foreach ($validated['items'] as $index => $itemData) {
                 // Handle per-item image upload
-                $imagePath = null;
+                $imagePath = $itemData['image_path'] ?? null;
                 $imageField = "item_image_{$index}";
                 if ($request->hasFile($imageField)) {
-                    $imagePath = $request->file($imageField)->store('invoice_items', 'public');
+                    $imagePath = $request->file($imageField)->store('items', 'public');
                 }
 
                 // Create invoice item
                 \App\Models\InvoiceItem::create([
                     'invoice_id' => $invoice->id,
-                    'item_name' => $itemData['item_name'],
+                    'item_name' => $itemData['item_name'] ?? (\App\Models\Item::find($itemData['item_id'] ?? null)?->designation ?? 'Unknown Item'),
                     'description' => $itemData['description'] ?? null,
                     'quantity' => $itemData['quantity'],
                     'unit' => $itemData['unit'] ?? 'unit',

@@ -15,8 +15,12 @@ class StatsController extends Controller
     {
         $months = $request->get('months', 12);
 
+        $dateField = DB::getDriverName() === 'sqlite' 
+            ? "strftime('%Y-%m', date)" 
+            : "DATE_FORMAT(date, '%Y-%m')";
+
         $data = BonDeSortie::select(
-            DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
+            DB::raw("$dateField as month"),
             DB::raw('SUM(quantity) as total_quantity')
         )
             ->where('date', '>=', now()->subMonths($months))
@@ -43,8 +47,12 @@ class StatsController extends Controller
     {
         $months = $request->get('months', 12);
 
+        $dateField = DB::getDriverName() === 'sqlite' 
+            ? "strftime('%Y-%m', date)" 
+            : "DATE_FORMAT(date, '%Y-%m')";
+
         $data = Invoice::select(
-            DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
+            DB::raw("$dateField as month"),
             DB::raw('SUM(price * quantity) as total_spent')
         )
             ->where('date', '>=', now()->subMonths($months))
@@ -86,7 +94,7 @@ class StatsController extends Controller
             'total_items' => Item::count(),
             'low_stock_items' => Item::where('quantity', '<', 1)->count(),
             'pending_requests' => \App\Models\Request::where('status', 'pending')->count(),
-            'pending_purchase_orders' => \App\Models\PurchaseOrder::where('status', 'pending_hr')->count(),
+            'pending_purchase_orders' => \App\Models\PurchaseOrder::where('status', 'pending_initial_approval')->count(),
             'total_spent_this_month' => Invoice::whereYear('date', now()->year)
                 ->whereMonth('date', now()->month)
                 ->sum(DB::raw('price * quantity')),

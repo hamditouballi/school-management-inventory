@@ -65,7 +65,7 @@ class RequestController extends Controller
     public function updateStatus(Request $request, RequestModel $requestModel)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,approved,rejected,fulfilled',
+            'status' => 'required|in:pending,hr_approved,rejected,fulfilled',
         ]);
 
         $requestModel->update(['status' => $validated['status']]);
@@ -75,8 +75,8 @@ class RequestController extends Controller
 
     public function fulfill(Request $request, RequestModel $requestModel)
     {
-        if ($requestModel->status !== 'approved') {
-            return response()->json(['error' => 'Request must be approved before fulfillment'], 400);
+        if ($requestModel->status !== 'hr_approved') {
+            return response()->json(['error' => 'Request must be HR approved before fulfillment'], 400);
         }
 
         DB::beginTransaction();

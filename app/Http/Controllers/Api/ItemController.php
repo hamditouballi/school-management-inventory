@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ItemController extends Controller
 {
+    use AuthorizesRequests;
+
     public function index()
     {
         return response()->json(Item::all());
@@ -15,6 +18,7 @@ class ItemController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Item::class);
         $validated = $request->validate([
             'designation' => 'required|string',
             'description' => 'nullable|string',
@@ -43,6 +47,7 @@ class ItemController extends Controller
 
     public function update(Request $request, Item $item)
     {
+        $this->authorize('update', $item);
         $validated = $request->validate([
             'designation' => 'sometimes|required|string',
             'description' => 'nullable|string',
@@ -70,6 +75,7 @@ class ItemController extends Controller
 
     public function destroy(Item $item)
     {
+        $this->authorize('delete', $item);
         // Reject all pending/approved requests for this item
         \App\Models\Request::whereHas('requestItems', function($query) use ($item) {
             $query->where('item_id', $item->id);
