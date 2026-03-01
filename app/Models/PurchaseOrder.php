@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PurchaseOrder extends Model
 {
+    use HasFactory;
     protected $fillable = ['date', 'id_responsible_stock', 'status', 'supplier', 'total_amount'];
 
     protected $casts = [
@@ -20,5 +22,10 @@ class PurchaseOrder extends Model
     public function purchaseOrderItems()
     {
         return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    public function proposals()
+    {
+        return $this->hasMany(PurchaseOrderSupplier::class, 'purchase_order_id');
     }
 }

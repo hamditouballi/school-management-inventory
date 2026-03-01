@@ -21,36 +21,47 @@ class PurchaseOrderPolicy
     public function create(User $user): bool
     {
         // Only stock_manager can create purchase orders
-        return in_array($user->role, ['stock_manager', 'hr_manager']);
+        return $user->role === 'stock_manager';
     }
 
     public function update(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // Only stock_manager can update, and only if pending
-        if ($user->role === 'stock_manager' && $purchaseOrder->status === 'pending_hr') {
-            return true;
-        }
-        return $user->role === 'hr_manager';
+        // Only stock_manager can update, and only if pending initial approval
+        return $user->role === 'stock_manager' && $purchaseOrder->status === 'pending_initial_approval';
     }
 
     public function updateStatus(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // HR can approve/reject, stock_manager can mark as ordered/received
+        // HR handles initial/final reviews. Stock manager marks final orders as ordered.
         if ($user->role === 'hr_manager') {
-            return true;
+            return in_array($purchaseOrder->status, ['pending_initial_approval', 'pending_final_approval']);
         }
-        if ($user->role === 'stock_manager' && in_array($purchaseOrder->status, ['approved_hr', 'ordered'])) {
-            return true;
+        if ($user->role === 'stock_manager') {
+            return in_array($purchaseOrder->status, ['final_approved', 'ordered']);
         }
         return false;
     }
 
     public function delete(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // Only stock_manager can delete pending POs, HR can delete any
         if ($user->role === 'hr_manager') {
             return true;
         }
-        return $user->role === 'stock_manager' && $purchaseOrder->status === 'pending_hr';
+        return $user->role === 'stock_manager' && $purchaseOrder->status === 'pending_initial_approval';
+    }
+
+    public function reviewInitial(User $user, PurchaseOrder $purchaseOrder): bool
+    {
+        return $user->role === 'hr_manager' && $purchaseOrder->status === 'pending_initial_approval';
+    }
+
+    public function addProposals(User $user, PurchaseOrder $purchaseOrder): bool
+    {
+        return $user->role === 'stock_manager' && $purchaseOrder->status === 'initial_approved';
+    }
+
+    public function reviewFinal(User $user, PurchaseOrder $purchaseOrder): bool
+    {
+        return $user->role === 'hr_manager' && $purchaseOrder->status === 'pending_final_approval';
     }
 }

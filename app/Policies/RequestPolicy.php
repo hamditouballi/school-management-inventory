@@ -31,14 +31,14 @@ class RequestPolicy
 
     public function updateStatus(User $user, RequestModel $request): bool
     {
-        // Only stock_manager and hr_manager can update request status
-        return in_array($user->role, ['stock_manager', 'hr_manager']);
+        // Only hr_manager can update request status (approve/reject)
+        return $user->role === 'hr_manager';
     }
 
     public function fulfill(User $user, RequestModel $request): bool
     {
         // Only stock_manager can fulfill requests
-        return in_array($user->role, ['stock_manager', 'hr_manager']);
+        return $user->role === 'stock_manager';
     }
 
     public function delete(User $user, RequestModel $request): bool

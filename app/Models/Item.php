@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Item extends Model
 {
+    use HasFactory;
     protected $fillable = ['designation', 'description', 'quantity', 'price', 'unit', 'category', 'low_stock_threshold', 'image_path'];
 
     protected $appends = ['is_low_stock'];

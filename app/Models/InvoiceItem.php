@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class InvoiceItem extends Model
 {
+    use HasFactory;
     protected $fillable = ['invoice_id', 'item_name', 'description', 'quantity', 'unit', 'unit_price', 'image_path'];
 
     protected $appends = ['subtotal'];
