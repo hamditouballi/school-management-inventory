@@ -7,59 +7,63 @@ A production-ready Laravel 11 inventory management system for schools with compr
 ## 📊 Implemented Features
 
 ### ✅ Core Functionality
+
 - **Role-Based Access Control**: 4 distinct roles with specific permissions
-  - `teacher`: View items, create requests, track own requests
-  - `stock_manager`: Manage inventory, approve/fulfill requests, create POs
-  - `finance_manager`: Manage invoices, view financial data
-  - `hr_manager`: Full system access, approve POs, manage users
+    - `director`: View items, create requests, track own requests
+    - `stock_manager`: Manage inventory, approve/fulfill requests, create POs
+    - `finance_manager`: Manage invoices, view financial data
+    - `hr_manager`: Full system access, approve POs, manage users
 
 - **Inventory Management**
-  - Full CRUD operations for 30 pre-seeded items
-  - Low-stock threshold tracking with alerts
-  - Description and unit tracking
-  - Computed `is_low_stock` attribute for real-time monitoring
+    - Full CRUD operations for 30 pre-seeded items
+    - Low-stock threshold tracking with alerts
+    - Description and unit tracking
+    - Computed `is_low_stock` attribute for real-time monitoring
 
 - **Request Workflow**
-  - Multi-item requests creation by any user
-  - Status tracking: pending → approved → fulfilled
-  - Automatic Bon de Sortie generation on fulfillment
-  - Stock deduction with insufficient stock detection
-  - Suggestion system for Purchase Orders when stock is low
+    - Multi-item requests creation by any user
+    - Status tracking: pending → approved → fulfilled
+    - Automatic Bon de Sortie generation on fulfillment
+    - Stock deduction with insufficient stock detection
+    - Suggestion system for Purchase Orders when stock is low
 
 - **Purchase Order System**
-  - HR approval workflow (pending_hr → approved_hr/rejected_hr → ordered)
-  - Multi-item POs with supplier tracking
-  - Automatic total amount calculation
-  - Status-based access control
+    - HR approval workflow (pending_hr → approved_hr/rejected_hr → ordered)
+    - Multi-item POs with supplier tracking
+    - Automatic total amount calculation
+    - Status-based access control
 
 - **Invoice Management**
-  - Link invoices to Purchase Order Items
-  - File path support for document uploads
-  - Finance manager responsibility tracking
+    - Link invoices to Purchase Order Items
+    - File path support for document uploads
+    - Finance manager responsibility tracking
 
 - **Dashboard & Analytics**
-  - Interactive Chart.js visualizations
-  - Monthly consumption trends (line chart)
-  - Department-wise consumption (bar chart)
-  - Monthly spending analysis (bar chart)
-  - Top 10 consumed items (horizontal bar chart)
-  - Low-stock alerts table
-  - Real-time statistics cards
+    - Interactive Chart.js visualizations
+    - Monthly consumption trends (line chart)
+    - Department-wise consumption (bar chart)
+    - Monthly spending analysis (bar chart)
+    - Top 10 consumed items (horizontal bar chart)
+    - Low-stock alerts table
+    - Real-time statistics cards
 
 ### ✅ Security & Authorization
+
 - **Laravel Sanctum Authentication**
-  - Token-based API authentication
-  - Secure login/logout/me endpoints
-  - Session management for web interface
+    - Token-based API authentication
+    - Secure login/logout/me endpoints
+    - Session management for web interface
 
 - **Comprehensive Authorization Policies**
-  - `ItemPolicy`: View (all), Create/Update/Delete (managers only)
-  - `RequestPolicy`: Create (all), View (own or managers), Update/Fulfill (managers)
-  - `PurchaseOrderPolicy`: Create (stock_manager), Approve (hr_manager), View (managers)
-  - `InvoicePolicy`: Create/Manage (finance_manager, hr_manager)
+    - `ItemPolicy`: View (all), Create/Update/Delete (managers only)
+    - `RequestPolicy`: Create (all), View (own or managers), Update/Fulfill (managers)
+    - `PurchaseOrderPolicy`: Create (stock_manager), Approve (hr_manager), View (managers)
+    - `InvoicePolicy`: Create/Manage (finance_manager, hr_manager)
 
 ### ✅ Database Architecture
+
 **15 Tables** with complete relationships:
+
 - `departments` (4 records: Nursery, Primary, Middle/High School, Administration)
 - `users` (5 demo users with different roles)
 - `items` (30 inventory items with descriptions and thresholds)
@@ -76,6 +80,7 @@ A production-ready Laravel 11 inventory management system for schools with compr
 ### ✅ API Endpoints (29 routes)
 
 #### Authentication
+
 ```
 POST   /api/login          - Login and get token
 POST   /api/logout         - Logout current user
@@ -83,6 +88,7 @@ GET    /api/me             - Get current user details
 ```
 
 #### Items
+
 ```
 GET    /api/items          - List all items
 POST   /api/items          - Create new item (managers only)
@@ -92,6 +98,7 @@ DELETE /api/items/{id}     - Delete item (managers only)
 ```
 
 #### Requests
+
 ```
 GET    /api/requests                  - List requests (role-filtered)
 POST   /api/requests                  - Create multi-item request
@@ -101,6 +108,7 @@ POST   /api/requests/{id}/fulfill     - Fulfill and generate Bon de Sortie
 ```
 
 #### Purchase Orders
+
 ```
 GET    /api/purchase-orders                 - List all POs
 POST   /api/purchase-orders                 - Create PO (stock_manager)
@@ -111,6 +119,7 @@ DELETE /api/purchase-orders/{id}            - Delete PO
 ```
 
 #### Invoices
+
 ```
 GET    /api/invoices       - List all invoices
 POST   /api/invoices       - Create invoice (finance_manager)
@@ -119,6 +128,7 @@ DELETE /api/invoices/{id}  - Delete invoice
 ```
 
 #### Statistics & Dashboard
+
 ```
 GET    /api/stats/dashboard                 - Overview statistics
 GET    /api/stats/consumption               - Monthly consumption data
@@ -129,6 +139,7 @@ GET    /api/stats/low-stock                 - Low-stock alerts
 ```
 
 ### ✅ Web Interface
+
 - **Responsive Design** with Tailwind CSS
 - **Login Page** with demo credentials display
 - **Dashboard** with 4 interactive charts and statistics
@@ -158,13 +169,13 @@ php artisan serve
 
 ## 👥 Demo Credentials
 
-| Username | Password | Role | Department |
-|----------|----------|------|------------|
-| `hr_manager` | `password` | HR Manager | Administration |
-| `stock_manager` | `password` | Stock Manager | Administration |
-| `finance_manager` | `password` | Finance Manager | Administration |
-| `teacher_nursery` | `password` | Teacher | Nursery |
-| `teacher_primary` | `password` | Teacher | Primary |
+| Username           | Password   | Role            | Department     |
+| ------------------ | ---------- | --------------- | -------------- |
+| `hr_manager`       | `password` | HR Manager      | Administration |
+| `stock_manager`    | `password` | Stock Manager   | Administration |
+| `finance_manager`  | `password` | Finance Manager | Administration |
+| `director_nursery` | `password` | director        | Nursery        |
+| `director_primary` | `password` | director        | Primary        |
 
 ## 📦 Demo Data Included
 
@@ -179,8 +190,9 @@ php artisan serve
 ## 🎯 Business Workflows
 
 ### 1. Request → Fulfillment Flow
+
 ```
-1. Teacher creates request with multiple items
+1. director creates request with multiple items
    POST /api/requests
    {
      "items": [
@@ -202,6 +214,7 @@ php artisan serve
 ```
 
 ### 2. Purchase Order Approval Flow
+
 ```
 1. Stock Manager creates PO (when stock low)
    POST /api/purchase-orders
@@ -221,6 +234,7 @@ php artisan serve
 ```
 
 ### 3. Invoice Management
+
 ```
 Finance Manager creates invoice (linked to PO)
 POST /api/invoices
@@ -236,16 +250,16 @@ POST /api/invoices
 
 ## 🔒 Authorization Matrix
 
-| Action | Teacher | Stock Manager | Finance Manager | HR Manager |
-|--------|---------|---------------|-----------------|------------|
-| View Items | ✅ | ✅ | ✅ | ✅ |
-| Create/Edit Items | ❌ | ✅ | ❌ | ✅ |
-| Create Request | ✅ | ✅ | ✅ | ✅ |
-| View All Requests | ❌ | ✅ | ✅ | ✅ |
-| Approve/Fulfill Request | ❌ | ✅ | ❌ | ✅ |
-| Create PO | ❌ | ✅ | ❌ | ✅ |
-| Approve PO | ❌ | ❌ | ❌ | ✅ |
-| View/Create Invoices | ❌ | ❌ | ✅ | ✅ |
+| Action                  | director | Stock Manager | Finance Manager | HR Manager |
+| ----------------------- | -------- | ------------- | --------------- | ---------- |
+| View Items              | ✅       | ✅            | ✅              | ✅         |
+| Create/Edit Items       | ❌       | ✅            | ❌              | ✅         |
+| Create Request          | ✅       | ✅            | ✅              | ✅         |
+| View All Requests       | ❌       | ✅            | ✅              | ✅         |
+| Approve/Fulfill Request | ❌       | ✅            | ❌              | ✅         |
+| Create PO               | ❌       | ✅            | ❌              | ✅         |
+| Approve PO              | ❌       | ❌            | ❌              | ✅         |
+| View/Create Invoices    | ❌       | ❌            | ✅              | ✅         |
 
 ## 🛠 Technical Stack
 
@@ -259,6 +273,7 @@ POST /api/invoices
 ## 📈 Low-Stock Alert System
 
 Items automatically flagged as low-stock when:
+
 ```php
 $item->quantity < $item->low_stock_threshold
 ```
@@ -270,12 +285,14 @@ $item->quantity < $item->low_stock_threshold
 ## 🧪 Testing the System
 
 ### Via Web Interface
+
 1. Navigate to `http://localhost:8000`
 2. Login with any demo credential
 3. View interactive dashboard with charts
 4. Navigate through role-appropriate pages
 
 ### Via API (cURL examples)
+
 ```bash
 # Login
 curl -X POST http://localhost:8000/api/login \
@@ -396,6 +413,7 @@ school-inventory-system/
 ## 📞 Support
 
 For issues or questions about the system, refer to:
+
 - `README.md` - Basic setup and API examples
 - `QUICKSTART.md` - Quick installation guide
 - This file - Comprehensive system documentation

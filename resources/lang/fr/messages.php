@@ -149,15 +149,15 @@ return [
 
     // Login / UI specific (added)
     'manager_login' => 'Connexion Responsable',
-    'administrative_login' => 'Connexion Enseignant',
+    'administrative_login' => 'Connexion administratif',
     'sign_in' => 'Se connecter',
     'demo' => 'Démo',
     'welcome_back' => 'Content de vous revoir !',
     'manager_portal' => 'Portail Responsable - RH, Stock & Finance',
     'manager_login_btn' => 'Connexion Responsable',
-    'hello_administrative' => 'Bonjour, Enseignant !',
-    'administrative_portal' => "Accédez à votre espace d'enseignement",
-    'administrative_login_btn' => 'Connexion Enseignant',
+    'hello_administrative' => 'Bonjour, administratif !',
+    'administrative_portal' => "Accédez à votre espace administratif",
+    'administrative_login_btn' => 'Connexion administratif',
     'stock_manager' => 'Responsable Stock',
     'finance_manager' => 'Responsable Finances',
 ];

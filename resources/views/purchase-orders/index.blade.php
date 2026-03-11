@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 @section('title', __('messages.purchase_orders'))

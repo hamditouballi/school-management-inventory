@@ -51,10 +51,10 @@ test('stock manager full workflow scenario', function () {
         $this->assertDatabaseHas('purchase_orders', ['id' => $poId, 'status' => 'pending_initial_approval']);
     });
 
-    step('Fulfill a pending teacher request', function () use (&$item) {
-        $teacher = User::factory()->create(['role' => 'teacher']);
+    step('Fulfill a pending director request', function () use (&$item) {
+        $director = User::factory()->create(['role' => 'director']);
         $userRequest = UserRequest::factory()->create([
-            'user_id' => $teacher->id,
+            'user_id' => $director->id,
             'status' => 'hr_approved'
         ]);
         RequestItem::factory()->create([

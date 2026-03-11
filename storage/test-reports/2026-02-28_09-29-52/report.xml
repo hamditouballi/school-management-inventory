@@ -340,9 +340,9 @@ at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
 at tests\Feature\Scenarios\StockManagerScenarioTest.php:82</failure>
         </testcase>
       </testsuite>
-      <testsuite name="Tests\Feature\Scenarios\TeacherScenarioTest" file="tests\Feature\Scenarios\TeacherScenarioTest.php" tests="1" assertions="5" errors="0" failures="1" skipped="0" time="0.120700">
-        <testcase name="teacher full workflow scenario" file="tests\Feature\Scenarios\TeacherScenarioTest.php::teacher full workflow scenario" class="Tests\Feature\Scenarios\TeacherScenarioTest" classname="Tests.Feature.Scenarios.TeacherScenarioTest" assertions="5" time="0.120700">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">teacher full workflow scenarioExpected response status code [200] but received 500.
+      <testsuite name="Tests\Feature\Scenarios\directorScenarioTest" file="tests\Feature\Scenarios\directorScenarioTest.php" tests="1" assertions="5" errors="0" failures="1" skipped="0" time="0.120700">
+        <testcase name="director full workflow scenario" file="tests\Feature\Scenarios\directorScenarioTest.php::director full workflow scenario" class="Tests\Feature\Scenarios\directorScenarioTest" classname="Tests.Feature.Scenarios.directorScenarioTest" assertions="5" time="0.120700">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">director full workflow scenarioExpected response status code [200] but received 500.
 Failed asserting that 500 is identical to 200.&#13;
 &#13;
 The following exception occurred during the last request:
@@ -387,18 +387,18 @@ Stack trace:
 #35 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
 #36 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(573): Illuminate\Foundation\Testing\TestCase-&gt;call('POST', '/api/logout', Array, Array, Array, Array, '[]')
 #37 C:\Users\hamditou\school-inventory-system\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(411): Illuminate\Foundation\Testing\TestCase-&gt;json('POST', '/api/logout', Array, Array, 0)
-#38 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\TeacherScenarioTest.php(42): Illuminate\Foundation\Testing\TestCase-&gt;postJson('/api/logout')
-#39 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;{closure}()
-#40 [internal function]: P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;Pest\Factories\{closure}()
+#38 C:\Users\hamditou\school-inventory-system\tests\Feature\Scenarios\directorScenarioTest.php(42): Illuminate\Foundation\Testing\TestCase-&gt;postJson('/api/logout')
+#39 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Scenarios\directorScenarioTest-&gt;{closure}()
+#40 [internal function]: P\Tests\Feature\Scenarios\directorScenarioTest-&gt;Pest\Factories\{closure}()
 #41 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
-#42 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;Pest\Concerns\{closure}()
+#42 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Scenarios\directorScenarioTest-&gt;Pest\Concerns\{closure}()
 #43 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
-#44 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;__callClosure(Object(Closure), Array)
-#45 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;__runTest(Object(Closure))
-#46 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\TeacherScenarioTest-&gt;__pest_evaluable_teacher_full_workflow_scenario()
+#44 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Scenarios\directorScenarioTest-&gt;__callClosure(Object(Closure), Array)
+#45 C:\Users\hamditou\school-inventory-system\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Scenarios\directorScenarioTest-&gt;__runTest(Object(Closure))
+#46 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(1667): P\Tests\Feature\Scenarios\directorScenarioTest-&gt;__pest_evaluable_director_full_workflow_scenario()
 #47 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(519): PHPUnit\Framework\TestCase-&gt;runTest()
 #48 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
-#49 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\TeacherScenarioTest))
+#49 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestCase.php(365): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Scenarios\directorScenarioTest))
 #50 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
 #51 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
 #52 C:\Users\hamditou\school-inventory-system\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
@@ -415,7 +415,7 @@ Call to a member function delete() on null&#13;
 &#13;
 at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
 at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
-at tests\Feature\Scenarios\TeacherScenarioTest.php:43</failure>
+at tests\Feature\Scenarios\directorScenarioTest.php:43</failure>
         </testcase>
       </testsuite>
     </testsuite>

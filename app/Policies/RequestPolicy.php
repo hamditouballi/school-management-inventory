@@ -15,8 +15,8 @@ class RequestPolicy
 
     public function view(User $user, RequestModel $request): bool
     {
-        // Teachers can only view their own requests
-        if ($user->role === 'teacher') {
+        // directors can only view their own requests
+        if ($user->role === 'director') {
             return $request->user_id === $user->id;
         }
         // Managers can view all
@@ -43,8 +43,8 @@ class RequestPolicy
 
     public function delete(User $user, RequestModel $request): bool
     {
-        // Teachers can delete their own pending requests
-        if ($user->role === 'teacher' && $request->status === 'pending') {
+        // directors can delete their own pending requests
+        if ($user->role === 'director' && $request->status === 'pending') {
             return $request->user_id === $user->id;
         }
         // HR can delete any

@@ -16,24 +16,24 @@ class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-         $teacherPE1 = User::where('username', 'teacher_pe1')->first();
-    $teacherPE2 = User::where('username', 'teacher_pe2')->first();
+         $directorPE1 = User::where('username', 'director_pe1')->first();
+    $directorPE2 = User::where('username', 'director_pe2')->first();
 
     $stockManager = User::where('username', 'stock_manager')->first();
     $financeManager = User::where('username', 'finance_manager')->first();
 
-    if (!$teacherPE1 || !$teacherPE2 || !$stockManager || !$financeManager) {
+    if (!$directorPE1 || !$directorPE2 || !$stockManager || !$financeManager) {
         throw new \Exception('Required demo users not found. Run UserSeeder first.');
     }
 
     // Create 6 sample requests
     $requests = [
-        ['user' => $teacherPE1, 'status' => 'fulfilled', 'created' => now()->subDays(20)],
-        ['user' => $teacherPE2, 'status' => 'fulfilled', 'created' => now()->subDays(18)],
-        ['user' => $teacherPE1, 'status' => 'fulfilled', 'created' => now()->subDays(15)],
-        ['user' => $teacherPE2, 'status' => 'approved', 'created' => now()->subDays(10)],
-        ['user' => $teacherPE1, 'status' => 'pending', 'created' => now()->subDays(3)],
-        ['user' => $teacherPE2, 'status' => 'pending', 'created' => now()->subDays(1)],
+        ['user' => $directorPE1, 'status' => 'fulfilled', 'created' => now()->subDays(20)],
+        ['user' => $directorPE2, 'status' => 'fulfilled', 'created' => now()->subDays(18)],
+        ['user' => $directorPE1, 'status' => 'fulfilled', 'created' => now()->subDays(15)],
+        ['user' => $directorPE2, 'status' => 'approved', 'created' => now()->subDays(10)],
+        ['user' => $directorPE1, 'status' => 'pending', 'created' => now()->subDays(3)],
+        ['user' => $directorPE2, 'status' => 'pending', 'created' => now()->subDays(1)],
     ];
 
         foreach ($requests as $reqData) {

@@ -285,8 +285,8 @@
                     },
                     {
                         "@attributes": {
-                            "name": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
-                            "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php",
+                            "name": "Tests\\Feature\\Scenarios\\directorScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\directorScenarioTest.php",
                             "tests": "1",
                             "assertions": "4",
                             "errors": "0",
@@ -296,14 +296,14 @@
                         },
                         "testcase": {
                             "@attributes": {
-                                "name": "teacher full workflow scenario",
-                                "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php::teacher full workflow scenario",
-                                "class": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
-                                "classname": "Tests.Feature.Scenarios.TeacherScenarioTest",
+                                "name": "director full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\directorScenarioTest.php::director full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\directorScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.directorScenarioTest",
                                 "assertions": "4",
                                 "time": "0.058582"
                             },
-                            "failure": "teacher full workflow scenarioExpected response status code [403] but received 200.\nFailed asserting that 200 is identical to 403.\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\TestResponseAssert.php:45\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\TestResponse.php:160\nat tests\\Feature\\Scenarios\\TeacherScenarioTest.php:38"
+                            "failure": "director full workflow scenarioExpected response status code [403] but received 200.\nFailed asserting that 200 is identical to 403.\r\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\TestResponseAssert.php:45\nat vendor\\laravel\\framework\\src\\Illuminate\\Testing\\TestResponse.php:160\nat tests\\Feature\\Scenarios\\directorScenarioTest.php:38"
                         }
                     }
                 ]

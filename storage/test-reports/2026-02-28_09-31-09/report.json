@@ -282,8 +282,8 @@
                     },
                     {
                         "@attributes": {
-                            "name": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
-                            "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php",
+                            "name": "Tests\\Feature\\Scenarios\\directorScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\directorScenarioTest.php",
                             "tests": "1",
                             "assertions": "5",
                             "errors": "0",
@@ -293,10 +293,10 @@
                         },
                         "testcase": {
                             "@attributes": {
-                                "name": "teacher full workflow scenario",
-                                "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php::teacher full workflow scenario",
-                                "class": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
-                                "classname": "Tests.Feature.Scenarios.TeacherScenarioTest",
+                                "name": "director full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\directorScenarioTest.php::director full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\directorScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.directorScenarioTest",
                                 "assertions": "5",
                                 "time": "0.029266"
                             }

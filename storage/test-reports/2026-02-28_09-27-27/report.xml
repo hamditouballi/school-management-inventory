@@ -117,13 +117,13 @@ at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
 at tests\Feature\Scenarios\StockManagerScenarioTest.php:48</failure>
         </testcase>
       </testsuite>
-      <testsuite name="Tests\Feature\Scenarios\TeacherScenarioTest" file="tests\Feature\Scenarios\TeacherScenarioTest.php" tests="1" assertions="4" errors="0" failures="1" skipped="0" time="0.058582">
-        <testcase name="teacher full workflow scenario" file="tests\Feature\Scenarios\TeacherScenarioTest.php::teacher full workflow scenario" class="Tests\Feature\Scenarios\TeacherScenarioTest" classname="Tests.Feature.Scenarios.TeacherScenarioTest" assertions="4" time="0.058582">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">teacher full workflow scenarioExpected response status code [403] but received 200.
+      <testsuite name="Tests\Feature\Scenarios\directorScenarioTest" file="tests\Feature\Scenarios\directorScenarioTest.php" tests="1" assertions="4" errors="0" failures="1" skipped="0" time="0.058582">
+        <testcase name="director full workflow scenario" file="tests\Feature\Scenarios\directorScenarioTest.php::director full workflow scenario" class="Tests\Feature\Scenarios\directorScenarioTest" classname="Tests.Feature.Scenarios.directorScenarioTest" assertions="4" time="0.058582">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">director full workflow scenarioExpected response status code [403] but received 200.
 Failed asserting that 200 is identical to 403.&#13;
 at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
 at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:160
-at tests\Feature\Scenarios\TeacherScenarioTest.php:38</failure>
+at tests\Feature\Scenarios\directorScenarioTest.php:38</failure>
         </testcase>
       </testsuite>
     </testsuite>

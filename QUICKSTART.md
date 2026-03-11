@@ -3,42 +3,47 @@
 ## 🚀 Installation & Setup
 
 1. **Install Dependencies**
-   ```bash
-   composer install
-   ```
+
+    ```bash
+    composer install
+    ```
 
 2. **Configure Environment**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
 3. **Run Migrations & Seed Database**
-   ```bash
-   php artisan migrate:fresh --seed
-   ```
+
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
 
 4. **Start Server**
-   ```bash
-   php artisan serve
-   ```
+
+    ```bash
+    php artisan serve
+    ```
 
 5. **Access the Application**
-   - Web UI: http://localhost:8000
-   - API Base: http://localhost:8000/api
+    - Web UI: http://localhost:8000
+    - API Base: http://localhost:8000/api
 
 ## 👥 Demo Login Credentials
 
-| Username | Password | Role |
-|----------|----------|------|
-| `hr_manager` | `password` | HR Manager (Full Access) |
-| `stock_manager` | `password` | Stock Manager |
-| `finance_manager` | `password` | Finance Manager |
-| `teacher_nursery` | `password` | Teacher |
+| Username           | Password   | Role                     |
+| ------------------ | ---------- | ------------------------ |
+| `hr_manager`       | `password` | HR Manager (Full Access) |
+| `stock_manager`    | `password` | Stock Manager            |
+| `finance_manager`  | `password` | Finance Manager          |
+| `director_nursery` | `password` | director                 |
 
 ## 📊 Features Available
 
 ### ✅ Completed
+
 - **API Backend**: Full RESTful API with Sanctum authentication
 - **Database**: All models, migrations, relationships
 - **Items Management**: CRUD operations with stock tracking
@@ -47,11 +52,11 @@
 - **Purchase Orders**: HR approval workflow with supplier tracking
 - **Invoices**: Finance management with PO linkage
 - **Dashboard**: Interactive charts with Chart.js
-  - Monthly consumption (line chart)
-  - Consumption by department (bar chart)
-  - Monthly spending (bar chart)
-  - Top 10 consumed items (horizontal bar)
-  - Low stock alerts table
+    - Monthly consumption (line chart)
+    - Consumption by department (bar chart)
+    - Monthly spending (bar chart)
+    - Top 10 consumed items (horizontal bar)
+    - Low stock alerts table
 - **Web UI**: Login, dashboard with role-based navigation
 - **Demo Data**: 15 inventory items, 4 departments, 5 users
 
@@ -81,6 +86,7 @@ curl http://localhost:8000/api/stats/dashboard \
 ```
 
 ### Test with Postman
+
 Import `postman_collection.json` for pre-configured requests.
 
 ## 📁 Project Structure
@@ -107,19 +113,22 @@ school-inventory-system/
 ## 🎯 Key Workflows
 
 ### 1. Request → Fulfillment Flow
-1. Teacher creates request: `POST /api/requests`
+
+1. director creates request: `POST /api/requests`
 2. Stock manager approves: `PUT /api/requests/{id}/status` → `{"status":"approved"}`
 3. Stock manager fulfills: `POST /api/requests/{id}/fulfill`
-   - Generates Bon de Sortie
-   - Decreases stock
-   - Marks request as fulfilled
+    - Generates Bon de Sortie
+    - Decreases stock
+    - Marks request as fulfilled
 
 ### 2. Purchase Order Approval
+
 1. Stock manager creates PO: `POST /api/purchase-orders`
 2. HR manager approves: `PUT /api/purchase-orders/{id}/status` → `{"status":"approved_hr"}`
 3. Stock manager marks ordered: `PUT /api/purchase-orders/{id}/status` → `{"status":"ordered"}`
 
 ### 3. Invoice Management
+
 1. Finance manager creates invoice: `POST /api/invoices`
 2. Links to purchase order item via `id_purchase_order_item`
 
@@ -133,6 +142,7 @@ school-inventory-system/
 ## 📈 Dashboard Charts
 
 The dashboard automatically fetches data from:
+
 - `/api/stats/dashboard` - Overview statistics
 - `/api/stats/consumption` - Monthly consumption trend
 - `/api/stats/consumption-by-department` - Department breakdown

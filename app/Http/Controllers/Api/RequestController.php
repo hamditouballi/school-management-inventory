@@ -17,7 +17,7 @@ class RequestController extends Controller
         $query = RequestModel::with(['user.department', 'requestItems.item']);
 
         // Filter by role
-        if ($request->user()->role === 'teacher') {
+        if ($request->user()->role === 'director') {
             $query->where('user_id', $request->user()->id);
         }
 

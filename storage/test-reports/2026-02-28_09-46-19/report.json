@@ -280,13 +280,13 @@
                                 "assertions": "8",
                                 "time": "0.049330"
                             },
-                            "system-out": "\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Add new inventory item\",\"status\":\"PASS\",\"duration_ms\":5.86,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Create purchase order\",\"status\":\"PASS\",\"duration_ms\":3.93,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Fulfill a pending teacher request\",\"status\":\"PASS\",\"duration_ms\":4.86,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":1.1,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n"
+                            "system-out": "\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Add new inventory item\",\"status\":\"PASS\",\"duration_ms\":5.86,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Create purchase order\",\"status\":\"PASS\",\"duration_ms\":3.93,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Fulfill a pending director request\",\"status\":\"PASS\",\"duration_ms\":4.86,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"StockManagerScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":1.1,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n"
                         }
                     },
                     {
                         "@attributes": {
-                            "name": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
-                            "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php",
+                            "name": "Tests\\Feature\\Scenarios\\directorScenarioTest",
+                            "file": "tests\\Feature\\Scenarios\\directorScenarioTest.php",
                             "tests": "1",
                             "assertions": "5",
                             "errors": "0",
@@ -296,14 +296,14 @@
                         },
                         "testcase": {
                             "@attributes": {
-                                "name": "teacher full workflow scenario",
-                                "file": "tests\\Feature\\Scenarios\\TeacherScenarioTest.php::teacher full workflow scenario",
-                                "class": "Tests\\Feature\\Scenarios\\TeacherScenarioTest",
-                                "classname": "Tests.Feature.Scenarios.TeacherScenarioTest",
+                                "name": "director full workflow scenario",
+                                "file": "tests\\Feature\\Scenarios\\directorScenarioTest.php::director full workflow scenario",
+                                "class": "Tests\\Feature\\Scenarios\\directorScenarioTest",
+                                "classname": "Tests.Feature.Scenarios.directorScenarioTest",
                                 "assertions": "5",
                                 "time": "0.036631"
                             },
-                            "system-out": "\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"Create item request\",\"status\":\"PASS\",\"duration_ms\":5.8,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"View request status\",\"status\":\"PASS\",\"duration_ms\":4.46,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"Attempt unauthorized action\",\"status\":\"PASS\",\"duration_ms\":2.52,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"TeacherScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":0.86,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n"
+                            "system-out": "\r\n##STEP_DATA##{\"file\":\"directorScenarioTest.php\",\"step\":\"Create item request\",\"status\":\"PASS\",\"duration_ms\":5.8,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"directorScenarioTest.php\",\"step\":\"View request status\",\"status\":\"PASS\",\"duration_ms\":4.46,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"directorScenarioTest.php\",\"step\":\"Attempt unauthorized action\",\"status\":\"PASS\",\"duration_ms\":2.52,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n\r\n##STEP_DATA##{\"file\":\"directorScenarioTest.php\",\"step\":\"Logout\",\"status\":\"PASS\",\"duration_ms\":0.86,\"timestamp\":\"09:46:25\",\"error\":null}##\r\n"
                         }
                     }
                 ]
@@ -385,7 +385,7 @@
         },
         {
             "file": "StockManagerScenarioTest.php",
-            "step": "Fulfill a pending teacher request",
+            "step": "Fulfill a pending director request",
             "status": "PASS",
             "duration_ms": 4.86,
             "timestamp": "09:46:25",
@@ -400,7 +400,7 @@
             "error": null
         },
         {
-            "file": "TeacherScenarioTest.php",
+            "file": "directorScenarioTest.php",
             "step": "Create item request",
             "status": "PASS",
             "duration_ms": 5.8,
@@ -408,7 +408,7 @@
             "error": null
         },
         {
-            "file": "TeacherScenarioTest.php",
+            "file": "directorScenarioTest.php",
             "step": "View request status",
             "status": "PASS",
             "duration_ms": 4.46,
@@ -416,7 +416,7 @@
             "error": null
         },
         {
-            "file": "TeacherScenarioTest.php",
+            "file": "directorScenarioTest.php",
             "step": "Attempt unauthorized action",
             "status": "PASS",
             "duration_ms": 2.52,
@@ -424,7 +424,7 @@
             "error": null
         },
         {
-            "file": "TeacherScenarioTest.php",
+            "file": "directorScenarioTest.php",
             "step": "Logout",
             "status": "PASS",
             "duration_ms": 0.86,

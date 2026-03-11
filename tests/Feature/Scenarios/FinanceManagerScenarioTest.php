@@ -18,7 +18,7 @@ test('finance manager full workflow scenario', function () {
         $item = Item::factory()->create(['designation' => 'Office Paper', 'quantity' => 10]);
         $requestData = [
             'items' => [
-                ['item_id' => $item->id, 'quantity_requested' => 5]
+                ['item_id' => $item->id, 'quantity_requested' => 5],
             ]
         ];
         

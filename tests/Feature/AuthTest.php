@@ -47,11 +47,11 @@ test('it allows an authenticated user to access protected routes', function () {
 });
 
 test('it ensures role-based isolation works correctly', function () {
-    // Create a teacher user
-    $teacher = User::factory()->create(['role' => 'teacher']);
+    // Create a director user
+    $director = User::factory()->create(['role' => 'director']);
 
-    // Attempt to access the dashboard (which is restricted for teachers)
-    $response = actingAs($teacher)->get('/dashboard');
+    // Attempt to access the dashboard (which is restricted for directors)
+    $response = actingAs($director)->get('/dashboard');
 
     // Should redirect to requests.page
     $response->assertRedirect('/requests');

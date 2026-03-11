@@ -72,40 +72,42 @@ class UserSeeder extends Seeder
             'department_id' => $ps2->id,
         ]);
 
-        // Teachers
         User::create([
-            'name' => 'Preschool Teacher',
-            'username' => 'teacher_pe1',
-            'email' => 'teacher_pe1@school.com',
+            'name' => 'Preschool Director',
+            'username' => 'director_pe1',
+            'email' => 'director_pe1@school.com',
             'password' => Hash::make('password'),
-            'role' => 'teacher',
+            'role' => 'director',
             'department_id' => $pe1->id,
         ]);
-
+        
+        
         User::create([
-            'name' => 'Primary Teacher',
-            'username' => 'teacher_pe2',
-            'email' => 'teacher_pe2@school.com',
+            'name' => 'Primary Director',
+            'username' => 'director_pe2',
+            'email' => 'director_pe2@school.com',
             'password' => Hash::make('password'),
-            'role' => 'teacher',
+            'role' => 'director',
             'department_id' => $pe2->id,
         ]);
-
+        
+        
         User::create([
-            'name' => 'Secondary Teacher',
-            'username' => 'teacher_pe3',
-            'email' => 'teacher_pe3@school.com',
+            'name' => 'Secondary Director',
+            'username' => 'director_pe3',
+            'email' => 'director_pe3@school.com',
             'password' => Hash::make('password'),
-            'role' => 'teacher',
+            'role' => 'director',
             'department_id' => $pe3->id,
         ]);
-
+        
+        
         User::create([
-            'name' => 'Logistics Teacher',
-            'username' => 'teacher_ps2',
-            'email' => 'teacher_ps2@school.com',
+            'name' => 'Logistics Manager',
+            'username' => 'logistics_manager',
+            'email' => 'logistics@school.com',
             'password' => Hash::make('password'),
-            'role' => 'teacher',
+            'role' => 'logistics_manager',
             'department_id' => $ps2->id,
         ]);
     }

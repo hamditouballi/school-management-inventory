@@ -5,10 +5,10 @@ use App\Models\Item;
 use function Pest\Laravel\{actingAs, postJson, getJson, deleteJson};
 
 beforeEach(function () {
-    $this->teacher = User::factory()->create(['role' => 'teacher']);
+    $this->director = User::factory()->create(['role' => 'director']);
 });
 
-test('teacher full workflow scenario', function () {
+test('director full workflow scenario', function () {
     step('Create item request', function () use (&$requestId) {
         $item = Item::factory()->create(['designation' => 'Pencil', 'quantity' => 100]);
         $requestData = [
@@ -17,7 +17,7 @@ test('teacher full workflow scenario', function () {
             ]
         ];
 
-        $response = actingAs($this->teacher, 'sanctum')
+        $response = actingAs($this->director, 'sanctum')
             ->postJson('/api/requests', $requestData)
             ->assertStatus(201);
 
@@ -25,7 +25,7 @@ test('teacher full workflow scenario', function () {
     });
 
     step('View request status', function () use (&$requestId) {
-        actingAs($this->teacher, 'sanctum')
+        actingAs($this->director, 'sanctum')
             ->getJson("/api/requests/{$requestId}")
             ->assertStatus(200)
             ->assertJsonPath('status', 'pending');
@@ -33,13 +33,13 @@ test('teacher full workflow scenario', function () {
 
     step('Attempt unauthorized action', function () {
         $item = Item::factory()->create();
-        actingAs($this->teacher, 'sanctum')
+        actingAs($this->director, 'sanctum')
             ->deleteJson("/api/items/{$item->id}")
             ->assertStatus(403);
     });
 
     step('Logout', function () {
-        actingAs($this->teacher, 'sanctum')
+        actingAs($this->director, 'sanctum')
             ->postJson('/api/logout')
             ->assertStatus(200);
     });

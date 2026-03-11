@@ -5,7 +5,7 @@
 [![Pest](https://img.shields.io/badge/Testing-Pest-green.svg)](https://pestphp.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A professional, production-ready inventory management system designed specifically for school environments. This system streamlines the request, approval, and fulfillment process for school supplies, providing transparency and efficiency for teachers and administration alike.
+A professional, production-ready inventory management system designed specifically for school environments. This system streamlines the request, approval, and fulfillment process for school supplies, providing transparency and efficiency for directors and administration alike.
 
 ---
 
@@ -26,7 +26,7 @@ A professional, production-ready inventory management system designed specifical
 
 ## 🎯 Project Overview
 
-The **School Inventory System** is a centralized platform for managing school resources. It replaces manual, paper-based tracking with a digitized workflow that ensures every item is accounted for, from the moment a teacher requests it to the final invoice payment.
+The **School Inventory System** is a centralized platform for managing school resources. It replaces manual, paper-based tracking with a digitized workflow that ensures every item is accounted for, from the moment a director requests it to the final invoice payment.
 
 ### Target Users
 
@@ -42,7 +42,7 @@ The **School Inventory System** is a centralized platform for managing school re
 
 ### Business Value
 
-By implementing this system, schools can significantly reduce waste, optimize their budget allocation based on real consumption data, and ensure that teachers always have the necessary tools for education without administrative delays.
+By implementing this system, schools can significantly reduce waste, optimize their budget allocation based on real consumption data, and ensure that directors always have the necessary tools for education without administrative delays.
 
 ---
 
@@ -64,7 +64,7 @@ The system implements a strict Role-Based Access Control (RBAC) model:
 
 | Role                | Responsibility             | Allowed Actions                                   | Restricted Actions                   |
 | :------------------ | :------------------------- | :------------------------------------------------ | :----------------------------------- |
-| **Teacher**         | Classroom Resource User    | View items, Create requests, Track own requests   | Managing inventory, Modifying POs    |
+| **director**        | Classroom Resource User    | View items, Create requests, Track own requests   | Managing inventory, Modifying POs    |
 | **Stock Manager**   | Warehouse & Inventory      | CRUD items, Approve/Fulfill requests, Create POs  | Financial reports, Final PO approval |
 | **HR Manager**      | Administration & Oversight | Approve POs, Manage users, Full system visibility | Manual invoice entry                 |
 | **Finance Manager** | Financial Control          | Manage invoices, Generate financial reports       | Modifying inventory levels           |
@@ -73,7 +73,7 @@ The system implements a strict Role-Based Access Control (RBAC) model:
 
 ## 🔄 Business Workflows (Scenarios)
 
-### 👨‍🏫 Teacher Scenario
+### 👨‍🏫 director Scenario
 
 1. **Login**: Securely access the portal.
 2. **Browse**: Search the catalog for required items (e.g., Pencils, Paper).
@@ -84,7 +84,7 @@ The system implements a strict Role-Based Access Control (RBAC) model:
 
 1. **Inventory**: Add new items or update current stock levels.
 2. **Procurement**: Identify low stock and create a **Purchase Order (PO)**.
-3. **Fulfillment**: Review teacher requests, approve them, and generate a **Bon de Sortie** (Release Slip) upon physical delivery.
+3. **Fulfillment**: Review director requests, approve them, and generate a **Bon de Sortie** (Release Slip) upon physical delivery.
 4. **Restock**: Mark POs as `ordered` once supplier confirmation is received.
 
 ### 👔 HR Manager Scenario
@@ -129,7 +129,7 @@ Quality is ensured through a comprehensive Pest-based testing suite:
 
 - **Unit Tests**: Validating isolated logic in models and helpers.
 - **Feature Tests**: Ensuring API endpoints respond correctly and respect authorization rules.
-- **E2E Scenario Tests**: Role-based simulations (e.g., `TeacherScenarioTest.php`) that walk through entire business cycles.
+- **E2E Scenario Tests**: Role-based simulations (e.g., `directorScenarioTest.php`) that walk through entire business cycles.
 
 ### Running Tests
 
@@ -211,7 +211,7 @@ The project includes support for Docker:
 - **Role-Based Authorization**: Controlled via Laravel **Policies** (`ItemPolicy`, `RequestPolicy`, etc.).
 - **Sanctum Authentication**: Every API request requires a valid Bearer token.
 - **Input Validation**: Strictly enforced via Request classes to prevent injection and malformed data.
-- **Forbidden Actions**: Users are programmatically blocked from performing actions outside their role (e.g., Teachers cannot delete items).
+- **Forbidden Actions**: Users are programmatically blocked from performing actions outside their role (e.g., directors cannot delete items).
 
 ---
 
