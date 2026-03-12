@@ -26,7 +26,7 @@
             <div>
                 <label class="block text-sm font-medium mb-1">{{ __('messages.status') }}</label>
                 <select id="statusFilter" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
-                    <option value="">All Statuses</option>
+                    <option value="">{{ __('messages.all_statuses') }}</option>
                     <option value="pending">{{ __('messages.pending') }}</option>
                     <option value="hr_approved">{{ __('messages.hr_approved') }}</option>
                     <option value="rejected">{{ __('messages.rejected') }}</option>
@@ -56,6 +56,9 @@
                             {{ __('messages.items') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.total_price') }}
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.status') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.date') }}</th>
@@ -67,7 +70,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200" id="requestsBody">
                     <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">Loading requests...</td>
+                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">{{ __('messages.loading_requests') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -86,7 +89,7 @@
     <div id="detailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Request Details</h3>
+                <h3 class="text-xl font-bold">{{ __('messages.request_details') }}</h3>
                 <button onclick="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -95,7 +98,7 @@
                 </button>
             </div>
             <div id="detailsContent" class="space-y-4">
-                <p class="text-gray-500">Loading...</p>
+<p class="text-gray-500">{{ __('messages.loading') }}</p>
             </div>
         </div>
     </div>
@@ -104,19 +107,19 @@
     @if (auth()->user()->role === 'stock_manager')
         <div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <h3 class="text-xl font-bold mb-4">Create New Request</h3>
+                <h3 class="text-xl font-bold mb-4">{{ __('messages.create_new_request') }}</h3>
                 <form id="createRequestForm" onsubmit="createRequest(event)">
                     <div id="itemsList" class="space-y-4 mb-4">
                         <div class="border p-4 rounded">
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium mb-1">Item</label>
+                                    <label class="block text-sm font-medium mb-1">{{ __('messages.item') }}</label>
                                     <select name="items[0][item_id]" required class="w-full px-3 py-2 border rounded">
-                                        <option value="">Select Item...</option>
+                                        <option value="">{{ __('messages.select_item') }}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium mb-1">Quantity</label>
+                                    <label class="block text-sm font-medium mb-1">{{ __('messages.quantity') }}</label>
                                     <input type="number" name="items[0][quantity_requested]" required min="1"
                                         class="w-full px-3 py-2 border rounded">
                                 </div>
@@ -140,7 +143,7 @@
             class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
             <div class="bg-white rounded-lg p-6 w-full max-w-6xl max-h-[90vh] my-8 overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-xl font-bold">Select Items for Request</h3>
+                    <h3 class="text-xl font-bold">{{ __('messages.select_items_for_request') }}</h3>
                     <button onclick="closeCreateModal()" class="text-gray-500 hover:text-gray-700">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -163,9 +166,9 @@
 
                 <!-- Cart Summary -->
                 <div class="border-t pt-4">
-                    <h4 class="font-semibold mb-3">Selected Items (<span id="cartCount">0</span>)</h4>
+                    <h4 class="font-semibold mb-3">{{ __('messages.selected_items') }} (<span id="cartCount">0</span>)</h4>
                     <div id="cartItems" class="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                        <p class="text-gray-500 text-sm">No items selected</p>
+<p class="text-gray-500 text-sm">{{ __('messages.no_items_selected') }}</p>
                     </div>
                     <div class="flex justify-end gap-2">
                         <button type="button" onclick="closeCreateModal()"
@@ -212,7 +215,7 @@
                     })
                     .catch(() => {
                         document.getElementById('requestsBody').innerHTML =
-                            '<tr><td colspan="7" class="px-6 py-4 text-center text-red-500">Error loading requests</td></tr>';
+                            '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">{{ __('messages.error_loading_requests') }}</td></tr>';
                     });
             }
 
@@ -262,7 +265,7 @@
 
                 if (pageRequests.length === 0) {
                     tbody.innerHTML =
-                        '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500">No requests found</td></tr>';
+                        '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">{{ __('messages.no_requests_found') }}</td></tr>';
                 } else {
                     tbody.innerHTML = pageRequests.map(req => {
                         const statusColors = {
@@ -277,6 +280,13 @@
                         const userName = req.user?.name || 'N/A';
                         const deptName = req.user?.department?.name || 'N/A';
                         const dateCreated = req.dateCreated || req.date_created || req.created_at;
+                        
+                        // Calculate total price
+                        const totalPrice = requestItems.reduce((sum, item) => {
+                            const price = item.item?.price || 0;
+                            const qty = item.quantity_requested || item.quantityRequested || 0;
+                            return sum + (price * qty);
+                        }, 0);
 
                         return `
             <tr class="hover:bg-gray-50">
@@ -288,6 +298,7 @@
                         ${requestItems.length} {{ __('messages.items') }}
                     </button>
                 </td>
+                <td class="px-6 py-4">{{ __('messages.currency') }} ${totalPrice.toFixed(2)}</td>
                 <td class="px-6 py-4">
                     <span class="px-2 py-1 text-xs rounded ${statusColors[req.status] || 'bg-gray-100 text-gray-800'}">${
                         req.status == "pending" 
@@ -334,7 +345,7 @@
 
                 if (currentPage > 1) {
                     html +=
-                        `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 border rounded hover:bg-gray-100">Previous</button>`;
+                        `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 border rounded hover:bg-gray-100">{{ __('messages.previous') }}</button>`;
                 }
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -348,7 +359,7 @@
 
                 if (currentPage < totalPages) {
                     html +=
-                        `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 border rounded hover:bg-gray-100">Next</button>`;
+                        `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 border rounded hover:bg-gray-100">{{ __('messages.next') }}</button>`;
                 }
 
                 pagination.innerHTML = html;
@@ -372,7 +383,7 @@
 
             function updateItemSelects() {
                 document.querySelectorAll('select[name*="item_id"]').forEach(select => {
-                    select.innerHTML = '<option value="">Select Item...</option>' +
+                    select.innerHTML = '<option value="">{{ __('messages.select_item') }}</option>' +
                         allItems.map(item => {
                             const imgIcon = item.image_path ? '🖼️ ' : '';
                             return `<option value="${item.id}" data-image="${item.image_path || ''}">${imgIcon}${item.designation} - {{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</option>`;
@@ -397,11 +408,11 @@
             <div class="border p-4 rounded">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Item</label>
+                        <label class="block text-sm font-medium mb-1">{{ __('messages.item') }}</label>
                         <select name="items[0][item_id]" required class="w-full px-3 py-2 border rounded"></select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Quantity</label>
+                        <label class="block text-sm font-medium mb-1">{{ __('messages.quantity') }}</label>
                         <input type="number" name="items[0][quantity_requested]" required min="1" class="w-full px-3 py-2 border rounded">
                     </div>
                 </div>
@@ -422,11 +433,11 @@
                 newItem.innerHTML = `
         <div class="grid grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm font-medium mb-1">Item</label>
+                <label class="block text-sm font-medium mb-1">{{ __('messages.item') }}</label>
                 <select name="items[${itemCounter}][item_id]" required class="w-full px-3 py-2 border rounded"></select>
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1">Quantity</label>
+                <label class="block text-sm font-medium mb-1">{{ __('messages.quantity') }}</label>
                 <input type="number" name="items[${itemCounter}][quantity_requested]" required min="1" class="w-full px-3 py-2 border rounded">
             </div>
         </div>
@@ -463,9 +474,9 @@
                     .then(() => {
                         closeCreateModal();
                         loadRequests();
-                        Notification.success('Request created successfully!');
+                        Notification.success('{{ __('messages.request_created_success') }}');
                     })
-                    .catch(err => Notification.error('Error creating request'));
+                    .catch(err => Notification.error('{{ __('messages.error_message') }}'));
             }
 
             function approveRequest(id) {
@@ -473,7 +484,7 @@
             }
 
             function rejectRequest(id) {
-                if (confirm('Reject this request?')) {
+                if (confirm('{{ __('messages.confirm_delete', ['item' => __('messages.requests')]) }}')) {
                     updateStatus(id, 'rejected');
                 }
             }
@@ -495,7 +506,7 @@
             }
 
             function fulfillRequest(id) {
-                if (confirm('Fulfill this request? This will decrease stock and generate Bon de Sortie.')) {
+                if (confirm('{{ __('messages.confirm_fulfill') }}')) {
                     fetch(`/api/requests/${id}/fulfill`, {
                             method: 'POST',
                             headers
@@ -506,7 +517,7 @@
                                 alert(data.error + '\n\n' + JSON.stringify(data.insufficient_items, null, 2));
                             } else {
                                 closeDetailsModal();
-                                Notification.success('Request fulfilled successfully!');
+                                Notification.success('{{ __('messages.request_fulfilled') }}');
                                 loadRequests();
                             }
                         })
@@ -516,7 +527,7 @@
 
             function viewRequestDetails(id) {
                 document.getElementById('detailsModal').classList.remove('hidden');
-                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">Loading...</p>';
+                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}</p>';
 
                 const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
                 const isHrManager = {{ auth()->user()->role === 'hr_manager' ? 'true' : 'false' }};
@@ -538,7 +549,7 @@
                 <div class="border-b pb-4 mb-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500">Request ID</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.request_id') }}</p>
                             <p class="font-semibold">#${req.id}</p>
                         </div>
                         <div>
@@ -554,21 +565,21 @@
                             <p class="font-semibold">${req.user?.department?.name || 'N/A'}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Date Created</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.date_created') }}</p>
                             <p class="font-semibold">${new Date(req.dateCreated || req.created_at).toLocaleDateString()}</p>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-3">Requested Items</h4>
-                    ${requestItems.length === 0 ? '<p class="text-gray-500">No items</p>' : `
+                    <h4 class="font-semibold mb-3">{{ __('messages.requested_items') }}</h4>
+                    ${requestItems.length === 0 ? '<p class="text-gray-500">{{ __('messages.no_items') }}</p>' : `
                                                                                                                                                                                 <table class="min-w-full">
                                                                                                                                                                                     <thead class="bg-gray-50">
                                                                                                                                                                                         <tr>
-                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
-                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Price</th>
-                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.image') }}</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.item') }}</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.price') }}</th>
+                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.quantity') }}</th>
                                                                                                                                                                                         </tr>
                                                                                                                                                                                     </thead>
                                                                                                                                                                                     <tbody class="divide-y">
@@ -579,10 +590,10 @@
                                         <td class="px-4 py-2">
                                             ${item.image_path ? 
                                                 `<img src="/storage/${item.image_path}" class="w-12 h-12 object-cover rounded">` : 
-                                                '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Image</div>'
+                                                '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                                             }
                                         </td>
-                                        <td class="px-4 py-2">${item.designation || 'Unknown Item'}</td>
+                                        <td class="px-4 py-2">${item.designation || '{{ __('messages.unknown_item') }}'}</td>
                                         <td class="px-4 py-2">{{ __('messages.currency') }} ${item.price ? parseFloat(item.price).toFixed(2) : 'N/A'}</td>
                                         <td class="px-4 py-2">${ri.quantity_requested}</td>
                                     </tr>
@@ -606,7 +617,7 @@
             })
             .catch(() => {
                 document.getElementById('detailsContent').innerHTML =
-                    '<p class="text-red-500">Error loading details</p>';
+                    '<p class="text-red-500">{{ __('messages.error_loading_details') }}</p>';
             });
             }
 
@@ -620,7 +631,7 @@
                 const grid = document.getElementById('itemsGrid');
 
                 if (filteredItems.length === 0) {
-                    grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No items available</p>';
+                    grid.innerHTML = '<p class="col-span-full text-center text-gray-500">{{ __('messages.no_items_available') }}</p>';
                     return;
                 }
 
@@ -631,18 +642,18 @@
                 <div class="aspect-square mb-2 overflow-hidden rounded">
                     ${item.image_path ? 
                         `<img src="/storage/${item.image_path}" class="w-full h-full object-cover">` : 
-                        '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>'
+                        '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">{{ __('messages.no_image') }}</div>'
                     }
                 </div>
                 <h4 class="font-semibold text-sm mb-1 truncate" title="${item.designation}">${item.designation}</h4>
-                <p class="text-xs text-gray-500 mb-2">Available: ${parseFloat(item.quantity).toFixed(2)}</p>
+                <p class="text-xs text-gray-500 mb-2">{{ __('messages.available') }}: ${parseFloat(item.quantity).toFixed(2)}</p>
                 <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
                                                                                                                                                                             <div class="flex items-center gap-2">
                                                                                                                                                                                 <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
                                                                                                                                                                                 <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
                                                                                                                                                                                 <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
+                                                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">{{ __('messages.remove') }}</button>
                                                                                                                                                                             </div>
                                                                                                                                                                         ` : `
                                                                                                                                                                             <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
@@ -662,7 +673,7 @@
 
                 const grid = document.getElementById('itemsGrid');
                 if (filteredItems.length === 0) {
-                    grid.innerHTML = '<p class="col-span-full text-center text-gray-500">No items found</p>';
+                    grid.innerHTML = '<p class="col-span-full text-center text-gray-500">{{ __('messages.no_items_found') }}</p>';
                     return;
                 }
 
@@ -673,18 +684,18 @@
                 <div class="aspect-square mb-2 overflow-hidden rounded">
                     ${item.image_path ? 
                         `<img src="/storage/${item.image_path}" loading="lazy" class="w-full h-full object-cover">` : 
-                        '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>'
+                        '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">{{ __('messages.no_image') }}</div>'
                     }
                 </div>
                 <h4 class="font-semibold text-sm mb-1 truncate" title="${item.designation}">${item.designation}</h4>
-                <p class="text-xs text-gray-500 mb-2">Available: ${parseFloat(item.quantity).toFixed(2)}</p>
+                <p class="text-xs text-gray-500 mb-2">{{ __('messages.available') }}: ${parseFloat(item.quantity).toFixed(2)}</p>
                 <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
                                                                                                                                                                             <div class="flex items-center gap-2">
                                                                                                                                                                                 <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
                                                                                                                                                                                 <input type="number" id="qty_${item.id}" value="${inCart.quantity}" min="1" max="${item.quantity}" class="w-16 px-2 py-1 border rounded text-center" onchange="updateQuantity(${item.id}, this.value)">
                                                                                                                                                                                 <button onclick="increaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
-                                                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">Remove</button>
+                                                                                                                                                                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">{{ __('messages.remove') }}</button>
                                                                                                                                                                             </div>
                                                                                                                                                                         ` : `
                                                                                                                                                                             <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
@@ -748,7 +759,7 @@
 
                 const cartContainer = document.getElementById('cartItems');
                 if (cartCount === 0) {
-                    cartContainer.innerHTML = '<p class="text-gray-500 text-sm">No items selected</p>';
+                    cartContainer.innerHTML = '<p class="text-gray-500 text-sm">{{ __('messages.no_items_selected') }}</p>';
                     return;
                 }
 
@@ -760,11 +771,11 @@
             <div class="flex items-center gap-2">
                 ${item.image_path ? 
                     `<img src="/storage/${item.image_path}" class="w-10 h-10 object-cover rounded">` : 
-                    '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Img</div>'
+                    '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                 }
                 <div>
                     <p class="text-sm font-semibold">${item.designation}</p>
-                    <p class="text-xs text-gray-500">Qty: ${quantity} × {{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
+                    <p class="text-xs text-gray-500">{{ __('messages.qty') }}: ${quantity} × {{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 </div>
             </div>
             <button onclick="removeFromCart(${item.id})" class="text-red-600 hover:text-red-800 text-sm">×</button>
@@ -782,7 +793,7 @@
                 }));
 
                 if (items.length === 0) {
-                    alert('Please select at least one item');
+                    alert('{{ __('messages.select_at_least_one_item') }}');
                     return;
                 }
 
@@ -801,7 +812,7 @@
                     })
                     .catch(err => {
                         console.error(err);
-                        alert('Error creating request');
+                        alert('{{ __('messages.error_message') }}');
                     });
             }
         </script>

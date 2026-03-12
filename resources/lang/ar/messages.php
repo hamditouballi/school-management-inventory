@@ -9,7 +9,7 @@ return [
     'invoices' => 'الفواتير',
     'logout' => 'تسجيل الخروج',
     'login' => 'تسجيل الدخول',
-    
+
     // Common
     'welcome' => 'مرحبا',
     'search' => 'بحث',
@@ -29,6 +29,10 @@ return [
     'quantity' => 'الكمية',
     'description' => 'الوصف',
     'image' => 'الصورة',
+    'no_items' => 'لا توجد مواد',
+    'price' => 'السعر',
+    'available' => 'متوفر',
+    'qty' => 'الكمية',
     'submit' => 'إرسال',
     'update' => 'تحديث',
     'create' => 'إنشاء',
@@ -41,7 +45,7 @@ return [
     // Currency
     'currency' => 'د.م.',
     'currency_full' => 'درهم مغربي',
-    
+
     // Dashboard
     'total_items' => 'إجمالي المواد',
     'low_stock_items' => 'مواد قليلة المخزون',
@@ -52,7 +56,7 @@ return [
     'top_consumed_items' => 'أكثر 10 مواد استهلاكا',
     'low_stock_alerts' => 'تنبيهات نقص المخزون',
     'reports' => 'التقارير',
-    
+
     // Items
     'items_management' => 'إدارة المواد',
     'manage_inventory' => 'إدارة المواد ومستويات المخزون',
@@ -69,7 +73,7 @@ return [
     'item_deleted_success' => 'تم حذف المادة بنجاح!',
     'error_saving_item' => 'خطأ في حفظ المادة',
     'error_deleting_item' => 'خطأ في حذف المادة',
-    
+
     // Requests
     'create_request' => '+ إنشاء طلب',
     'request_created_success' => 'تم إنشاء الطلب بنجاح!',
@@ -83,7 +87,8 @@ return [
     'rejected' => 'مرفوض',
     'fulfilled' => 'منفذ',
     'hr_approved' => 'موافق عليه',
-    
+    'total_price' => 'السعر الإجمالي',
+
     // Purchase Orders
     'create_purchase_order' => '+ إنشاء أمر شراء',
     'supplier' => 'المورد',
@@ -95,8 +100,8 @@ return [
     'approved_hr' => 'موافق عليه  ',
     'rejected_hr' => 'مرفوض  ',
     'ordered' => 'مُطلَب',
-     'amount' => 'المبلغ الإجمالي',
-     'approve_initial' => 'موافقة أولية',
+    'amount' => 'المبلغ الإجمالي',
+    'approve_initial' => 'موافقة أولية',
     'reject' => 'رفض',
     'select_final' => 'اختيار نهائي',
     'edit' => 'تعديل',
@@ -124,7 +129,7 @@ return [
     'type' => 'النوع',
     'incoming' => 'استلام',
     'return' => 'إرجاع',
-    
+
     // Reports
     'consumed_materials_report' => 'جرد المواد المستهلكة',
     'department_consumption_report' => 'تقرير الاستهلاك حسب القسم',
@@ -136,8 +141,7 @@ return [
     'items_selected' => 'مادة مختارة',
     'date_from' => 'تاريخ الطلب',
     'view_and_manage_item_requests' => 'عرض وإدارة طلبات المواد',
-    
-    
+
     // Notifications
     'success' => 'نجاح',
     'error' => 'خطأ',
@@ -146,7 +150,7 @@ return [
     'select_dates' => 'الرجاء تحديد تاريخي البداية والنهاية',
     'invalid_date_range' => 'يجب أن يكون تاريخ البداية قبل تاريخ النهاية',
     'error_downloading_report' => 'خطأ في تحميل التقرير. يرجى المحاولة مرة أخرى.',
-    
+
     // Categories
     'office_supplies' => 'لوازم المكتب',
     'hygiene_products' => 'منتجات النظافة',
@@ -166,4 +170,165 @@ return [
     // Roles
     'stock_manager' => 'مسؤول المخزون',
     'finance_manager' => 'مسؤول المالية',
+
+    // UI Strings
+    'loading' => 'جاري التحميل...',
+    'error_loading' => 'خطأ في التحميل',
+    'no_data_found' => 'لا توجد بيانات',
+    'items_found' => 'مواد موجودة',
+    'previous' => 'السابق',
+    'next' => 'التالي',
+    'no_image' => 'لا توجد صورة',
+    'cancel' => 'إلغاء',
+    'create' => 'إنشاء',
+    'edit' => 'تعديل',
+    'update' => 'تحديث',
+    'delete' => 'حذف',
+    'save' => 'حفظ',
+    'close' => 'إغلاق',
+    'remove' => 'إزالة',
+    'add_item' => '+ إضافة مادة',
+    'item' => 'مادة',
+    'items' => 'المواد',
+    'all_statuses' => 'جميع الحالات',
+
+    // Report descriptions
+    'consumed_materials_desc' => 'تصدير تقرير المواد المستهلكة لفترة زمنية',
+    'department_consumption_desc' => 'تصدير تقرير الاستهلاك حسب القسم مع اختيار المواد',
+
+    // Item selector
+    'select_all' => 'تحديد الكل',
+    'deselect_all' => 'إلغاء تحديد الكل',
+
+    // Status messages
+    'success' => 'نجاح',
+    'error' => 'خطأ',
+    'success_created' => 'تم إنشاء :item بنجاح!',
+    'success_updated' => 'تم تحديث :item بنجاح!',
+    'success_deleted' => 'تم حذف :item بنجاح!',
+    'success_message' => 'تمت العملية بنجاح!',
+    'error_message' => 'حدث خطأ. يرجى المحاولة مرة أخرى.',
+    'confirm_delete' => 'هل أنت متأكد من حذف :item هذا؟',
+
+    // Purchase Orders specific
+    'purchase_order_details' => 'تفاصيل أمر الشراء',
+    'pending_selection' => 'في انتظار الاختيار',
+    'unknown_item' => 'مادة غير معروفة',
+    'select_supplier_proposal' => 'يرجى اختيار عرض المورد أولاً.',
+    'confirm_select_supplier' => 'اختيار هذا المورد كالاختيار النهائي؟',
+    'supplier_selected' => 'تم اختيار المورد بنجاح!',
+    'confirm_reject_po' => 'رفض أمر الشراء هذا؟',
+    'proposals_added' => 'تمت إضافة العروض بنجاح! في انتظار اختيار الموارد البشرية.',
+
+    // Requests specific
+    'confirm_fulfill' => 'تنفيذ هذا الطلب؟ سيؤدي ذلك إلى نقص المخزون وإنشاء أمر الخروج.',
+    'request_fulfilled' => 'تم تنفيذ الطلب بنجاح!',
+    'select_at_least_one_item' => 'يرجى اختيار مادة واحدة على الأقل',
+
+    // Invoices specific
+    'supplier_required' => 'المورد',
+    'date_required' => 'التاريخ',
+    'invoice_image_optional' => 'صورة الفاتورة (اختياري)',
+    'items_required' => 'المواد',
+    'edit_invoice' => 'تعديل الفاتورة',
+    'manual' => 'يدوي',
+    'invoice_created' => 'تم إنشاء الفاتورة بنجاح! تمت إضافة المواد إلى المخزون.',
+    'invoice_updated' => 'تم تحديث الفاتورة بنجاح!',
+    'error_creating_invoice' => 'خطأ في إنشاء الفاتورة',
+    'error_updating_invoice' => 'خطأ في تحديث الفاتورة',
+
+    // Charts
+    'quantity_consumed' => 'الكمية المستهلكة',
+    'total_consumption' => 'إجمالي الاستهلاك',
+    'total_consumed' => 'إجمالي المستهلك',
+    'amount_spent' => 'المبلغ المنصرف',
+
+    // More UI strings
+    'loading_requests' => 'جاري تحميل الطلبات...',
+    'request_details' => 'تفاصيل الطلب',
+    'create_new_request' => 'إنشاء طلب جديد',
+    'select_item' => 'اختيار مادة...',
+    'select_items_for_request' => 'اختيار المواد للطلب',
+    'selected_items' => 'المواد المختارة',
+    'no_items_selected' => 'لم يتم اختيار أي مواد',
+    'error_loading_requests' => 'خطأ في تحميل الطلبات',
+    'no_requests_found' => 'لا توجد طلبات',
+    'request_id' => 'رقم الطلب',
+    'date_created' => 'تاريخ الإنشاء',
+    'requested_items' => 'المواد المطلوبة',
+    'no_items_available' => 'لا توجد مواد متاحة',
+    'no_items_found' => 'لم يتم العثور على مواد',
+    'loading_details' => 'جاري تحميل التفاصيل...',
+    'error_loading_details' => 'خطأ في تحميل التفاصيل',
+
+    // Purchase Orders more
+    'supplier' => 'المورد',
+    'date' => 'التاريخ',
+    'items' => 'المواد',
+    'item' => 'مادة',
+    'item_number' => 'مادة #',
+    'select_existing_item' => 'اختيار مادة موجودة',
+    'create_new_item' => 'إنشاء مادة جديدة',
+    'new_item_name' => 'اسم المادة الجديدة',
+    'unit' => 'الوحدة',
+    'item_image_optional' => 'صورة المادة (اختياري)',
+    'quantity' => 'الكمية',
+    'total_amount' => 'المبلغ الإجمالي',
+    'supplier_proposals' => 'عروض الموردين',
+    'selected_final' => 'محدد نهائي',
+    'add_supplier_proposals' => 'إضافة عروض موردين',
+    'supplier_name' => 'اسم المورد',
+    'unit_price' => 'سعر الوحدة',
+    'quality_rating' => 'تقييم الجودة',
+    'select_1_10' => 'اختيار (1-10)',
+    'add_supplier' => 'إضافة مورد',
+    'approve_initial' => 'موافقة أولية',
+    'loading_purchase_orders' => 'جاري تحميل أوامر الشراء...',
+    'error_loading_purchase_orders' => 'خطأ في تحميل أوامر الشراء',
+    'no_purchase_orders_found' => 'لا توجد أوامر شراء',
+    'loading_invoices' => 'جاري تحميل الفواتير...',
+    'error_loading_invoices' => 'خطأ في تحميل الفواتير',
+    'no_invoices_found' => 'لا توجد فواتير',
+    'error_loading_purchase_order' => 'خطأ في تحميل أمر الشراء',
+
+    // PO UI strings
+    'po_id' => 'رقم أمر الشراء',
+    'new_item_label' => '(مادة جديدة)',
+    'accept' => 'قبول',
+    'notes' => 'ملاحظات',
+    'po_success_message' => 'تم :action أمر الشراء بنجاح!',
+    'po_error_message' => 'خطأ في :action أمر الشراء',
+    'showing' => 'عرض',
+    'to' => 'إلى',
+    'of' => 'من',
+    'enter_item_name' => 'أدخل اسم المادة',
+    'kg' => 'كيلوغرام',
+    'liter' => 'لتر',
+    'meter' => 'متر',
+    'box' => 'صندوق',
+    'pack' => 'حزمة',
+    'piece' => 'قطعة',
+    'error_submitting_proposals' => 'خطأ في إرسال العروض',
+    'error_selecting_supplier' => 'خطأ في اختيار المورد',
+    'error_updating_status' => 'خطأ في تحديث الحالة',
+    'error_creating_po' => 'خطأ في إنشاء أمر الشراء',
+    'error_updating_po' => 'خطأ في تحديث أمر الشراء',
+    'manual' => 'يدوي',
+    'id' => 'الرقم',
+    'items_count' => 'مادة/مواد',
+    'view' => 'عرض',
+    'edit' => 'تعديل',
+    'from_po' => 'من أمر الشراء #',
+    'error_loading_items' => 'خطأ في تحميل المواد',
+    'error_loading_po' => 'خطأ في تحميل أمر الشراء',
+    'error_loading_invoice' => 'خطأ في تحميل الفاتورة',
+    'enter_item_name' => 'أدخل اسم المادة',
+    'quantity_optional' => 'الكمية',
+    'unit_optional' => 'الوحدة',
+    'unit_price_optional' => 'سعر الوحدة',
+    'item_image_optional' => 'صورة المادة',
+    'not_available' => 'غ/م',
+
+    // N/A
+    'not_available' => 'غ/م',
 ];

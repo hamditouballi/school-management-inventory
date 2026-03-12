@@ -26,6 +26,11 @@
             .rtl-flip {
                 transform: scaleX(-1);
             }
+
+            /* RTL Table alignment - override text-left */
+            table th, table td {
+                text-align: right !important;
+            }
         </style>
     @endif
 </head>

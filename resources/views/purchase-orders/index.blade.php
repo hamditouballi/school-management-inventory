@@ -33,7 +33,7 @@
                     {{ __('messages.status') }}
                 </label>
                 <select id="statusFilter" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
-                    <option value="">All Statuses</option>
+                    <option value="">{{ __('messages.all_statuses') }}</option>
                     <option value="pending_initial_approval">{{ __('messages.pending_initial_approval') }}</option>
                     <option value="initial_approved">{{ __('messages.initial_approved') }}</option>
                     <option value="pending_final_approval">{{ __('messages.pending_final_approval') }}</option>
@@ -82,15 +82,15 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200" id="poBody">
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">{{ __('messages.loading') }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div class="px-6 py-4 border-t flex items-center justify-between">
             <div class="text-sm text-gray-700">
-                Showing <span id="showingFrom">0</span> to <span id="showingTo">0</span> of <span id="totalPOs">0</span>
-                purchase orders
+                {{ __('messages.showing') }} <span id="showingFrom">0</span> {{ __('messages.to') }} <span id="showingTo">0</span> {{ __('messages.of') }} <span id="totalPOs">0</span>
+                {{ __('messages.purchase_orders') }}
             </div>
             <div id="pagination" class="flex gap-2">
             </div>
@@ -101,7 +101,7 @@
     <div id="detailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-xl font-bold">Purchase Order Details</h3>
+                <p class="text-xl font-bold">{{ __('messages.purchase_order_details') }}</p>
                 <button onclick="closeDetailsModal()" class="text-gray-500 hover:text-gray-700">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -110,7 +110,7 @@
                 </button>
             </div>
             <div id="detailsContent" class="space-y-4">
-                <p class="text-gray-500">Loading...</p>
+                <p class="text-gray-500">{{ __('messages.loading') }}</p>
             </div>
         </div>
     </div>
@@ -123,27 +123,26 @@
                 <input type="hidden" id="poId" value="">
                 <div class="space-y-4 mb-4">
                     <div class="grid grid-cols-2 gap-4">
-                        <label class="block text-sm font-medium mb-1" style="display:none;">Supplier *</label>
+                        <label class="block text-sm font-medium mb-1" style="display:none;">{{ __('messages.supplier') }} *</label>
                         <input type="hidden" id="poSupplier" name="supplier" value="">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Date *</label>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.date') }} *</label>
                             <input type="date" id="poDate" name="date" required
                                 class="w-full px-3 py-2 border rounded">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">Items *</label>
+                        <label class="block text-sm font-medium mb-2">{{ __('messages.items') }} *</label>
                         <div id="poItemsList" class="space-y-4"></div>
                         <button type="button" onclick="addPOItem()"
-                            class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">+ Add
-                            Item</button>
+                            class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">+ {{ __('messages.add_item') }}</button>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeCreateModal()"
-                        class="px-4 py-2 border rounded hover:bg-gray-100">Cancel</button>
+                        class="px-4 py-2 border rounded hover:bg-gray-100">{{ __('messages.cancel') }}</button>
                     <button type="submit" id="submitBtn"
-                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Create</button>
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.create') }}</button>
                 </div>
             </form>
         </div>
@@ -185,7 +184,7 @@
                     })
                     .catch(() => {
                         document.getElementById('poBody').innerHTML =
-                            '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">Error loading purchase orders</td></tr>';
+                            '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">{{ __('messages.error_loading_purchase_orders') }}</td></tr>';
                     });
             }
 
@@ -242,10 +241,19 @@
                     ordered: 'bg-purple-100 text-purple-800'
                 };
 
+                const statusTranslations = {
+                    pending_initial_approval: '{{ __('messages.pending_initial_approval') }}',
+                    initial_approved: '{{ __('messages.initial_approved') }}',
+                    pending_final_approval: '{{ __('messages.pending_final_approval') }}',
+                    final_approved: '{{ __('messages.final_approved') }}',
+                    rejected: '{{ __('messages.rejected') }}',
+                    ordered: '{{ __('messages.ordered') }}'
+                };
+
                 const tbody = document.getElementById('poBody');
                 if (pagePOs.length === 0) {
                     tbody.innerHTML =
-                        '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">No purchase orders found</td></tr>';
+                        '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">{{ __('messages.no_purchase_orders_found') }}</td></tr>';
                 } else {
                     tbody.innerHTML = pagePOs.map(po => {
                         const poItems = po.purchase_order_items || [];
@@ -257,7 +265,7 @@
                 <td class="px-6 py-4">
                     ${firstItemImage ? 
                         `<img src="/storage/${firstItemImage}" class="w-12 h-12 object-cover rounded cursor-pointer" onclick="viewPODetails(${po.id})">` : 
-                        '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Image</div>'
+                        '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                     }
                 </td>
                 <td class="px-6 py-4">#${po.id}</td>
@@ -268,21 +276,7 @@
                     </button>
                 </td>
                 <td class="px-6 py-4">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</td>
-                <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${
-                    po.status.replace(/_/g, ' ').toUpperCase() == "PENDING INITIAL APPROVAL" 
-                    ? "{{ __('messages.pending_initial_approval') }}" 
-                    : po.status.replace(/_/g, ' ').toUpperCase() == "INITIAL APPROVED" 
-                        ? "{{ __('messages.initial_approved') }}" 
-                        : po.status.replace(/_/g, ' ').toUpperCase() == "PENDING FINAL APPROVAL" 
-                            ? "{{ __('messages.pending_final_approval') }}" 
-                            : po.status.replace(/_/g, ' ').toUpperCase() == "FINAL APPROVED" 
-                                ? "{{ __('messages.final_approved') }}" 
-                                : po.status.replace(/_/g, ' ').toUpperCase() == "REJECTED" 
-                                    ? "{{ __('messages.rejected') }}" 
-                                    : po.status.replace(/_/g, ' ').toUpperCase() == "ORDERED" 
-                                        ? "{{ __('messages.ordered') }}" 
-                                        : po.status.toUpperCase()
-                    }</span></td>
+                <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${statusTranslations[po.status] || po.status}</span></td>
                 <td class="px-6 py-4">${new Date(po.date).toLocaleDateString()}</td>
                 ${(isHRManager || isStockManager) ? `
                                                                                                             <td class="px-6 py-4">
@@ -323,7 +317,7 @@
 
                 if (currentPage > 1) {
                     html +=
-                        `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 border rounded hover:bg-gray-100">Previous</button>`;
+                        `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 border rounded hover:bg-gray-100">{{ __('messages.previous') }}</button>`;
                 }
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -337,7 +331,7 @@
 
                 if (currentPage < totalPages) {
                     html +=
-                        `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 border rounded hover:bg-gray-100">Next</button>`;
+                        `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 border rounded hover:bg-gray-100">{{ __('messages.next') }}</button>`;
                 }
 
                 pagination.innerHTML = html;
@@ -350,7 +344,7 @@
 
             function showCreateModal() {
                 document.getElementById('modalTitle').textContent = '{{ __('messages.create_purchase_order') }}';
-                document.getElementById('submitBtn').textContent = 'Create';
+                document.getElementById('submitBtn').textContent = '{{ __('messages.create') }}';
                 document.getElementById('poId').value = '';
                 document.getElementById('poItemsList').innerHTML = '';
                 poItemCounter = 0;
@@ -364,8 +358,8 @@
                     })
                     .then(res => res.json())
                     .then(po => {
-                        document.getElementById('modalTitle').textContent = 'Edit Purchase Order';
-                        document.getElementById('submitBtn').textContent = 'Update';
+document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {{ __('messages.purchase_orders') }}';
+                document.getElementById('submitBtn').textContent = '{{ __('messages.update') }}';
                         document.getElementById('poId').value = po.id;
                         document.getElementById('poSupplier').value = po.supplier;
                         document.getElementById('poDate').value = po.date;
@@ -399,7 +393,7 @@
                     })
                     .catch(err => {
                         console.error(err);
-                        Notification.error('Error loading purchase order');
+                        Notification.error('{{ __('messages.error_loading_purchase_order') }}');
                     });
             }
 
@@ -418,20 +412,20 @@
 
                 itemDiv.innerHTML = `
         <div class="flex justify-between items-center mb-3">
-            <h4 class="font-semibold text-sm">Item #${currentIndex + 1}</h4>
-            ${currentIndex > 0 ? `<button type="button" onclick="removePOItem(this)" class="text-red-600 hover:text-red-800 text-sm">Remove</button>` : ''}
+            <h4 class="font-semibold text-sm">{{ __('messages.item_number') }} #${currentIndex + 1}</h4>
+            ${currentIndex > 0 ? `<button type="button" onclick="removePOItem(this)" class="text-red-600 hover:text-red-800 text-sm">{{ __('messages.remove') }}</button>` : ''}
         </div>
         <div class="space-y-3">
             <div class="flex gap-2 items-center">
                 <input type="radio" name="item_type_${currentIndex}" value="existing" checked onchange="toggleItemType(${currentIndex}, 'existing')">
-                <label class="text-sm">Select Existing Item</label>
+                <label class="text-sm">{{ __('messages.select_existing_item') }}</label>
                 <input type="radio" name="item_type_${currentIndex}" value="new" onchange="toggleItemType(${currentIndex}, 'new')">
-                <label class="text-sm">Create New Item</label>
+                <label class="text-sm">{{ __('messages.create_new_item') }}</label>
             </div>
             <div id="existing_item_${currentIndex}" class="space-y-2">
-                <label class="block text-xs font-medium">Item *</label>
+                <label class="block text-xs font-medium">{{ __('messages.item') }} *</label>
                 <select name="items[${currentIndex}][item_id]" onchange="setActive(this)" class="w-full px-3 py-2 border rounded text-sm">
-    <option value="">Select Item...</option>
+    <option value="">{{ __('messages.select_item') }}</option>
     ${allItems.map(item => `
                                                                                                                         <option
                                                                                                   value="${item.id}"
@@ -443,29 +437,29 @@
 </select>
             </div>
             <div id="new_item_${currentIndex}" class="hidden space-y-2">
-                <label class="block text-xs font-medium">New Item Name *</label>
-                <input type="text" name="items[${currentIndex}][new_item_name]" class="w-full px-3 py-2 border rounded text-sm" placeholder="Enter item name">
-                <label class="block text-xs font-medium mt-2">Unit *</label>
+                <label class="block text-xs font-medium">{{ __('messages.new_item_name') }}</label>
+                <input type="text" name="items[${currentIndex}][new_item_name]" class="w-full px-3 py-2 border rounded text-sm" placeholder="{{ __('messages.enter_item_name') }}">
+                <label class="block text-xs font-medium mt-2">{{ __('messages.unit') }}</label>
                 <select name="items[${currentIndex}][unit]" class="w-full px-3 py-2 border rounded text-sm">
-                    <option value="unit">Unit</option>
-                    <option value="kg">Kg</option>
-                    <option value="liter">Liter</option>
-                    <option value="meter">Meter</option>
-                    <option value="box">Box</option>
-                    <option value="pack">Pack</option>
-                    <option value="piece">Piece</option>
+                    <option value="unit">{{ __('messages.unit') }}</option>
+                    <option value="kg">{{ __('messages.kg') }}</option>
+                    <option value="liter">{{ __('messages.liter') }}</option>
+                    <option value="meter">{{ __('messages.meter') }}</option>
+                    <option value="box">{{ __('messages.box') }}</option>
+                    <option value="pack">{{ __('messages.pack') }}</option>
+                    <option value="piece">{{ __('messages.piece') }}</option>
                 </select>
-                <label class="block text-xs font-medium mt-2">Item Image (Optional)</label>
+                <label class="block text-xs font-medium mt-2">{{ __('messages.item_image_optional') }}</label>
                 <input type="file" name="items[${currentIndex}][image]" accept="image/*" class="w-full px-3 py-2 border rounded text-sm" onchange="previewNewItemImage(${currentIndex})">
                 <img id="new_item_preview_${currentIndex}" class="hidden mt-2 w-24 h-24 object-cover rounded border">
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-xs font-medium mb-1">Quantity *</label>
+                    <label class="block text-xs font-medium mb-1">{{ __('messages.quantity') }}</label>
                     <input type="number" name="items[${currentIndex}][quantity]" required min="0.01" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium mb-1">Unit</label>
+                    <label class="block text-xs font-medium mb-1">{{ __('messages.unit') }}</label>
                     <input
   id="unit_${currentIndex}"
   disabled
@@ -593,17 +587,17 @@
                     .then(() => {
                         closeCreateModal();
                         loadPOs();
-                        Notification.success(`Purchase order ${isEdit ? 'updated' : 'created'} successfully!`);
+                        Notification.success(isEdit ? '{{ __('messages.po_updated_success') }}' : '{{ __('messages.po_created_success') }}');
                     })
                     .catch(err => {
                         console.error(err);
-                        Notification.error(`Error ${isEdit ? 'updating' : 'creating'} purchase order`);
+                        Notification.error(isEdit ? '{{ __('messages.error_updating_po') }}' : '{{ __('messages.error_creating_po') }}');
                     });
             }
 
             function viewPODetails(id) {
                 document.getElementById('detailsModal').classList.remove('hidden');
-                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">Loading...</p>';
+                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}</p>';
 
                 fetch(`/api/purchase-orders/${id}`, {
                         headers
@@ -618,40 +612,49 @@
                             ordered: 'bg-blue-100 text-blue-800'
                         };
 
+                        const statusTranslations = {
+                            pending_initial_approval: '{{ __('messages.pending_initial_approval') }}',
+                            initial_approved: '{{ __('messages.initial_approved') }}',
+                            pending_final_approval: '{{ __('messages.pending_final_approval') }}',
+                            final_approved: '{{ __('messages.final_approved') }}',
+                            rejected: '{{ __('messages.rejected') }}',
+                            ordered: '{{ __('messages.ordered') }}'
+                        };
+
                         const html = `
                 <div class="border-b pb-4 mb-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-sm text-gray-500">PO ID</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.po_id') }}</p>
                             <p class="font-semibold">#${po.id}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${po.status.replace(/_/g, ' ').toUpperCase()}</span>
+                            <p class="text-sm text-gray-500">{{ __('messages.status') }}</p>
+                            <span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${statusTranslations[po.status] || po.status}</span>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.supplier') }}</p>
-                            <p class="font-semibold">${po.supplier || 'Pending Selection'}</p>
+                            <p class="font-semibold">${po.supplier || '{{ __('messages.pending_selection') }}'}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Date</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.date') }}</p>
                             <p class="font-semibold">${new Date(po.date).toLocaleDateString()}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Total Amount</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.total_amount') }}</p>
                             <p class="font-semibold">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</p>
                         </div>
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-semibold mb-3">Items</h4>
-                    ${poItems.length === 0 ? '<p class="text-gray-500">No items</p>' : `
+                    <h4 class="font-semibold mb-3">{{ __('messages.items') }}</h4>
+                    ${poItems.length === 0 ? '<p class="text-gray-500">{{ __('messages.no_data_found') }}</p>' : `
                                                                                                         <table class="min-w-full mb-6">
                                                                                                             <thead class="bg-gray-50">
                                                                                                                 <tr>
-                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Image</th>
-                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.image') }}</th>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.item') }}</th>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.quantity') }}</th>
                                                                                                                 </tr>
                                                                                                             </thead>
                                                                                                             <tbody class="divide-y">
@@ -660,12 +663,12 @@
                                         <td class="px-4 py-2">
                                             ${item.item?.image_path ? 
                                                 `<img src="/storage/${item.item.image_path}" class="w-16 h-16 object-cover rounded">` : 
-                                                '<div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Img</div>'
+                                                '<div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                                             }
                                         </td>
                                         <td class="px-4 py-2">
-                                            ${item.item?.designation || item.new_item_name || 'Unknown'}
-                                            ${item.new_item_name && !item.item ? '<span class="ml-2 text-xs text-gray-500">(New Item)</span>' : ''}
+                                            ${item.item?.designation || item.new_item_name || '{{ __('messages.unknown_item') }}'}
+                                            ${item.new_item_name && !item.item ? '<span class="ml-2 text-xs text-gray-500">{{ __('messages.new_item_label') }}</span>' : ''}
                                         </td>
                                         <td class="px-4 py-2">${parseFloat(item.quantity).toFixed(2)}</td>
                                     </tr>
@@ -678,7 +681,7 @@
                 <!-- Proposals Section -->
                 ${po.proposals && po.proposals.length > 0 ? `
                                                                                                     <div class="mt-6 pt-4 border-t">
-                                                                                                        <h4 class="font-semibold mb-3">Supplier Proposals</h4>
+                                                                                                        <h4 class="font-semibold mb-3">{{ __('messages.supplier_proposals') }}</h4>
                                                                                                         <div class="grid gap-4" id="finalSelectionForm">
                                                                                                             ${po.proposals.map(prop => `
                                 <label class="border p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-50 ${prop.is_selected ? 'bg-green-50 border-green-200' : 'bg-white'}">
@@ -688,20 +691,20 @@
                                                                                                         ` : ''}
                                         <div>
                                             <h5 class="font-bold">${prop.supplier_name}</h5>
-                                            <p class="text-sm text-gray-600">Unit Price: <span class="font-semibold">{{ __('messages.currency') }} ${parseFloat(prop.price).toFixed(2)}</span></p>
-                                            <p class="text-sm text-gray-600">Quality: ${prop.quality_rating || 'N/A'}/10</p>
+                                            <p class="text-sm text-gray-600">{{ __('messages.unit_price') }}: <span class="font-semibold">{{ __('messages.currency') }} ${parseFloat(prop.price).toFixed(2)}</span></p>
+                                            <p class="text-sm text-gray-600">{{ __('messages.quality_rating') }}: ${prop.quality_rating || 'N/A'}/10</p>
                                             ${prop.notes ? `<p class="text-xs text-gray-500 mt-1">${prop.notes}</p>` : ''}
                                         </div>
                                     </div>
                                     <div>
-                                        ${prop.is_selected ? `<span class="px-3 py-1 bg-green-100 text-green-800 rounded font-semibold text-sm">Selected Final</span>` : ''}
+                                        ${prop.is_selected ? `<span class="px-3 py-1 bg-green-100 text-green-800 rounded font-semibold text-sm">{{ __('messages.selected_final') }}</span>` : ''}
                                     </div>
                                 </label>
                             `).join('')}
                                                                                                         </div>
                                                                                                         ${isHRManager && po.status === 'pending_final_approval' ? `
                                             <div class="mt-6 pt-4 border-t flex justify-end">
-                                                <button onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">Accept</button>
+                                                <button onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.accept') }}</button>
                                             </div>
                                         ` : ''}
                                                                                                     </div>
@@ -710,18 +713,18 @@
                 <!-- Add Proposals Form for Stock Manager -->
                 ${isStockManager && po.status === 'initial_approved' ? `
                                                                                                     <div class="mt-6 pt-4 border-t">
-                                                                                                        <h4 class="font-semibold mb-3 text-orange-600">Add Supplier Proposals</h4>
+                                                                                                        <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.add_supplier_proposals') }}</h4>
                                                                                                         <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
                                                                                                             <div id="proposalsList" class="space-y-4 mb-4">
                                                                                                                 <!-- First proposal always visible -->
                                                                                                                 <div class="border p-4 rounded bg-orange-50 proposal-entry">
                                                                                                                     <div class="grid grid-cols-2 gap-4">
-                                                                                                                        <div><label class="block text-xs font-semibold">Supplier Name *</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
-                                                                                                                        <div><label class="block text-xs font-semibold">Unit Price *</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                                        <div><label class="block text-xs font-semibold">{{ __('messages.supplier_name') }}</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                                        <div><label class="block text-xs font-semibold">{{ __('messages.unit_price') }}</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
                                                                                                                         <div>
-                                                                                                                            <label class="block text-xs font-semibold">Quality Rating *</label>
+                                                                                                                            <label class="block text-xs font-semibold">{{ __('messages.quality_rating') }}</label>
                                                                                                                             <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
-                                                                                                                                <option value="">Select (1-10)</option>
+                                                                                                                                <option value="">{{ __('messages.select_1_10') }}</option>
                                                                                                                                 <option value="1">1</option>
                                                                                                                                 <option value="2">2</option>
                                                                                                                                 <option value="3">3</option>
@@ -734,13 +737,13 @@
                                                                                                                                 <option value="10">10</option>
                                                                                                                             </select>
                                                                                                                         </div>
-                                                                                                                        <div><label class="block text-xs font-semibold">Notes</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                                        <div><label class="block text-xs font-semibold">{{ __('messages.notes') }}</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                             <div class="mt-6 pt-4 border-t flex justify-between items-center">
-                                                                                                                <button type="button" onclick="addProposalField()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-semibold text-sm">Add Supplier</button>
-                                                                                                                <button type="submit" class="z-10 px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 w-32">Accept</button>
+                                                                                                                <button type="button" onclick="addProposalField()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-semibold text-sm">{{ __('messages.add_supplier') }}</button>
+                                                                                                                <button type="submit" class="z-10 px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 w-32">{{ __('messages.accept') }}</button>
                                                                                                             </div>
                                                                                                         </form>
                                                                                                     </div>
@@ -749,8 +752,8 @@
                 <!-- Action Buttons -->
                 ${isHRManager && po.status === 'pending_initial_approval' ? `
                                                                                                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                        <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Approve Initial</button>
-                                                                                                        <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Reject</button>
+                                                                                                        <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve_initial') }}</button>
+                                                                                                        <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
                                                                                                     </div>
                                                                                                 ` : ''}
             `;
@@ -758,7 +761,7 @@
                     })
                     .catch(() => {
                         document.getElementById('detailsContent').innerHTML =
-                            '<p class="text-red-500">Error loading details</p>';
+                            '<p class="text-red-500">{{ __('messages.error_loading_details') }}</p>';
                     });
             }
 
@@ -770,14 +773,14 @@
                 const list = document.getElementById('proposalsList');
                 const html = `
                     <div class="border p-4 rounded bg-orange-50 mt-4 proposal-entry">
-                        <div class="flex justify-end mb-2"><button type="button" onclick="this.closest('.proposal-entry').remove()" class="text-xs text-red-600">Remove</button></div>
+                        <div class="flex justify-end mb-2"><button type="button" onclick="this.closest('.proposal-entry').remove()" class="text-xs text-red-600">{{ __('messages.remove') }}</button></div>
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold">Supplier Name *</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
-                            <div><label class="block text-xs font-semibold">Unit Price *</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                            <div><label class="block text-xs font-semibold">{{ __('messages.supplier_name') }}</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                            <div><label class="block text-xs font-semibold">{{ __('messages.unit_price') }}</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
                             <div>
-                                <label class="block text-xs font-semibold">Quality Rating *</label>
+                                <label class="block text-xs font-semibold">{{ __('messages.quality_rating') }}</label>
                                 <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
-                                    <option value="">Select (1-10)</option>
+                                    <option value="">{{ __('messages.select_1_10') }}</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
@@ -790,7 +793,7 @@
                                     <option value="10">10</option>
                                 </select>
                             </div>
-                            <div><label class="block text-xs font-semibold">Notes</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
+                            <div><label class="block text-xs font-semibold">{{ __('messages.notes') }}</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
                         </div>
                     </div>
                 `;
@@ -829,20 +832,20 @@
                     .then(data => {
                         closeDetailsModal();
                         loadPOs();
-                        Notification.success('Proposals added successfully! Awaiting HR selection.');
+                        Notification.success('{{ __('messages.proposals_added') }}');
                     })
-                    .catch(err => Notification.error('Error submitting proposals'));
+                    .catch(err => Notification.error('{{ __('messages.error_submitting_proposals') }}'));
             }
 
             function submitFinalSelection(poId) {
                 const selectedRadio = document.querySelector('input[name="selected_proposal"]:checked');
 
                 if (!selectedRadio) {
-                    Notification.error('Please select a supplier proposal first.');
+                    Notification.error('{{ __('messages.select_supplier_proposal') }}');
                     return;
                 }
 
-                if (confirm('Select this supplier as the final choice?')) {
+                if (confirm('{{ __('messages.confirm_select_supplier') }}')) {
                     fetch(`/api/purchase-orders/${poId}/final-approval`, {
                             method: 'POST',
                             headers: {
@@ -857,9 +860,9 @@
                         .then(data => {
                             closeDetailsModal();
                             loadPOs();
-                            Notification.success('Supplier successfully selected!');
+                            Notification.success('{{ __('messages.supplier_selected') }}');
                         })
-                        .catch(err => Notification.error('Error selecting supplier'));
+                        .catch(err => Notification.error('{{ __('messages.error_selecting_supplier') }}'));
                 }
             }
 
@@ -868,7 +871,7 @@
             }
 
             function rejectInitial(id) {
-                if (confirm('Reject this purchase order?')) {
+                if (confirm('{{ __('messages.confirm_reject_po') }}')) {
                     updateInitialApproval(id, 'reject');
                 }
             }
@@ -887,9 +890,9 @@
                     .then(() => {
                         closeDetailsModal();
                         loadPOs();
-                        Notification.success(`Purchase order ${action}d successfully!`);
+                        Notification.success(action === 'approve' ? '{{ __('messages.po_approved') }}' : '{{ __('messages.po_rejected') }}');
                     })
-                    .catch(err => Notification.error('Error updating status'));
+                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}'));
             }
         </script>
     @endpush

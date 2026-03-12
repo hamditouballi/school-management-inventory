@@ -57,7 +57,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div class="border rounded-lg p-4 hover:shadow-md transition">
                 <h4 class="font-semibold mb-2">{{ __('messages.consumed_materials_report') }}</h4>
-                <p class="text-sm text-gray-600 mb-3">Export consumed materials report for a date range</p>
+                <p class="text-sm text-gray-600 mb-3">{{ __('messages.consumed_materials_desc') }}</p>
                 <div class="space-y-2 mb-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">{{ __('messages.start_date') }}</label>
@@ -83,7 +83,7 @@
             <!-- Department Consumption Report -->
             <div class="border rounded-lg p-4 hover:shadow-md transition">
                 <h4 class="font-semibold mb-2">{{ __('messages.department_consumption_report') }}</h4>
-                <p class="text-sm text-gray-600 mb-3">Export consumption report by department with item selection</p>
+                <p class="text-sm text-gray-600 mb-3">{{ __('messages.department_consumption_desc') }}</p>
                 <div class="space-y-2 mb-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-700 mb-1">{{ __('messages.start_date') }}</label>
@@ -130,10 +130,9 @@
             </div>
             <div class="mb-4">
                 <button onclick="selectAllItems()"
-                    class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm mr-2">Tout
-                    sélectionner</button>
+                    class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm mr-2">{{ __('messages.select_all') }}</button>
                 <button onclick="deselectAllItems()"
-                    class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">Tout désélectionner</button>
+                    class="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">{{ __('messages.deselect_all') }}</button>
             </div>
             <div id="itemCheckboxList" class="space-y-2 mb-4 max-h-96 overflow-y-auto">
                 <!-- Items will be loaded here -->
@@ -151,7 +150,7 @@
     <div class="bg-white p-6 rounded-lg shadow">
         <h3 class="text-lg font-semibold mb-4">{{ __('messages.low_stock_alerts') }}</h3>
         <div id="lowStockTable" class="overflow-x-auto">
-            <p class="text-gray-500">Loading...</p>
+            <p class="text-gray-500">{{ __('messages.loading') }}</p>
         </div>
     </div>
 
@@ -190,7 +189,7 @@
                             data: {
                                 labels: data.map(d => d.month),
                                 datasets: [{
-                                    label: 'Quantity Consumed',
+                                    label: '{{ __('messages.quantity_consumed') }}',
                                     data: data.map(d => d.total_quantity),
                                     borderColor: 'rgb(34, 197, 94)',
                                     backgroundColor: 'rgba(34, 197, 94, 0.1)',
@@ -220,7 +219,7 @@
                             data: {
                                 labels: data.map(d => d.department),
                                 datasets: [{
-                                    label: 'Total Consumption',
+                                    label: '{{ __('messages.total_consumption') }}',
                                     data: data.map(d => d.total_quantity),
                                     backgroundColor: ['#22c55e', '#16a34a', '#15803d', '#ef4444']
                                 }]
@@ -276,7 +275,7 @@
                             data: {
                                 labels: data.map(d => d.designation),
                                 datasets: [{
-                                    label: 'Total Consumed',
+                                    label: '{{ __('messages.total_consumed') }}',
                                     data: data.map(d => d.total_consumed),
                                     backgroundColor: 'rgb(220, 38, 38)'
                                 }]
@@ -301,7 +300,7 @@
                     .then(data => {
                         if (data.length === 0) {
                             document.getElementById('lowStockTable').innerHTML =
-                                '<p class="text-gray-500">No low stock items</p>';
+                                '<p class="text-gray-500">{{ __('messages.no_data_found') }}</p>';
                             return;
                         }
                         let html =

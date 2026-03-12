@@ -84,7 +84,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200" id="itemsBody">
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">Loading items...</td>
+                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">{{ __('messages.loading') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -94,7 +94,7 @@
         <div class="px-6 py-4 border-t flex justify-between items-center">
             <div class="text-sm text-gray-700">
                 Showing <span id="showingFrom">0</span> to <span id="showingTo">0</span> of <span id="totalItems">0</span>
-                items
+                {{ __('messages.items_found') }}
             </div>
             <div class="flex gap-2" id="pagination"></div>
         </div>
@@ -188,7 +188,7 @@
                     })
                     .catch(() => {
                         document.getElementById('itemsBody').innerHTML =
-                            '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">Error loading items</td></tr>';
+                            '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">{{ __('messages.error_loading') }}</td></tr>';
                     });
             }
 
@@ -240,14 +240,14 @@
 
                 if (pageItems.length === 0) {
                     tbody.innerHTML =
-                        '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">No items found</td></tr>';
+                        '<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500">{{ __('messages.no_data_found') }}</td></tr>';
                 } else {
                     tbody.innerHTML = pageItems.map(item => `
             <tr class="hover:bg-gray-50">
                 <td class="px-6 py-4">
     ${item.image_path ? 
         `<img src="${STORAGE_URL}/${item.image_path}" class="w-12 h-12 object-cover rounded">` : 
-        '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No Image</div>'
+        '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
     }
 </td>
                 <td class="px-6 py-4 font-medium">${item.designation}</td>
@@ -288,7 +288,7 @@
 
                 if (currentPage > 1) {
                     html +=
-                        `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 border rounded hover:bg-gray-100">Previous</button>`;
+                        `<button onclick="changePage(${currentPage - 1})" class="px-3 py-1 border rounded hover:bg-gray-100">{{ __('messages.previous') }}</button>`;
                 }
 
                 for (let i = 1; i <= totalPages; i++) {
@@ -302,7 +302,7 @@
 
                 if (currentPage < totalPages) {
                     html +=
-                        `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 border rounded hover:bg-gray-100">Next</button>`;
+                        `<button onclick="changePage(${currentPage + 1})" class="px-3 py-1 border rounded hover:bg-gray-100">{{ __('messages.next') }}</button>`;
                 }
 
                 pagination.innerHTML = html;

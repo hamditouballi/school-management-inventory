@@ -12,7 +12,7 @@
         </div>
         @if (auth()->user()->role === 'finance_manager')
             <button onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                {{ __('messages.create_invoice') }} (Manual)
+                {{ __('messages.create_invoice') }} ({{ __('messages.manual') }})
             </button>
         @endif
     </div>
@@ -22,7 +22,7 @@
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-bold text-gray-800 mb-4">{{ __('messages.approved_pos_awaiting') }}</h2>
             <div id="approvedPOsContainer">
-                <p class="text-gray-500">Loading...</p>
+                <p class="text-gray-500">{{ __('messages.loading') }}</p>
             </div>
         </div>
     @endif
@@ -34,7 +34,7 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.image') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{{ __('messages.id') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.type') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -54,7 +54,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200" id="invoiceBody">
                     <tr>
-                        <td colspan="9" class="px-6 py-4 text-center text-gray-500">Loading...</td>
+                        <td colspan="9" class="px-6 py-4 text-center text-gray-500">{{ __('messages.loading') }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -74,7 +74,7 @@
                 </button>
             </div>
             <div id="detailsContent" class="space-y-4">
-                <p class="text-gray-500">Loading...</p>
+                <p class="text-gray-500">{{ __('messages.loading') }}</p>
             </div>
         </div>
     </div>
@@ -95,35 +95,34 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Supplier *</label>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.supplier_required') }}</label>
                             <input type="text" id="supplier" name="supplier" required
                                 class="w-full px-3 py-2 border rounded">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Date *</label>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.date_required') }}</label>
                             <input type="date" id="date" name="date" required
                                 class="w-full px-3 py-2 border rounded">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Invoice Image (Optional)</label>
+                        <label class="block text-sm font-medium mb-1">{{ __('messages.invoice_image_optional') }}</label>
                         <input type="file" id="invoiceImage" accept="image/*" class="w-full px-3 py-2 border rounded"
                             onchange="previewMainInvoiceImage()">
                         <img id="invoiceImagePreview" class="hidden mt-2 w-32 h-32 object-cover rounded border">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2">Items *</label>
+                        <label class="block text-sm font-medium mb-2">{{ __('messages.items_required') }}</label>
                         <div id="invoiceItemsList" class="space-y-4"></div>
                         <button type="button" onclick="addInvoiceItem()"
-                            class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">+ Add
-                            Item</button>
+                            class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">{{ __('messages.add_item') }}</button>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeCreateModal()"
-                        class="px-4 py-2 border rounded hover:bg-gray-100">Cancel</button>
+                        class="px-4 py-2 border rounded hover:bg-gray-100">{{ __('messages.cancel') }}</button>
                     <button id="submitButton" type="submit"
-                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Create</button>
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.create') }}</button>
                 </div>
             </form>
         </div>
@@ -158,7 +157,7 @@
                     .then(items => {
                         allInventoryItems = items;
                     })
-                    .catch(err => console.error('Error loading items:', err));
+                    .catch(err => console.error('{{ __('messages.error_loading_items') }}:', err));
             }
 
             function loadApprovedPOs() {
@@ -185,9 +184,9 @@
                         renderApprovedPOs();
                     })
                     .catch(err => {
-                        console.error('Error loading purchase orders:', err);
+                        console.error('{{ __('messages.error_loading_po') }}:', err);
                         document.getElementById('approvedPOsContainer').innerHTML =
-                            '<p class="text-red-500">Error loading purchase orders</p>';
+                            '<p class="text-red-500">{{ __('messages.error_loading_purchase_order') }}</p>';
                     });
             }
 
@@ -203,7 +202,7 @@
             <table class="min-w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">ID</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.id') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.supplier') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.date') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.items') }}</th>
@@ -219,7 +218,7 @@
                                                                                     <td class="px-4 py-2">#${po.id}</td>
                                                                                     <td class="px-4 py-2">${po.supplier}</td>
                                                                                     <td class="px-4 py-2">${new Date(po.date).toLocaleDateString()}</td>
-                                                                                    <td class="px-4 py-2">${items.length} item(s)</td>
+                                                                                    <td class="px-4 py-2">${items.length} {{ __('messages.items_count') }}</td>
                                                                                     <td class="px-4 py-2 font-semibold">{{ __('messages.currency') }} ${parseFloat(po.total_amount).toFixed(2)}</td>
                                                                                     <td class="px-4 py-2">
                                                                                         <button onclick="createInvoiceFromPO(${po.id})" class="px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
@@ -246,7 +245,7 @@
                     })
                     .catch(() => {
                         document.getElementById('invoiceBody').innerHTML =
-                            '<tr><td colspan="9" class="px-6 py-4 text-center text-red-500">Error loading invoices</td></tr>';
+                            '<tr><td colspan="9" class="px-6 py-4 text-center text-red-500">{{ __('messages.error_loading_invoices') }}</td></tr>';
                     });
             }
 
@@ -254,7 +253,7 @@
                 const tbody = document.getElementById('invoiceBody');
                 if (allInvoices.length === 0) {
                     tbody.innerHTML =
-                        '<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">No invoices found</td></tr>';
+                        '<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">{{ __('messages.no_invoices_found') }}</td></tr>';
                     return;
                 }
 
@@ -282,16 +281,16 @@
             <td class="px-6 py-4">${inv.supplier}</td>
             <td class="px-6 py-4">
                 <button onclick="viewInvoiceDetails(${inv.id})" class="text-green-600 hover:underline">
-                    ${itemsCount} item(s)
+                    ${itemsCount} {{ __('messages.items_count') }}
                 </button>
             </td>
             <td class="px-6 py-4">${totalQty.toFixed(2)}</td>
             <td class="px-6 py-4 font-semibold">{{ __('messages.currency') }} ${parseFloat(total).toFixed(2)}</td>
             <td class="px-6 py-4">${new Date(inv.date).toLocaleDateString()}</td>
             <td class="px-6 py-4">
-                <button onclick="viewInvoiceDetails(${inv.id})" class="text-green-600 hover:text-indigo-800 mr-2">View</button>
+                <button onclick="viewInvoiceDetails(${inv.id})" class="text-green-600 hover:text-indigo-800 mr-2">{{ __('messages.view') }}</button>
                 @if (auth()->user()->role === 'finance_manager')
-                <button onclick="editInvoice(${inv.id})" class="text-green-600 hover:text-green-800">Edit</button>
+                <button onclick="editInvoice(${inv.id})" class="text-green-600 hover:text-green-800">{{ __('messages.edit') }}</button>
                 @endif
             </td>
         </tr>
@@ -300,8 +299,8 @@
             }
 
             function showCreateModal() {
-                document.getElementById('modalTitle').textContent = '{{ __('messages.create_invoice') }} (Manual)';
-                document.getElementById('submitButton').textContent = 'Create';
+                document.getElementById('modalTitle').textContent = '{{ __('messages.create_invoice') }} ({{ __('messages.manual') }})';
+                document.getElementById('submitButton').textContent = '{{ __('messages.create') }}';
                 document.getElementById('editInvoiceId').value = '';
                 selectedPOId = null;
                 document.getElementById('invoiceItemsList').innerHTML = '';
@@ -318,7 +317,7 @@
                     .then(res => res.json())
                     .then(po => {
                         document.getElementById('modalTitle').textContent =
-                            `{{ __('messages.create_invoice') }} from PO #${po.id}`;
+                            `{{ __('messages.create_invoice') }} {{ __('messages.from_po') }}${po.id}`;
                         document.getElementById('submitButton').textContent = '{{ __('messages.create_invoice') }}';
                         document.getElementById('editInvoiceId').value = '';
 
@@ -340,13 +339,13 @@
                     })
                     .catch(err => {
                         console.error(err);
-                        Notification.error('Error loading purchase order');
+                        Notification.error('{{ __('messages.error_loading_po') }}');
                     });
             }
 
             function editInvoice(id) {
-                document.getElementById('modalTitle').textContent = 'Edit Invoice';
-                document.getElementById('submitButton').textContent = 'Update';
+                document.getElementById('modalTitle').textContent = '{{ __('messages.edit_invoice') }}';
+                document.getElementById('submitButton').textContent = '{{ __('messages.update') }}';
                 document.getElementById('editInvoiceId').value = id;
 
                 fetch(`/api/invoices/${id}`, {
@@ -407,7 +406,7 @@
                     })
                     .catch(err => {
                         console.error(err);
-                        Notification.error('Error loading invoice');
+                        Notification.error('{{ __('messages.error_loading_invoice') }}');
                     });
             }
 
@@ -426,7 +425,7 @@
                 itemDiv.className = 'border p-4 rounded-lg bg-gray-50';
                 const currentIndex = invoiceItemCounter;
 
-                const itemName = poItem.item?.designation || poItem.new_item_name || 'Unknown';
+                const itemName = poItem.item?.designation || poItem.new_item_name || '{{ __('messages.unknown_item') }}';
                 const itemId = poItem.item_id;
 
                 itemDiv.innerHTML = `
@@ -438,11 +437,11 @@
                 <input type="hidden" id="po_item_name_${currentIndex}" value="${itemName}">
                 <div class="grid grid-cols-3 gap-3">
                     <div>
-                        <label class="block text-xs font-medium mb-1">Quantity *</label>
+<label class="block text-xs font-medium mb-1">{{ __('messages.quantity') }}</label>
                         <input type="number" id="item_quantity_${currentIndex}" name="items[${currentIndex}][quantity]" value="${poItem.quantity}" required min="0.01" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium mb-1">Unit *</label>
+<label class="block text-xs font-medium mb-1">{{ __('messages.unit') }}</label>
                         <input type="text"
                                id="item_unit_${currentIndex}"
                                name="items[${currentIndex}][unit]"
@@ -450,13 +449,13 @@
                                readonly>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium mb-1">Unit Price *</label>
+<label class="block text-xs font-medium mb-1">{{ __('messages.unit_price') }}</label>
                         <input type="number" id="item_price_${currentIndex}" name="items[${currentIndex}][unit_price]" value="${poItem.unit_price}" required min="0" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                     </div>
                 </div>
                 <!-- Added Item Image Input -->
                 <div class="mt-3">
-                    <label class="block text-xs font-medium mb-1">Item Image (Optional)</label>
+<label class="block text-xs font-medium mb-1">{{ __('messages.item_image_optional') }}</label>
                     <input type="hidden" id="item_existing_image_${currentIndex}" name="items[${currentIndex}][image_path]" value="${poItem.item?.image_path || ''}">
                     <input type="file" id="item_image_${currentIndex}" accept="image/*" class="w-full px-3 py-1 border rounded text-xs" onchange="previewInvoiceItemImage(${currentIndex})">
                     <img id="item_image_preview_${currentIndex}" 
@@ -499,46 +498,46 @@
 
                 itemDiv.innerHTML = `
         <div class="flex justify-between items-center mb-3">
-            <h4 class="font-semibold text-sm">Item #${currentIndex + 1}</h4>
-            ${currentIndex > 0 ? `<button type="button" onclick="removeInvoiceItem(this)" class="text-red-600 hover:text-red-800 text-sm">Remove</button>` : ''}
+            <h4 class="font-semibold text-sm">{{ __('messages.item_number') }} #${currentIndex + 1}</h4>
+            ${currentIndex > 0 ? `<button type="button" onclick="removeInvoiceItem(this)" class="text-red-600 hover:text-red-800 text-sm">{{ __('messages.remove') }}</button>` : ''}
         </div>
         <div class="space-y-3">
            
             <div id="existing_item_${currentIndex}" class="space-y-2">
-                <label class="block text-xs font-medium">Item *</label>
+                <label class="block text-xs font-medium">{{ __('messages.item') }} *</label>
                 <select id="inventory_item_${currentIndex}" name="items[${currentIndex}][item_id]" onchange="populateItemFromInventory(${currentIndex})" class="w-full px-3 py-2 border rounded text-sm">
-                    <option value="">Select Item...</option>
+                    <option value="">{{ __('messages.select_item') }}</option>
                     ${allInventoryItems.map(item => `<option value="${item.id}" data-designation="${item.designation}"  data-price="${item.price}" data-image="${item.image_path || ''}">${item.designation} - {{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</option>`).join('')}
                 </select>
             </div>
             <div id="new_item_${currentIndex}" class="hidden space-y-2">
-                <label class="block text-xs font-medium">Item Name *</label>
-                <input type="text" id="item_name_${currentIndex}" name="items[${currentIndex}][item_name]" class="w-full px-3 py-2 border rounded text-sm" placeholder="Enter item name">
+                <label class="block text-xs font-medium">{{ __('messages.designation') }} *</label>
+                <input type="text" id="item_name_${currentIndex}" name="items[${currentIndex}][item_name]" class="w-full px-3 py-2 border rounded text-sm" placeholder="{{ __('messages.enter_item_name') }}">
             </div>
             <div class="grid grid-cols-3 gap-3">
                 <div>
-                    <label class="block text-xs font-medium mb-1">Quantity *</label>
+                    <label class="block text-xs font-medium mb-1">{{ __('messages.quantity') }} *</label>
                     <input type="number" id="item_quantity_${currentIndex}" name="items[${currentIndex}][quantity]" required min="0.01" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium mb-1">Unit *</label>
+                    <label class="block text-xs font-medium mb-1">{{ __('messages.unit') }} *</label>
                     <select id="item_unit_${currentIndex}" name="items[${currentIndex}][unit]" class="w-full px-3 py-2 border rounded text-sm" disabled>
-                        <option value="unit">Unit</option>
-                        <option value="kg">Kg</option>
-                        <option value="liter">Liter</option>
-                        <option value="meter">Meter</option>
-                        <option value="box">Box</option>
-                        <option value="pack">Pack</option>
-                        <option value="piece">Piece</option>
+                        <option value="unit">{{ __('messages.unit') }}</option>
+                        <option value="kg">{{ __('messages.kg') }}</option>
+                        <option value="liter">{{ __('messages.liter') }}</option>
+                        <option value="meter">{{ __('messages.meter') }}</option>
+                        <option value="box">{{ __('messages.box') }}</option>
+                        <option value="pack">{{ __('messages.pack') }}</option>
+                        <option value="piece">{{ __('messages.piece') }}</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium mb-1">Unit Price *</label>
+                    <label class="block text-xs font-medium mb-1">{{ __('messages.unit_price') }} *</label>
                     <input type="number" id="item_price_${currentIndex}" name="items[${currentIndex}][unit_price]" required min="0" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
                 </div>
             </div>
             <div>
-                 <label class="block text-xs font-medium mb-1">Item Image (Optional)</label>
+                 <label class="block text-xs font-medium mb-1">{{ __('messages.item_image_optional') }}</label>
                  <input type="hidden" id="item_existing_image_${currentIndex}" name="items[${currentIndex}][image_path]" value="">
                  <input type="file" id="item_image_${currentIndex}" accept="image/*" class="w-full px-3 py-1 border rounded text-xs" onchange="previewInvoiceItemImage(${currentIndex})">
                  <img id="item_image_preview_${currentIndex}" 
@@ -794,20 +793,20 @@
                         @if (auth()->user()->role === 'finance_manager')
                             loadApprovedPOs(); // Reload to remove PO from list if invoice was created from PO
                         @endif
-                        const message = isEdit ? 'Invoice updated successfully!' :
-                            'Invoice created successfully! Items have been added to inventory.';
+const message = isEdit ? '{{ __('messages.invoice_updated') }}' :
+                                    '{{ __('messages.invoice_created') }}';
                         Notification.success(message);
                     })
                     .catch(err => {
                         console.error(err);
-                        Notification.error('Error ' + (isEdit ? 'updating' : 'creating') + ' invoice');
+                        Notification.error('{{ __('messages.error_creating_invoice') }}');
                     });
             };
 
 
             function viewInvoiceDetails(id) {
                 document.getElementById('detailsModal').classList.remove('hidden');
-                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">Loading...</p>';
+                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}</p>';
 
                 fetch(`/api/invoices/${id}`, {
                         headers
@@ -845,12 +844,12 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.finance_manager') }}</p>
-                            <p class="font-semibold">${inv.responsible_finance?.name || 'N/A'}</p>
+                            <p class="font-semibold">${inv.responsible_finance?.name || '{{ __('messages.not_available') }}'}</p>
                         </div>
                     </div>
                     <div class="pt-4 border-t">
                         <h4 class="font-semibold mb-3">{{ __('messages.items') }}</h4>
-                        ${items.length === 0 ? '<p class="text-gray-500">No items</p>' : `
+                        ${items.length === 0 ? '<p class="text-gray-500">{{ __('messages.no_data_found') }}</p>' : `
                                                                                     <table class="min-w-full">
                                                                                         <thead class="bg-gray-50">
                                                                                             <tr>
@@ -883,7 +882,7 @@
                                                                                                                                                                                                                                                                                                                                                                             </table>
                                                                                                                                                                                                                                                                                                                                                                         `}
                         <div class="mt-4 pt-4 border-t text-right">
-                            <p class="text-lg font-bold text-green-600">Total: {{ __('messages.currency') }} ${parseFloat(total).toFixed(2)}</p>
+                            <p class="text-lg font-bold text-green-600">{{ __('messages.total') }}: {{ __('messages.currency') }} ${parseFloat(total).toFixed(2)}</p>
                         </div>
                     </div>
                 </div>
@@ -892,7 +891,7 @@
                     })
                     .catch(() => {
                         document.getElementById('detailsContent').innerHTML =
-                            '<p class="text-red-500">Error loading details</p>';
+                            '<p class="text-red-500">{{ __('messages.error_loading_details') }}</p>';
                     });
             }
 
