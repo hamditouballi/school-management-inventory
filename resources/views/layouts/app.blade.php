@@ -31,6 +31,16 @@
             table th, table td {
                 text-align: right !important;
             }
+
+            /* RTL Logo border */
+            [dir="rtl"] .logo-text {
+                border-left: none !important;
+                border-right: 2px solid #15803d !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                margin-left: 0.5rem !important;
+                margin-right: 0.5rem !important;
+            }
         </style>
     @endif
 </head>
@@ -64,7 +74,7 @@
                     <img src="{{ asset('images/logo-al-amine.png') }}" class="h-14 transition-transform hover:scale-105"
                         alt="AL Amine Logo">
 
-                    <div class="hidden sm:block font-logo border-l-2 border-green-700 pl-2 ml-2rounded-l-md">
+                    <div class="hidden sm:block font-logo border-l-2 border-green-700 pl-2 ml-2 logo-text">
                         <p class="text-green-700 text-lg font-bold tracking-wide">
                             Complexe Scolaire
                         </p>
@@ -76,7 +86,7 @@
 
                 <!-- DESKTOP MENU -->
                 @auth
-                    <div class="hidden md:flex items-center space-x-1 bg-green-50 px-2 py-1 rounded-full shadow-inner">
+                    <div class="hidden md:flex items-center space-x-3 bg-green-50 px-3 py-1 rounded-full shadow-inner">
 
                         @if (auth()->user()->role !== 'director')
                             <a href="{{ route('dashboard') }}"
