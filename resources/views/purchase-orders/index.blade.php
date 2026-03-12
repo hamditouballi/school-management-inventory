@@ -195,7 +195,6 @@
                     .then(res => res.json())
                     .then(data => {
                         allItems = data;
-                        updatePOItemSelects();
                     });
             }
 
@@ -362,7 +361,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 document.getElementById('submitBtn').textContent = '{{ __('messages.update') }}';
                         document.getElementById('poId').value = po.id;
                         document.getElementById('poSupplier').value = po.supplier;
-                        document.getElementById('poDate').value = po.date;
+                        document.getElementById('poDate').value = po.date ? new Date(po.date).toISOString().split('T')[0] : '';
 
                         // Clear and populate items
                         document.getElementById('poItemsList').innerHTML = '';

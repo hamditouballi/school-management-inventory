@@ -312,175 +312,19 @@
                         html += '</tbody></table>';
                         document.getElementById('lowStockTable').innerHTML = html;
                     });
+
+                let allItemsList = [];
+                let selectedItemIds = [];
+
+                // Load items for selector
+                fetch('/api/items', {
+                        headers
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        allItemsList = data;
+                    });
             });
-
-            function downloadConsumedMaterialsReport() {
-                const token = '{{ session('api_token') }}';
-                const startDate = document.getElementById('reportStartDate').value;
-                const endDate = document.getElementById('reportEndDate').value;
-
-                if (!startDate || !endDate) {
-                    Notification.warning("{{ __('messages.select_dates') }}");
-                    return;
-                }
-
-                if (new Date(startDate) > new Date(endDate)) {
-                    Notification.error("{{ __('messages.invalid_date_range') }}");
-                    return;
-                }
-
-                // Show loading state
-                const btn = event.target.closest('button');
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML =
-                    '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-
-                fetch(`/api/reports/consumed-materials?start_date=${startDate}&end_date=${endDate}`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Download failed');
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        // Create download link
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `Inventaire_des_matieres_consommees_${startDate}_to_${endDate}.xlsx`;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-
-                        // Reset button
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    })
-                    .catch(error => {
-                        console.error('Error downloading report:', error);
-                        Notification.error("{{ __('messages.error_downloading_report') }}");
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    });
-            }
-
-            let allItemsList = [];
-            let selectedItemIds = []; // Empty array means all items selected by default
-
-            // Load items for selector
-            fetch('/api/items', {
-                    headers
-                })
-                .then(res => res.json())
-                .then(data => {
-                    allItemsList = data;
-                });
-
-            function showItemSelector() {
-                const list = document.getElementById('itemCheckboxList');
-                list.innerHTML = allItemsList.map(item => `
-        <label class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
-            <input type="checkbox" 
-                   value="${item.id}" 
-                   ${selectedItemIds.length === 0 || selectedItemIds.includes(item.id) ? 'checked' : ''}
-                   class="item-checkbox mr-2">
-            <span>${item.designation}</span>
-        </label>
-    `).join('');
-                document.getElementById('itemSelectorModal').classList.remove('hidden');
-            }
-
-            function closeItemSelector() {
-                document.getElementById('itemSelectorModal').classList.add('hidden');
-            }
-
-            function selectAllItems() {
-                document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = true);
-            }
-
-            function deselectAllItems() {
-                document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = false);
-            }
-
-            function applyItemSelection() {
-                const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-                selectedItemIds = Array.from(checkboxes).map(cb => parseInt(cb.value));
-
-                const text = (selectedItemIds.length === 0 || selectedItemIds.length === allItemsList.length) ?
-                    "{{ __('messages.all_items') }}" :
-                    `${selectedItemIds.length} {{ __('messages.items_selected') }}`;
-
-                document.getElementById('selectedItemsText').textContent = text;
-                closeItemSelector();
-            }
-
-            function downloadDepartmentReport() {
-                const token = '{{ session('api_token') }}';
-                const startDate = document.getElementById('deptReportStartDate').value;
-                const endDate = document.getElementById('deptReportEndDate').value;
-
-                if (!startDate || !endDate) {
-                    Notification.warning("{{ __('messages.select_dates') }}");
-                    return;
-                }
-
-                if (new Date(startDate) > new Date(endDate)) {
-                    Notification.error("{{ __('messages.invalid_date_range') }}");
-                    return;
-                }
-
-                const btn = event.target.closest('button');
-                const originalText = btn.innerHTML;
-                btn.disabled = true;
-                btn.innerHTML =
-                    '<svg class="animate-spin h-5 w-5 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
-
-                let url = `/api/reports/department-consumption?start_date=${startDate}&end_date=${endDate}`;
-
-                // Only add item_ids if specific items are selected (not all)
-                if (selectedItemIds.length > 0 && selectedItemIds.length < allItemsList.length) {
-                    selectedItemIds.forEach(id => {
-                        url += `&item_ids[]=${id}`;
-                    });
-                }
-
-                fetch(url, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Download failed');
-                        return response.blob();
-                    })
-                    .then(blob => {
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `Rapport_Consommation_Departements_${startDate}_to_${endDate}.xlsx`;
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(a);
-
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    })
-                    .catch(error => {
-                        console.error('Error downloading report:', error);
-                        Notification.error("{{ __('messages.error_downloading_report') }}");
-                        btn.disabled = false;
-                        btn.innerHTML = originalText;
-                    });
-            }
         </script>
     @endpush
 @endsection

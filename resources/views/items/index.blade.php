@@ -21,12 +21,14 @@
             <div>
                 <label class="block text-sm font-medium mb-1">{{ __('messages.search') }}</label>
                 <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}..."
-                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    oninput="applyFilters()">
             </div>
             <div>
                 <label class="block text-sm font-medium mb-1">{{ __('messages.status') }}</label>
                 <select id="statusFilter"
-                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    onchange="applyFilters()">
                     <option value="">{{ __('messages.filter') }}</option>
                     <option value="in_stock">{{ __('messages.in_stock') }}</option>
                     <option value="low_stock">{{ __('messages.low_stock') }}</option>
@@ -35,7 +37,8 @@
             <div>
                 <label class="block text-sm font-medium mb-1">{{ __('messages.price') }}</label>
                 <select id="priceFilter"
-                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    onchange="applyFilters()">
                     <option value="">{{ __('messages.filter') }}</option>
                     <option value="0-5">0 - 5 {{ __('messages.currency') }}</option>
                     <option value="5-10">5 - 10 {{ __('messages.currency') }}</option>
@@ -45,7 +48,8 @@
             <div>
                 <label class="block text-sm font-medium mb-1">{{ __('messages.quantity') }}</label>
                 <select id="quantityFilter"
-                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500">
+                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                    onchange="applyFilters()">
                     <option value="">{{ __('messages.filter') }}</option>
                     <option value="0-50">0 - 50</option>
                     <option value="50-200">50 - 200</option>
@@ -53,8 +57,6 @@
                 </select>
             </div>
         </div>
-        <button onclick="applyFilters()"
-            class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">{{ __('messages.filter') }}</button>
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
