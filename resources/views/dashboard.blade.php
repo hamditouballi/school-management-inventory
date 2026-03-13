@@ -156,15 +156,81 @@
 
     @push('scripts')
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const token = '{{ session('api_token') }}';
-                const headers = {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                };
+            const token = '{{ session('api_token') }}';
+            const headers = {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            };
 
-                // Fetch dashboard stats
+            // Download consumed materials report
+            function downloadConsumedMaterialsReport() {
+                const startDate = document.getElementById('reportStartDate').value;
+                const endDate = document.getElementById('reportEndDate').value;
+                
+                fetch(`/api/reports/consumed-materials?start_date=${startDate}&end_date=${endDate}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Download failed');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `RAPPORT_MENSUEL_${startDate}_au_${endDate}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                })
+                .catch(err => {
+                    console.error('Download failed:', err);
+                    alert('{{ __('messages.failed_to_download_report') }}');
+                });
+            }
+
+            // Download department consumption report
+            function downloadDepartmentReport() {
+                const startDate = document.getElementById('deptReportStartDate').value;
+                const endDate = document.getElementById('deptReportEndDate').value;
+                
+                let url = `/api/reports/department-consumption?start_date=${startDate}&end_date=${endDate}`;
+                if (typeof selectedItemIds !== 'undefined' && selectedItemIds.length > 0) {
+                    url += `&item_ids=${JSON.stringify(selectedItemIds)}`;
+                }
+                
+                fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Download failed');
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Rapport_Consommation_Departements_${startDate}_to_${endDate}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                })
+                .catch(err => {
+                    console.error('Download failed:', err);
+                    alert('{{ __('messages.failed_to_download_report') }}');
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
                 fetch('/api/stats/dashboard', {
                         headers
                     })

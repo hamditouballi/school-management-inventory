@@ -19,11 +19,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Items
     Route::apiResource('items', ItemController::class);
+    Route::get('/categories', [ItemController::class, 'categories']);
 
     // Requests
     Route::get('/requests', [RequestController::class, 'index']);
     Route::post('/requests', [RequestController::class, 'store']);
     Route::get('/requests/unconfirmed', [RequestController::class, 'unconfirmed']);
+    Route::get('/requests/my-unconfirmed', [RequestController::class, 'myUnconfirmed']);
     Route::get('/requests/{request}', [RequestController::class, 'show']);
     Route::put('/requests/{requestModel}/status', [RequestController::class, 'updateStatus']);
     Route::post('/requests/{requestModel}/fulfill', [RequestController::class, 'fulfill']);

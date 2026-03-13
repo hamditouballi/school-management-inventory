@@ -140,11 +140,8 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">{{ __('messages.category') }}</label>
-                        <select id="category" class="w-full px-3 py-2 border rounded">
-                            <option value="">-- {{ __('messages.category') }} --</option>
-                            <option value="FOURNITURES DE BUREAU">{{ __('messages.office_supplies') }}</option>
-                            <option value="PRODUITS D'HYGIÈNE">{{ __('messages.hygiene_products') }}</option>
-                            <option value="AUTRES">{{ __('messages.others') }}</option>
+                        <select id="category_id" class="w-full px-3 py-2 border rounded">
+                            <option value="">-- {{ __('messages.select_category') }} --</option>
                         </select>
                     </div>
                 </div>
@@ -176,7 +173,10 @@
             let currentPage = 1;
             const itemsPerPage = 10;
 
-            document.addEventListener('DOMContentLoaded', loadItems);
+            document.addEventListener('DOMContentLoaded', () => {
+                loadItems();
+                loadCategories();
+            });
 
             function loadItems() {
                 fetch('/api/items', {
@@ -191,6 +191,22 @@
                     .catch(() => {
                         document.getElementById('itemsBody').innerHTML =
                             '<tr><td colspan="8" class="px-6 py-4 text-center text-red-500">{{ __('messages.error_loading') }}</td></tr>';
+                    });
+            }
+
+            function loadCategories() {
+                fetch('/api/categories', {
+                        headers
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const categorySelect = document.getElementById('category_id');
+                        data.forEach(cat => {
+                            const option = document.createElement('option');
+                            option.value = cat.id;
+                            option.textContent = cat.name;
+                            categorySelect.appendChild(option);
+                        });
                     });
             }
 
@@ -334,7 +350,7 @@
                 document.getElementById('quantity').value = item.quantity;
                 document.getElementById('price').value = item.price;
                 document.getElementById('unit').value = item.unit;
-                document.getElementById('category').value = item.category || '';
+                document.getElementById('category_id').value = item.category_id || '';
                 document.getElementById('low_stock_threshold').value = item.low_stock_threshold;
 
                 // Clear the file input
@@ -365,7 +381,10 @@
                 formData.append('quantity', document.getElementById('quantity').value);
                 formData.append('price', document.getElementById('price').value);
                 formData.append('unit', document.getElementById('unit').value);
-                formData.append('category', document.getElementById('category').value || '');
+                const categoryId = document.getElementById('category_id').value;
+                if (categoryId) {
+                    formData.append('category_id', categoryId);
+                }
                 formData.append('low_stock_threshold', document.getElementById('low_stock_threshold').value || 50);
 
                 const imageFile = document.getElementById('image').files[0];

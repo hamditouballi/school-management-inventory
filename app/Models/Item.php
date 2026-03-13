@@ -9,13 +9,18 @@ class Item extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['designation', 'description', 'quantity', 'price', 'unit', 'category', 'low_stock_threshold', 'image_path'];
+    protected $fillable = ['designation', 'description', 'quantity', 'price', 'unit', 'category', 'low_stock_threshold', 'image_path', 'category_id'];
 
     protected $appends = ['is_low_stock'];
 
     public function getIsLowStockAttribute(): bool
     {
         return $this->quantity < $this->low_stock_threshold;
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function requestItems()

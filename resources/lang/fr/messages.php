@@ -29,6 +29,9 @@ return [
     'quantity' => 'Quantité',
     'description' => 'Description',
     'image' => 'Image',
+    'no_items' => 'Aucun article',
+    'available' => 'Disponible',
+    'qty' => 'Qté',
     'submit' => 'Soumettre',
     'update' => 'Mettre à jour',
     'create' => 'Créer',
@@ -63,6 +66,7 @@ return [
     'in_stock' => 'En stock',
     'low_stock' => 'Stock faible',
     'category' => 'Catégorie',
+    'select_category' => 'Sélectionner une catégorie',
     'low_stock_threshold' => 'Seuil de stock faible',
     'item_added_success' => 'Article ajouté avec succès!',
     'item_updated_success' => 'Article mis à jour avec succès!',
@@ -88,6 +92,7 @@ return [
     'receipt_confirmed' => 'Réception confirmée!',
     'unconfirmed' => 'Non confirmé',
     'awaiting_confirmation' => 'En attente de confirmation',
+    'total_price' => 'Prix total',
 
     // Purchase Orders
     'create_purchase_order' => '+ Créer un bon de commande',
@@ -125,6 +130,9 @@ return [
     'no_approved_pos_awaiting' => 'Aucun bon de commande approuvé en attente de factures.',
     'invoice_details' => 'Détails de la facture',
     'subtotal' => 'Sous-total',
+    'type' => 'Type',
+    'incoming' => 'Entrant',
+    'return' => 'Retour',
 
     // Reports
     'consumed_materials_report' => 'Inventaire des matières consommées',
@@ -146,27 +154,110 @@ return [
     'select_dates' => 'Veuillez sélectionner les deux dates',
     'invalid_date_range' => 'La date de début doit être avant la date de fin',
     'error_downloading_report' => 'Erreur lors du téléchargement. Veuillez réessayer.',
+    'failed_to_download_report' => 'Échec du téléchargement du rapport',
+    'add_to_cart' => 'Ajouter au panier',
+    'error_updating_request' => 'Erreur lors de la mise à jour de la demande',
+    'error_fulfilling_request' => 'Erreur lors de l\'exécution de la demande',
+    'error_confirming_receipt' => 'Erreur lors de la confirmation de la réception',
+    'cannot_login_as_manager' => 'Ce compte ne peut pas se connecter en tant que Responsable.',
+    'managers_must_use_manager_login' => 'Les responsables doivent utiliser la connexion Responsable.',
+    'school_name' => 'Complexe Scolaire',
+    'school_name_short' => 'AL AMINE',
 
     // Categories
     'office_supplies' => 'Fournitures de bureau',
     'hygiene_products' => 'Produits d\'hygiène',
     'others' => 'Autres',
 
-    // Login / UI specific (added)
-    'manager_login' => 'Connexion Responsable',
-    'administrative_login' => 'Connexion administratif',
-    'sign_in' => 'Se connecter',
-    'demo' => 'Démo',
-    'welcome_back' => 'Content de vous revoir !',
-    'manager_portal' => 'Portail Responsable - RH, Stock & Finance',
-    'manager_login_btn' => 'Connexion Responsable',
-    'hello_administrative' => 'Bonjour, administratif !',
-    'administrative_portal' => 'Accédez à votre espace administratif',
-    'administrative_login_btn' => 'Connexion administratif',
-    'stock_manager' => 'Responsable Stock',
-    'finance_manager' => 'Responsable Finances',
+    // UI Strings
+    'loading' => 'Chargement...',
+    'error_loading' => 'Erreur de chargement',
+    'no_data_found' => 'Aucune donnée trouvée',
+    'items_found' => 'articles trouvés',
+    'previous' => 'Précédent',
+    'next' => 'Suivant',
+    'no_image' => 'Pas d\'image',
+    'cancel' => 'Annuler',
+    'create' => 'Créer',
+    'edit' => 'Modifier',
+    'update' => 'Mettre à jour',
+    'delete' => 'Supprimer',
+    'save' => 'Enregistrer',
+    'close' => 'Fermer',
+    'remove' => 'Supprimer',
+    'add_item' => '+ Ajouter un article',
+    'item' => 'Article',
+    'items' => 'Articles',
+    'all_statuses' => 'Tous les statuts',
 
-    // Purchase Orders more
+    // Report descriptions
+    'consumed_materials_desc' => 'Exporter le rapport des matériaux consommés pour une période',
+    'department_consumption_desc' => 'Exporter le rapport de consommation par département avec sélection d\'articles',
+
+    // Item selector
+    'select_all' => 'Tout sélectionner',
+    'deselect_all' => 'Tout désélectionner',
+
+    // Status messages
+    'success' => 'Succès',
+    'error' => 'Erreur',
+    'success_created' => ':item créé avec succès!',
+    'success_updated' => ':item mis à jour avec succès!',
+    'success_deleted' => ':item supprimé avec succès!',
+    'success_message' => 'Opération effectuée avec succès!',
+    'error_message' => 'Une erreur est survenue. Veuillez réessayer.',
+    'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cet(te) :item ?',
+
+    // Purchase Orders specific
+    'purchase_order_details' => 'Détails du bon de commande',
+    'pending_selection' => 'En attente de sélection',
+    'unknown_item' => 'Article inconnu',
+    'select_supplier_proposal' => 'Veuillez d\'abord sélectionner une proposition de fournisseur.',
+    'confirm_select_supplier' => 'Sélectionner ce fournisseur comme choix final ?',
+    'supplier_selected' => 'Fournisseur sélectionné avec succès !',
+    'confirm_reject_po' => 'Rejeter ce bon de commande ?',
+    'proposals_added' => 'Propositions ajoutées avec succès ! En attente de sélection RH.',
+
+    // Requests specific
+    'confirm_fulfill' => 'Remplir cette demande ? Cela diminuera le stock et générera un Bon de Sortie.',
+    'request_fulfilled' => 'Demande fulfilled successfully!', // keeping English as this is from line 246
+    'select_at_least_one_item' => 'Veuillez sélectionner au moins un article',
+
+    // Invoices specific
+    'supplier_required' => 'Fournisseur',
+    'date_required' => 'Date',
+    'invoice_image_optional' => 'Image de la facture (optionnel)',
+    'items_required' => 'Articles',
+    'edit_invoice' => 'Modifier la facture',
+    'manual' => 'Manuel',
+    'invoice_created' => 'Facture créée avec succès ! Les articles ont été ajoutés à l\'inventaire.',
+    'invoice_updated' => 'Facture mise à jour avec succès !',
+    'error_creating_invoice' => 'Erreur lors de la création de la facture',
+    'error_updating_invoice' => 'Erreur lors de la mise à jour de la facture',
+
+    // Charts
+    'quantity_consumed' => 'Quantité consommée',
+    'total_consumption' => 'Consommation totale',
+    'total_consumed' => 'Total consommé',
+    'amount_spent' => 'Montant dépensé',
+
+    // More UI strings
+    'loading_requests' => 'Chargement des demandes...',
+    'request_details' => 'Détails de la demande',
+    'create_new_request' => 'Créer une nouvelle demande',
+    'select_item' => 'Sélectionner un article...',
+    'select_items_for_request' => 'Sélectionner les articles pour la demande',
+    'selected_items' => 'Articles sélectionnés',
+    'no_items_selected' => 'Aucun article sélectionné',
+    'error_loading_requests' => 'Erreur lors du chargement des demandes',
+    'no_requests_found' => 'Aucune demande trouvée',
+    'request_id' => 'ID de la demande',
+    'date_created' => 'Date de création',
+    'requested_items' => 'Articles demandés',
+    'no_items_available' => 'Aucun article disponible',
+    'no_items_found' => 'Aucun article trouvé',
+    'loading_details' => 'Chargement des détails...',
+    'error_loading_details' => 'Erreur lors du chargement des détails',
     'supplier' => 'Fournisseur',
     'date' => 'Date',
     'items' => 'Articles',

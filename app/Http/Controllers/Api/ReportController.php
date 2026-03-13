@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Exports\ConsumedMaterialsExport;
 use App\Exports\DepartmentConsumptionExport;
+use App\Exports\MonthlyConsumptionExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,11 +15,11 @@ class ReportController extends Controller
         $startDate = $request->input('start_date', now()->startOfMonth()->format('Y-m-d'));
         $endDate = $request->input('end_date', now()->endOfMonth()->format('Y-m-d'));
 
-        $filename = 'Inventaire_des_matieres_consommees_'.
-                    str_replace('-', '_', $startDate).'_to_'.
+        $filename = 'RAPPORT_MENSUEL_'.
+                    str_replace('-', '_', $startDate).'_au_'.
                     str_replace('-', '_', $endDate).'.xlsx';
 
-        return Excel::download(new ConsumedMaterialsExport($startDate, $endDate), $filename);
+        return Excel::download(new MonthlyConsumptionExport($startDate, $endDate), $filename);
     }
 
     public function departmentConsumption(Request $request)

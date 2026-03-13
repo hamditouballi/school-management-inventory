@@ -14,17 +14,15 @@
                     {{ __('messages.create_request') }}
                 </button>
             @endif
-            @if (auth()->user()->role === 'stock_manager' || auth()->user()->role === 'finance_manager')
-                <div class="flex gap-2">
-                    <button onclick="switchTab('all')" id="tabAll" class="px-4 py-2 rounded-lg font-medium bg-green-600 text-white shadow">
-                        {{ __('messages.all_statuses') }}
-                    </button>
-                    <button onclick="switchTab('unconfirmed')" id="tabUnconfirmed" class="px-4 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 relative">
-                        <span id="unconfirmedText">{{ __('messages.unconfirmed') }}</span>
-                        <span id="unconfirmedBadge" class="hidden ml-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
-                    </button>
-                </div>
-            @endif
+            <div class="flex gap-2">
+                <button onclick="switchTab('all')" id="tabAll" class="px-4 py-2 rounded-lg font-medium bg-green-600 text-white shadow">
+                    {{ __('messages.all_statuses') }}
+                </button>
+                <button onclick="switchTab('unconfirmed')" id="tabUnconfirmed" class="px-4 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 relative">
+                    <span id="unconfirmedText">{{ __('messages.unconfirmed') }}</span>
+                    <span id="unconfirmedBadge" class="hidden ml-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -217,13 +215,15 @@
             document.addEventListener('DOMContentLoaded', () => {
                 loadRequests();
                 loadItemsForSelect();
-                if (isStockManager || isFinanceManager) {
-                    loadUnconfirmedCount();
-                }
+                loadUnconfirmedCount();
             });
 
             function loadUnconfirmedCount() {
-                fetch('/api/requests/unconfirmed', {
+                const endpoint = (isStockManager || isFinanceManager) 
+                    ? '/api/requests/unconfirmed' 
+                    : '/api/requests/my-unconfirmed';
+                
+                fetch(endpoint, {
                         headers
                     })
                     .then(res => res.json())
@@ -252,7 +252,12 @@
                 }
                 
                 if (tab === 'unconfirmed') {
-                    fetch('/api/requests/unconfirmed', {
+                    // Use different endpoint based on role
+                    const endpoint = (isStockManager || isFinanceManager) 
+                        ? '/api/requests/unconfirmed' 
+                        : '/api/requests/my-unconfirmed';
+                    
+                    fetch(endpoint, {
                             headers
                         })
                         .then(res => res.json())
@@ -400,7 +405,11 @@
                             <td class="px-6 py-4">
                                 <button onclick="fulfillRequest(${req.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.fulfill') }}</button>
                             </td>
-                        ` : (isHrManager || isStockManager) ? '<td class="px-6 py-4">-</td>' : ''}
+                        ` : (req.status === 'fulfilled' && !req.confirmed_received_at && (req.user_id === currentUserId || req.user?.id === currentUserId)) ? `
+                            <td class="px-6 py-4">
+                                <button onclick="confirmReceipt(${req.id})" class="text-indigo-600 hover:text-indigo-800">{{ __('messages.confirm_receipt') }}</button>
+                            </td>
+                        ` : (isHrManager || isStockManager) ? '<td class="px-6 py-4">-</td>' : '<td class="px-6 py-4">-</td>'}
             </tr>
         `;
                     }).join('');
@@ -580,7 +589,7 @@
                         loadRequests();
                         Notification.success(`Request ${status}!`);
                     })
-                    .catch(err => Notification.error('Error updating request'));
+                    .catch(err => Notification.error('{{ __('messages.error_updating_request') }}'));
             }
 
             function fulfillRequest(id) {
@@ -599,7 +608,7 @@
                                 loadRequests();
                             }
                         })
-                        .catch(err => Notification.error('Error fulfilling request'));
+                        .catch(err => Notification.error('{{ __('messages.error_fulfilling_request') }}'));
                 }
             }
 
@@ -617,12 +626,10 @@
                                 closeDetailsModal();
                                 Notification.success('{{ __('messages.receipt_confirmed') }}');
                                 loadRequests();
-                                if (isStockManager || isFinanceManager) {
-                                    loadUnconfirmedCount();
-                                }
+                                loadUnconfirmedCount();
                             }
                         })
-                        .catch(err => Notification.error('Error confirming receipt'));
+                        .catch(err => Notification.error('{{ __('messages.error_confirming_receipt') }}'));
                 }
             }
 
@@ -713,7 +720,7 @@
                         ` : ''}
                             </div>
                         ` : ''}
-                        ${req.status === 'fulfilled' && req.user_id === currentUserId && !req.confirmed_received_at ? `
+                        ${req.status === 'fulfilled' && (req.user_id === currentUserId || req.user?.id === currentUserId) && !req.confirmed_received_at ? `
                             <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
                                 <button onclick="confirmReceipt(${req.id})" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">{{ __('messages.confirm_receipt') }}</button>
                             </div>
@@ -767,9 +774,9 @@
                                                                                                                                                                                 <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">{{ __('messages.remove') }}</button>
                                                                                                                                                                             </div>
                                                                                                                                                                         ` : `
-                                                                                                                                                                            <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                                                Add to Cart
-                                                                                                                                                                            </button>
+                                                                                                                                                                             <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                                                                                                                 {{ __('messages.add_to_cart') }}
+                                                                                                                                                                             </button>
                                                                                                                                                                         `}
             </div>
         `;
@@ -809,9 +816,9 @@
                                                                                                                                                                                 <button onclick="removeFromCart(${item.id})" class="ml-auto text-red-600 hover:text-red-800 text-xs">{{ __('messages.remove') }}</button>
                                                                                                                                                                             </div>
                                                                                                                                                                         ` : `
-                                                                                                                                                                            <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
-                                                                                                                                                                                Add to Cart
-                                                                                                                                                                            </button>
+                                                                                                                                                                             <button onclick="addToCart(${item.id})" class="w-full px-3 py-1 bg-green-600 text-white text-sm rounded hover:bg-green-700">
+                                                                                                                                                                                 {{ __('messages.add_to_cart') }}
+                                                                                                                                                                             </button>
                                                                                                                                                                         `}
             </div>
         `;

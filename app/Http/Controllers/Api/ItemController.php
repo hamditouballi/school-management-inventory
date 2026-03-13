@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Item;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -13,7 +14,12 @@ class ItemController extends Controller
 
     public function index()
     {
-        return response()->json(Item::all());
+        return response()->json(Item::with('category')->get());
+    }
+
+    public function categories()
+    {
+        return response()->json(Category::all());
     }
 
     public function store(Request $request)
@@ -25,7 +31,7 @@ class ItemController extends Controller
             'quantity' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:0',
             'unit' => 'required|string',
-            'category' => 'nullable|string',
+            'category_id' => 'nullable|exists:categories,id',
             'low_stock_threshold' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -37,12 +43,12 @@ class ItemController extends Controller
 
         $item = Item::create($validated);
 
-        return response()->json($item, 201);
+        return response()->json($item->load('category'), 201);
     }
 
     public function show(Item $item)
     {
-        return response()->json($item);
+        return response()->json($item->load('category'));
     }
 
     public function update(Request $request, Item $item)
@@ -54,7 +60,7 @@ class ItemController extends Controller
             'quantity' => 'sometimes|required|numeric|min:0',
             'price' => 'sometimes|required|numeric|min:0',
             'unit' => 'sometimes|required|string',
-            'category' => 'nullable|string',
+            'category_id' => 'nullable|exists:categories,id',
             'low_stock_threshold' => 'nullable|numeric|min:0',
             'image' => 'nullable|image|max:2048',
         ]);
@@ -70,7 +76,7 @@ class ItemController extends Controller
 
         $item->update($validated);
 
-        return response()->json($item);
+        return response()->json($item->load('category'));
     }
 
     public function destroy(Item $item)

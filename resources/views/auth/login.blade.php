@@ -516,7 +516,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!managerUsers.includes(username)) {
             e.preventDefault();
-            managerError.textContent = "This account cannot login as Manager.";
+            managerError.textContent = "{{ __('messages.cannot_login_as_manager') }}";
         }
     });
 
@@ -526,7 +526,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (managerUsers.includes(username)) {
             e.preventDefault();
-            adminError.textContent = "Managers must use Manager login.";
+            adminError.textContent = "{{ __('messages.managers_must_use_manager_login') }}";
         }
     });
 

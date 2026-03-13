@@ -160,4 +160,16 @@ class RequestController extends Controller
 
         return response()->json($requests);
     }
+
+    public function myUnconfirmed(Request $request)
+    {
+        $requests = RequestModel::with(['user.department', 'requestItems.item'])
+            ->where('user_id', $request->user()->id)
+            ->where('status', 'fulfilled')
+            ->whereNull('confirmed_received_at')
+            ->orderBy('dateCreated', 'desc')
+            ->get();
+
+        return response()->json($requests);
+    }
 }
