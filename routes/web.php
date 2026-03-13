@@ -1,14 +1,15 @@
 <?php
 
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\DashboardController;
-use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check() && auth()->user()->role === 'director') {
         return redirect()->route('requests.page');
     }
+
     return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
 });
 
@@ -42,4 +43,3 @@ Route::middleware('auth:web')->group(function () {
         return view('invoices.index');
     })->name('invoices.page');
 });
-

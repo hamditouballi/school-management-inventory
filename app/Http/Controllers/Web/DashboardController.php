@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -14,7 +13,7 @@ class DashboardController extends Controller
             return redirect()->route('requests.page')
                 ->with('error', 'You do not have access to the dashboard.');
         }
-        
+
         return view('dashboard');
     }
 }

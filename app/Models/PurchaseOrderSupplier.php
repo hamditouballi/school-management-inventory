@@ -15,12 +15,12 @@ class PurchaseOrderSupplier extends Model
         'price',
         'quality_rating',
         'notes',
-        'is_selected'
+        'is_selected',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
-        'is_selected' => 'boolean'
+        'is_selected' => 'boolean',
     ];
 
     public function purchaseOrder()

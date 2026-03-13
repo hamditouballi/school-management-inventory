@@ -19,6 +19,7 @@ class RequestPolicy
         if ($user->role === 'director') {
             return $request->user_id === $user->id;
         }
+
         // Managers can view all
         return in_array($user->role, ['stock_manager', 'finance_manager', 'hr_manager']);
     }
@@ -47,6 +48,7 @@ class RequestPolicy
         if ($user->role === 'director' && $request->status === 'pending') {
             return $request->user_id === $user->id;
         }
+
         // HR can delete any
         return $user->role === 'hr_manager';
     }

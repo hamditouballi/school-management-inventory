@@ -8,32 +8,45 @@
             <h1 class="text-3xl font-bold text-gray-800">{{ __('messages.requests') }}</h1>
             <p class="text-gray-600">{{ __('messages.view_and_manage_item_requests') }}</p>
         </div>
-        @if (auth()->user()->role !== 'stock_manager')
-            <button onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                {{ __('messages.create_request') }}
-            </button>
-        @endif
+        <div class="flex items-center gap-4">
+            @if (auth()->user()->role !== 'stock_manager')
+                <button onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    {{ __('messages.create_request') }}
+                </button>
+            @endif
+            @if (auth()->user()->role === 'stock_manager' || auth()->user()->role === 'finance_manager')
+                <div class="flex gap-2">
+                    <button onclick="switchTab('all')" id="tabAll" class="px-4 py-2 rounded-lg font-medium bg-green-600 text-white shadow">
+                        {{ __('messages.all_statuses') }}
+                    </button>
+                    <button onclick="switchTab('unconfirmed')" id="tabUnconfirmed" class="px-4 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 relative">
+                        <span id="unconfirmedText">{{ __('messages.unconfirmed') }}</span>
+                        <span id="unconfirmedBadge" class="hidden ml-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">0</span>
+                    </button>
+                </div>
+            @endif
+        </div>
     </div>
 
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <div class="grid grid-cols-3 gap-4">
-            <div>
+        <div class="flex gap-4 mb-4">
+            <div class="flex-1">
                 <label class="block text-sm font-medium mb-1">{{ __('messages.search') }}</label>
                 <input type="text" id="searchInput" placeholder="{{ __('messages.search') }}"
                     class="w-full px-3 py-2 border rounded" oninput="applyFilters()">
             </div>
-            <div>
+            <div class="flex-1">
                 <label class="block text-sm font-medium mb-1">{{ __('messages.status') }}</label>
                 <select id="statusFilter" class="w-full px-3 py-2 border rounded" onchange="applyFilters()">
                     <option value="">{{ __('messages.all_statuses') }}</option>
                     <option value="pending">{{ __('messages.pending') }}</option>
                     <option value="hr_approved">{{ __('messages.hr_approved') }}</option>
                     <option value="rejected">{{ __('messages.rejected') }}</option>
-                    <option value="fulfilled">{{ __('messages.fulfilled') }}</option>
+                    <option value="received">{{ __('messages.received') }}</option>
                 </select>
             </div>
-            <div>
+            <div class="flex-1">
                 <label class="block text-sm font-medium mb-1">
                     {{ __('messages.date_from') }}
                 </label>
@@ -196,12 +209,62 @@
             const requestsPerPage = 10;
             let itemCounter = 1;
             const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
-            let cart = {}; // { itemId: { item: itemData, quantity: number } }
+            const isFinanceManager = {{ auth()->user()->role === 'finance_manager' ? 'true' : 'false' }};
+            const currentUserId = {{ auth()->user()->id }};
+            let cart = {};
+            let currentTab = 'all'; // { itemId: { item: itemData, quantity: number } }
 
             document.addEventListener('DOMContentLoaded', () => {
                 loadRequests();
                 loadItemsForSelect();
+                if (isStockManager || isFinanceManager) {
+                    loadUnconfirmedCount();
+                }
             });
+
+            function loadUnconfirmedCount() {
+                fetch('/api/requests/unconfirmed', {
+                        headers
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const badge = document.getElementById('unconfirmedBadge');
+                        if (Array.isArray(data) && data.length > 0) {
+                            badge.textContent = data.length;
+                            badge.classList.remove('hidden');
+                        } else {
+                            badge.textContent = '0';
+                            badge.classList.add('hidden');
+                        }
+                    });
+            }
+
+            function switchTab(tab) {
+                currentTab = tab;
+                document.getElementById('tabAll').className = tab === 'all' ? 'px-6 py-2 rounded-lg font-medium bg-green-600 text-white shadow' : 'px-6 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300';
+                document.getElementById('tabUnconfirmed').className = tab === 'unconfirmed' ? 'px-6 py-2 rounded-lg font-medium bg-green-600 text-white shadow relative' : 'px-6 py-2 rounded-lg font-medium bg-gray-200 hover:bg-gray-300 relative';
+                
+                // Disable status filter when on unconfirmed tab
+                const statusFilter = document.getElementById('statusFilter');
+                statusFilter.disabled = tab === 'unconfirmed';
+                if (tab === 'unconfirmed') {
+                    statusFilter.value = '';
+                }
+                
+                if (tab === 'unconfirmed') {
+                    fetch('/api/requests/unconfirmed', {
+                            headers
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            filteredRequests = data;
+                            currentPage = 1;
+                            renderRequests();
+                        });
+                } else {
+                    loadRequests();
+                }
+            }
 
             function loadRequests() {
                 fetch('/api/requests', {
@@ -226,6 +289,11 @@
 
                 filteredRequests = allRequests.filter(req => {
                     let match = true;
+
+                    // Exclude unconfirmed fulfilled requests from "All" tab
+                    if (currentTab === 'all' && req.status === 'fulfilled' && !req.confirmed_received_at) {
+                        return false;
+                    }
 
                     // Search filter
                     if (search) {
@@ -255,6 +323,13 @@
             }
 
             function renderRequests() {
+                // Filter out unconfirmed fulfilled requests when on "all" tab
+                if (currentTab === 'all') {
+                    filteredRequests = allRequests.filter(req => {
+                        return !(req.status === 'fulfilled' && !req.confirmed_received_at);
+                    });
+                }
+
                 const start = (currentPage - 1) * requestsPerPage;
                 const end = start + requestsPerPage;
                 const pageRequests = filteredRequests.slice(start, end);
@@ -272,7 +347,8 @@
                             pending: 'bg-yellow-100 text-yellow-800',
                             hr_approved: 'bg-blue-100 text-blue-800',
                             rejected: 'bg-red-100 text-red-800',
-                            fulfilled: 'bg-green-100 text-green-800'
+                            fulfilled: 'bg-green-100 text-green-800',
+                            received: 'bg-gray-100 text-gray-800'
                         };
 
                         // Handle both snake_case and camelCase from API
@@ -309,7 +385,9 @@
                                     ? "{{ __('messages.rejected') }}" 
                                     : req.status == "fulfilled" 
                                         ? "{{ __('messages.fulfilled') }}" 
-                                        : req.status
+                                        : req.status == "received"
+                                            ? "{{ __('messages.received') }}"
+                                            : req.status
                     }</span>
                 </td>
                 <td class="px-6 py-4">${dateCreated ? new Date(dateCreated).toLocaleDateString() : 'N/A'}</td>
@@ -525,6 +603,29 @@
                 }
             }
 
+            function confirmReceipt(id) {
+                if (confirm('{{ __('messages.confirm_receipt') }}?')) {
+                    fetch(`/api/requests/${id}/confirm-receipt`, {
+                            method: 'POST',
+                            headers
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.error) {
+                                Notification.error(data.error);
+                            } else {
+                                closeDetailsModal();
+                                Notification.success('{{ __('messages.receipt_confirmed') }}');
+                                loadRequests();
+                                if (isStockManager || isFinanceManager) {
+                                    loadUnconfirmedCount();
+                                }
+                            }
+                        })
+                        .catch(err => Notification.error('Error confirming receipt'));
+                }
+            }
+
             function viewRequestDetails(id) {
                 document.getElementById('detailsModal').classList.remove('hidden');
                 document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}</p>';
@@ -610,6 +711,16 @@
                         ` : isStockManager && req.status === 'hr_approved' ? `
                             <button onclick="fulfillRequest(${req.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.fulfill') }}</button>
                         ` : ''}
+                            </div>
+                        ` : ''}
+                        ${req.status === 'fulfilled' && req.user_id === currentUserId && !req.confirmed_received_at ? `
+                            <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                                <button onclick="confirmReceipt(${req.id})" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">{{ __('messages.confirm_receipt') }}</button>
+                            </div>
+                        ` : ''}
+                        ${req.status === 'received' && req.confirmed_received_at ? `
+                            <div class="mt-4 p-3 bg-gray-50 rounded text-sm text-gray-600">
+                                <p>{{ __('messages.receipt_confirmed') }}: ${new Date(req.confirmed_received_at).toLocaleDateString()}</p>
                             </div>
                         ` : ''}
             `;

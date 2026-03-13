@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
-use App\Models\Item;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PurchaseOrderItemFactory extends Factory

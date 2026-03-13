@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
-use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
@@ -77,11 +77,11 @@ class ItemController extends Controller
     {
         $this->authorize('delete', $item);
         // Reject all pending/approved requests for this item
-        \App\Models\Request::whereHas('requestItems', function($query) use ($item) {
+        \App\Models\Request::whereHas('requestItems', function ($query) use ($item) {
             $query->where('item_id', $item->id);
         })
-        ->whereIn('status', ['pending', 'approved'])
-        ->update(['status' => 'rejected']);
+            ->whereIn('status', ['pending', 'approved'])
+            ->update(['status' => 'rejected']);
 
         $item->delete();
 

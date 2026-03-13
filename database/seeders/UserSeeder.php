@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Department;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -80,8 +80,7 @@ class UserSeeder extends Seeder
             'role' => 'director',
             'department_id' => $pe1->id,
         ]);
-        
-        
+
         User::create([
             'name' => 'Primary Director',
             'username' => 'director_pe2',
@@ -90,8 +89,7 @@ class UserSeeder extends Seeder
             'role' => 'director',
             'department_id' => $pe2->id,
         ]);
-        
-        
+
         User::create([
             'name' => 'Secondary Director',
             'username' => 'director_pe3',
@@ -100,8 +98,7 @@ class UserSeeder extends Seeder
             'role' => 'director',
             'department_id' => $pe3->id,
         ]);
-        
-        
+
         User::create([
             'name' => 'Logistics Manager',
             'username' => 'logistics_manager',

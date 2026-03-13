@@ -13,13 +13,13 @@ class LocaleController extends Controller
     public function switch(Request $request, $locale)
     {
         // Validate locale
-        if (!array_key_exists($locale, config('app.available_locales'))) {
+        if (! array_key_exists($locale, config('app.available_locales'))) {
             return redirect()->back();
         }
-        
+
         // Store locale in session
         Session::put('locale', $locale);
-        
+
         return redirect()->back();
     }
 }

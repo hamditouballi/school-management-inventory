@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -17,7 +17,7 @@ return new class extends Migration
         DB::table('purchase_orders')->where('status', 'approved_hr')->update(['status' => 'initial_approved']);
         // If there were any rejected, they map cleanly to just rejected
         DB::table('purchase_orders')->where('status', 'rejected_hr')->update(['status' => 'rejected']);
-        
+
         if (DB::getDriverName() === 'sqlite') {
             Schema::table('purchase_orders', function (Blueprint $table) {
                 $table->string('status')->default('pending_initial_approval')->change();

@@ -28,7 +28,7 @@ class InvoiceController extends Controller
             'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.item_name' => 'required_without:items.*.item_id|string',
-            'items.*.item_id'   => 'nullable|exists:items,id',
+            'items.*.item_id' => 'nullable|exists:items,id',
             'items.*.description' => 'nullable|string',
             'items.*.quantity' => 'required|numeric|min:0.01',
             'items.*.unit' => 'nullable|string',
@@ -124,9 +124,11 @@ class InvoiceController extends Controller
             }
 
             \DB::commit();
+
             return response()->json($invoice->load(['responsibleFinance', 'purchaseOrderItem', 'invoiceItems']), 201);
         } catch (\Exception $e) {
             \DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -199,9 +201,11 @@ class InvoiceController extends Controller
             }
 
             \DB::commit();
+
             return response()->json($invoice->load(['responsibleFinance', 'invoiceItems']));
         } catch (\Exception $e) {
             \DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -209,6 +213,7 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();
+
         return response()->json(['message' => 'Invoice deleted successfully']);
     }
 }

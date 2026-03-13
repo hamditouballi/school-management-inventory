@@ -2,39 +2,39 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
-use App\Models\Item;
-use App\Models\Request as RequestModel;
-use App\Models\RequestItem;
 use App\Models\BonDeSortie;
+use App\Models\Invoice;
+use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
-use App\Models\Invoice;
+use App\Models\Request as RequestModel;
+use App\Models\RequestItem;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
-         $directorPE1 = User::where('username', 'director_pe1')->first();
-    $directorPE2 = User::where('username', 'director_pe2')->first();
+        $directorPE1 = User::where('username', 'director_pe1')->first();
+        $directorPE2 = User::where('username', 'director_pe2')->first();
 
-    $stockManager = User::where('username', 'stock_manager')->first();
-    $financeManager = User::where('username', 'finance_manager')->first();
+        $stockManager = User::where('username', 'stock_manager')->first();
+        $financeManager = User::where('username', 'finance_manager')->first();
 
-    if (!$directorPE1 || !$directorPE2 || !$stockManager || !$financeManager) {
-        throw new \Exception('Required demo users not found. Run UserSeeder first.');
-    }
+        if (! $directorPE1 || ! $directorPE2 || ! $stockManager || ! $financeManager) {
+            throw new \Exception('Required demo users not found. Run UserSeeder first.');
+        }
 
-    // Create 6 sample requests
-    $requests = [
-        ['user' => $directorPE1, 'status' => 'fulfilled', 'created' => now()->subDays(20)],
-        ['user' => $directorPE2, 'status' => 'fulfilled', 'created' => now()->subDays(18)],
-        ['user' => $directorPE1, 'status' => 'fulfilled', 'created' => now()->subDays(15)],
-        ['user' => $directorPE2, 'status' => 'approved', 'created' => now()->subDays(10)],
-        ['user' => $directorPE1, 'status' => 'pending', 'created' => now()->subDays(3)],
-        ['user' => $directorPE2, 'status' => 'pending', 'created' => now()->subDays(1)],
-    ];
+        // Create 6 sample requests
+        $requests = [
+            ['user' => $directorPE1, 'status' => 'fulfilled', 'created' => now()->subDays(20)],
+            ['user' => $directorPE2, 'status' => 'fulfilled', 'created' => now()->subDays(18)],
+            ['user' => $directorPE1, 'status' => 'fulfilled', 'created' => now()->subDays(15)],
+            ['user' => $directorPE2, 'status' => 'approved', 'created' => now()->subDays(10)],
+            ['user' => $directorPE1, 'status' => 'pending', 'created' => now()->subDays(3)],
+            ['user' => $directorPE2, 'status' => 'pending', 'created' => now()->subDays(1)],
+        ];
 
         foreach ($requests as $reqData) {
             $request = RequestModel::create([
@@ -47,7 +47,7 @@ class DemoDataSeeder extends Seeder
             // Add 2-3 items per request
             $itemCount = rand(2, 3);
             $items = Item::inRandomOrder()->take($itemCount)->get();
-            
+
             foreach ($items as $item) {
                 RequestItem::create([
                     'request_id' => $request->id,
@@ -110,13 +110,13 @@ class DemoDataSeeder extends Seeder
 
         // Create 6 sample invoices
         $purchaseOrderItems = PurchaseOrderItem::with('item')->get();
-        
+
         for ($i = 0; $i < 6; $i++) {
             $poItem = $purchaseOrderItems->random();
-            
+
             Invoice::create([
-                'supplier' => 'Supplier ' . chr(65 + $i),
-                'description' => 'Invoice for ' . $poItem->item->designation,
+                'supplier' => 'Supplier '.chr(65 + $i),
+                'description' => 'Invoice for '.$poItem->item->designation,
                 'quantity' => $poItem->quantity,
                 'price' => $poItem->unit_price * $poItem->quantity,
                 'date' => now()->subDays(rand(1, 20)),

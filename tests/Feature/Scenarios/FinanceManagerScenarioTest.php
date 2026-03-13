@@ -1,12 +1,13 @@
 <?php
 
-use App\Models\User;
 use App\Models\Item;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use function Pest\Laravel\{actingAs, postJson, getJson};
+
+use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
     $this->financeManager = User::factory()->create(['role' => 'finance_manager']);
@@ -19,9 +20,9 @@ test('finance manager full workflow scenario', function () {
         $requestData = [
             'items' => [
                 ['item_id' => $item->id, 'quantity_requested' => 5],
-            ]
+            ],
         ];
-        
+
         actingAs($this->financeManager, 'sanctum')
             ->postJson('/api/requests', $requestData)
             ->assertStatus(201);
@@ -32,13 +33,13 @@ test('finance manager full workflow scenario', function () {
         $po = PurchaseOrder::factory()->create([
             'status' => 'final_approved',
             'supplier' => 'Stationery Hub',
-            'total_amount' => 500.00
+            'total_amount' => 500.00,
         ]);
         $poItem = PurchaseOrderItem::factory()->create([
             'purchase_order_id' => $po->id,
             'item_id' => $item->id,
             'quantity' => 100,
-            'unit_price' => 5.00
+            'unit_price' => 5.00,
         ]);
 
         $invoiceFromPoData = [
@@ -53,9 +54,9 @@ test('finance manager full workflow scenario', function () {
                     'item_name' => 'Office Paper',
                     'quantity' => 100,
                     'unit_price' => 5.00,
-                    'unit' => 'box'
-                ]
-            ]
+                    'unit' => 'box',
+                ],
+            ],
         ];
 
         actingAs($this->financeManager, 'sanctum')
@@ -75,10 +76,10 @@ test('finance manager full workflow scenario', function () {
                     'item_name' => 'New Desk',
                     'quantity' => 1,
                     'unit_price' => 250.00,
-                    'unit' => 'pcs'
-                ]
+                    'unit' => 'pcs',
+                ],
             ]),
-            'image' => UploadedFile::fake()->image('invoice.jpg')
+            'image' => UploadedFile::fake()->image('invoice.jpg'),
         ];
 
         actingAs($this->financeManager, 'sanctum')
@@ -101,4 +102,3 @@ test('finance manager full workflow scenario', function () {
             ->assertStatus(200);
     });
 });
-

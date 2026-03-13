@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Item;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ArticlesSeeder extends Seeder
@@ -18,16 +17,18 @@ class ArticlesSeeder extends Seeder
         // Skip header row
         fgetcsv($file);
 
-        while (($data = fgetcsv($file, 1000, ",")) !== FALSE) {
+        while (($data = fgetcsv($file, 1000, ',')) !== false) {
             // Convert encoding to UTF-8
             $data = array_map(function ($value) {
                 return mb_convert_encoding($value, 'UTF-8', 'Windows-1252');
             }, $data);
 
-            if (empty($data[2])) continue;
+            if (empty($data[2])) {
+                continue;
+            }
 
             Item::create([
-                'image_path' => 'items/' . $data[0] . ".jpg",
+                'image_path' => 'items/'.$data[0].'.jpg',
                 'designation' => $data[2],
                 'quantity' => (int) $data[3],
                 'unit' => $data[4],

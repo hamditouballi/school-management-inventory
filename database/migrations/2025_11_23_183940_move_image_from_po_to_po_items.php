@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::table('purchase_order_items', function (Blueprint $table) {
             $table->string('image_path')->nullable()->after('unit_price');
         });
-        
+
         // Remove image_path from purchase_orders
         Schema::table('purchase_orders', function (Blueprint $table) {
             $table->dropColumn('image_path');
@@ -31,7 +31,7 @@ return new class extends Migration
         Schema::table('purchase_orders', function (Blueprint $table) {
             $table->string('image_path')->nullable()->after('total_amount');
         });
-        
+
         // Remove image_path from purchase_order_items
         Schema::table('purchase_order_items', function (Blueprint $table) {
             $table->dropColumn('image_path');

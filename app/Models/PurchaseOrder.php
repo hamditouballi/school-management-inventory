@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrder extends Model
 {
     use HasFactory;
+
     protected $fillable = ['date', 'id_responsible_stock', 'status', 'supplier', 'total_amount'];
 
     protected $casts = [

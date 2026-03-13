@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
 use App\Models\Item;
-use App\Models\PurchaseOrder;
 use App\Models\Request as UserRequest;
 use App\Models\RequestItem;
-use function Pest\Laravel\{actingAs, postJson, getJson, putJson};
+use App\Models\User;
+
+use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
     $this->stockManager = User::factory()->create(['role' => 'stock_manager']);
@@ -20,7 +20,7 @@ test('stock manager full workflow scenario', function () {
             'price' => 15.5,
             'unit' => 'pcs',
             'category' => 'Stationery',
-            'low_stock_threshold' => 10
+            'low_stock_threshold' => 10,
         ];
 
         actingAs($this->stockManager, 'sanctum')
@@ -37,10 +37,10 @@ test('stock manager full workflow scenario', function () {
                 [
                     'item_id' => $item->id,
                     'quantity' => 100,
-                    'unit_price' => 14.0
-                ]
+                    'unit_price' => 14.0,
+                ],
             ],
-            'date' => now()->format('Y-m-d')
+            'date' => now()->format('Y-m-d'),
         ];
 
         $response = actingAs($this->stockManager, 'sanctum')
@@ -55,12 +55,12 @@ test('stock manager full workflow scenario', function () {
         $director = User::factory()->create(['role' => 'director']);
         $userRequest = UserRequest::factory()->create([
             'user_id' => $director->id,
-            'status' => 'hr_approved'
+            'status' => 'hr_approved',
         ]);
         RequestItem::factory()->create([
             'request_id' => $userRequest->id,
             'item_id' => $item->id,
-            'quantity_requested' => 5
+            'quantity_requested' => 5,
         ]);
 
         actingAs($this->stockManager, 'sanctum')
@@ -77,4 +77,3 @@ test('stock manager full workflow scenario', function () {
             ->assertStatus(200);
     });
 });
-

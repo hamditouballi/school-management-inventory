@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\BonDeSortie;
-use App\Models\Request;
 use App\Models\Item;
+use App\Models\Request;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 

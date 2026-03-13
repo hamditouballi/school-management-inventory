@@ -1,12 +1,12 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\ItemController;
-use App\Http\Controllers\Api\RequestController;
-use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\InvoiceController;
-use App\Http\Controllers\Api\StatsController;
+use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RequestController;
+use App\Http\Controllers\Api\StatsController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -23,9 +23,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Requests
     Route::get('/requests', [RequestController::class, 'index']);
     Route::post('/requests', [RequestController::class, 'store']);
+    Route::get('/requests/unconfirmed', [RequestController::class, 'unconfirmed']);
     Route::get('/requests/{request}', [RequestController::class, 'show']);
     Route::put('/requests/{requestModel}/status', [RequestController::class, 'updateStatus']);
     Route::post('/requests/{requestModel}/fulfill', [RequestController::class, 'fulfill']);
+    Route::post('/requests/{requestModel}/confirm-receipt', [RequestController::class, 'confirmReceipt']);
 
     // Purchase Orders
     Route::put('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus']);
@@ -44,7 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/stats/top-items', [StatsController::class, 'topItems']);
     Route::get('/stats/low-stock', [StatsController::class, 'lowStock']);
     Route::get('/stats/dashboard', [StatsController::class, 'dashboard']);
-    
+
     // Reports
     Route::get('/reports/consumed-materials', [ReportController::class, 'consumedMaterials']);
     Route::get('/reports/department-consumption', [ReportController::class, 'departmentConsumption']);

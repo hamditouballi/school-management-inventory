@@ -86,7 +86,12 @@ return [
     'approved' => 'Approved',
     'rejected' => 'Rejected',
     'fulfilled' => 'Fulfilled',
+    'received' => 'Received',
     'hr_approved' => 'HR Approved',
+    'confirm_receipt' => 'Confirm Receipt',
+    'receipt_confirmed' => 'Receipt confirmed!',
+    'unconfirmed' => 'Unconfirmed',
+    'awaiting_confirmation' => 'Awaiting Confirmation',
     'total_price' => 'Total Price',
 
     // Purchase Orders

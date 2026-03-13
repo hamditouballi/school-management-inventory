@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Item;
 use App\Models\Request;
 use App\Models\RequestItem;
-use App\Models\Item;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RequestItemFactory extends Factory

@@ -18,13 +18,13 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
         // Handle items from JSON string (FormData submission)
-        $items = $request->has('items') && is_string($request->input('items')) 
-            ? json_decode($request->input('items'), true) 
+        $items = $request->has('items') && is_string($request->input('items'))
+            ? json_decode($request->input('items'), true)
             : $request->input('items');
-        
+
         $request->merge(['items' => $items]);
-        
-            $validated = $request->validate([
+
+        $validated = $request->validate([
             'date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.item_id' => 'nullable|exists:items,id',
@@ -46,15 +46,15 @@ class PurchaseOrderController extends Controller
 
             foreach ($validated['items'] as $index => $itemData) {
                 $itemId = $itemData['item_id'] ?? null;
-                
+
                 // If new item name is provided, create item in inventory with quantity 0
-                if (!$itemId && isset($itemData['new_item_name'])) {
+                if (! $itemId && isset($itemData['new_item_name'])) {
                     $itemImagePath = null;
                     $imageField = "item_image_{$index}";
                     if ($request->hasFile($imageField)) {
                         $itemImagePath = $request->file($imageField)->store('items', 'public');
                     }
-                    
+
                     $newItem = \App\Models\Item::create([
                         'designation' => $itemData['new_item_name'],
                         'description' => '',
@@ -66,7 +66,7 @@ class PurchaseOrderController extends Controller
                     ]);
                     $itemId = $newItem->id;
                 }
-                
+
                 PurchaseOrderItem::create([
                     'purchase_order_id' => $purchaseOrder->id,
                     'item_id' => $itemId,
@@ -77,9 +77,11 @@ class PurchaseOrderController extends Controller
             }
 
             DB::commit();
+
             return response()->json($purchaseOrder->load('purchaseOrderItems.item'), 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -96,10 +98,10 @@ class PurchaseOrderController extends Controller
         }
 
         // Handle items from JSON string (FormData submission)
-        $items = $request->has('items') && is_string($request->input('items')) 
-            ? json_decode($request->input('items'), true) 
+        $items = $request->has('items') && is_string($request->input('items'))
+            ? json_decode($request->input('items'), true)
             : $request->input('items');
-        
+
         $request->merge(['items' => $items]);
 
         $validated = $request->validate([
@@ -128,19 +130,19 @@ class PurchaseOrderController extends Controller
             // Create new items
             foreach ($validated['items'] as $index => $itemData) {
                 $itemId = $itemData['item_id'] ?? null;
-                
+
                 // If new item name is provided and item doesn't exist yet, create it
-                if (!$itemId && isset($itemData['new_item_name'])) {
+                if (! $itemId && isset($itemData['new_item_name'])) {
                     // Check if item was already created
                     $existingItem = \App\Models\Item::where('designation', $itemData['new_item_name'])->first();
                     if ($existingItem) {
                         $itemId = $existingItem->id;
-                        
+
                         // Update image if new one provided
                         $imageField = "item_image_{$index}";
                         if ($request->hasFile($imageField)) {
                             $existingItem->update([
-                                'image_path' => $request->file($imageField)->store('items', 'public')
+                                'image_path' => $request->file($imageField)->store('items', 'public'),
                             ]);
                         }
                     } else {
@@ -149,7 +151,7 @@ class PurchaseOrderController extends Controller
                         if ($request->hasFile($imageField)) {
                             $itemImagePath = $request->file($imageField)->store('items', 'public');
                         }
-                        
+
                         $newItem = \App\Models\Item::create([
                             'designation' => $itemData['new_item_name'],
                             'description' => '',
@@ -162,7 +164,7 @@ class PurchaseOrderController extends Controller
                         $itemId = $newItem->id;
                     }
                 }
-                
+
                 PurchaseOrderItem::create([
                     'purchase_order_id' => $purchaseOrder->id,
                     'item_id' => $itemId,
@@ -173,9 +175,11 @@ class PurchaseOrderController extends Controller
             }
 
             DB::commit();
+
             return response()->json($purchaseOrder->load('purchaseOrderItems.item'));
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -187,6 +191,7 @@ class PurchaseOrderController extends Controller
         ]);
 
         $purchaseOrder->update(['status' => $validated['status']]);
+
         return response()->json($purchaseOrder);
     }
 
@@ -197,7 +202,7 @@ class PurchaseOrderController extends Controller
         }
 
         $validated = $request->validate([
-            'action' => 'required|in:approve,reject'
+            'action' => 'required|in:approve,reject',
         ]);
 
         $status = $validated['action'] === 'approve' ? 'initial_approved' : 'rejected';
@@ -213,8 +218,8 @@ class PurchaseOrderController extends Controller
         }
 
         // Decode JSON if it's sent as string
-        $proposals = $request->has('proposals') && is_string($request->input('proposals')) 
-            ? json_decode($request->input('proposals'), true) 
+        $proposals = $request->has('proposals') && is_string($request->input('proposals'))
+            ? json_decode($request->input('proposals'), true)
             : $request->input('proposals');
 
         $request->merge(['proposals' => $proposals]);
@@ -239,6 +244,7 @@ class PurchaseOrderController extends Controller
             return response()->json($purchaseOrder->load('proposals'));
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -250,12 +256,12 @@ class PurchaseOrderController extends Controller
         }
 
         $validated = $request->validate([
-            'proposal_id' => 'required|exists:purchase_order_suppliers,id'
+            'proposal_id' => 'required|exists:purchase_order_suppliers,id',
         ]);
 
         $proposal = $purchaseOrder->proposals()->where('id', $validated['proposal_id'])->first();
 
-        if (!$proposal) {
+        if (! $proposal) {
             return response()->json(['error' => 'Proposal does not belong to this purchase order'], 400);
         }
 
@@ -268,13 +274,15 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->update([
                 'status' => 'final_approved',
                 'supplier' => $proposal->supplier_name,
-                'total_amount' => $proposal->price
+                'total_amount' => $proposal->price,
             ]);
 
             DB::commit();
+
             return response()->json($purchaseOrder->load('proposals'));
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -286,6 +294,7 @@ class PurchaseOrderController extends Controller
         }
 
         $purchaseOrder->delete();
+
         return response()->json(['message' => 'Purchase order deleted successfully']);
     }
 }

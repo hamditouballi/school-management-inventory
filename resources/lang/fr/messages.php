@@ -82,7 +82,12 @@ return [
     'approved' => 'Approuvé',
     'rejected' => 'Rejeté',
     'fulfilled' => 'Rempli',
+    'received' => 'Reçu',
     'hr_approved' => 'Approuvé',
+    'confirm_receipt' => 'Confirmer la réception',
+    'receipt_confirmed' => 'Réception confirmée!',
+    'unconfirmed' => 'Non confirmé',
+    'awaiting_confirmation' => 'En attente de confirmation',
 
     // Purchase Orders
     'create_purchase_order' => '+ Créer un bon de commande',

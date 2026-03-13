@@ -26,7 +26,7 @@ class AuthWebController extends Controller
 
         if ($user && Hash::check($credentials['password'], $user->password)) {
             Auth::login($user);
-            
+
             // Create API token directly (avoid HTTP self-call)
             $token = $user->createToken('web_token')->plainTextToken;
             session(['api_token' => $token]);

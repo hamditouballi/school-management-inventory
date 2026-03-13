@@ -1,8 +1,9 @@
 <?php
 
-use App\Models\User;
 use App\Models\Item;
-use function Pest\Laravel\{actingAs, postJson, getJson, deleteJson};
+use App\Models\User;
+
+use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
     $this->director = User::factory()->create(['role' => 'director']);
@@ -13,8 +14,8 @@ test('director full workflow scenario', function () {
         $item = Item::factory()->create(['designation' => 'Pencil', 'quantity' => 100]);
         $requestData = [
             'items' => [
-                ['item_id' => $item->id, 'quantity_requested' => 10]
-            ]
+                ['item_id' => $item->id, 'quantity_requested' => 10],
+            ],
         ];
 
         $response = actingAs($this->director, 'sanctum')
@@ -44,4 +45,3 @@ test('director full workflow scenario', function () {
             ->assertStatus(200);
     });
 });
-

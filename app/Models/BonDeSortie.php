@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class BonDeSortie extends Model
 {
     use HasFactory;
+
     protected $fillable = ['request_id', 'item_id', 'quantity', 'date', 'id_responsible_stock'];
 
     protected $casts = [

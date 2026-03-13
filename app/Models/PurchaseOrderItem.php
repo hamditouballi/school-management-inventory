@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class PurchaseOrderItem extends Model
 {
     use HasFactory;
+
     protected $fillable = ['item_id', 'purchase_order_id', 'quantity', 'unit_price', 'image_path', 'new_item_name'];
 
     public function item()

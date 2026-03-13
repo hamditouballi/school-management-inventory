@@ -15,8 +15,8 @@ class StatsController extends Controller
     {
         $months = $request->get('months', 12);
 
-        $dateField = DB::getDriverName() === 'sqlite' 
-            ? "strftime('%Y-%m', date)" 
+        $dateField = DB::getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', date)"
             : "DATE_FORMAT(date, '%Y-%m')";
 
         $data = BonDeSortie::select(
@@ -47,8 +47,8 @@ class StatsController extends Controller
     {
         $months = $request->get('months', 12);
 
-        $dateField = DB::getDriverName() === 'sqlite' 
-            ? "strftime('%Y-%m', date)" 
+        $dateField = DB::getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', date)"
             : "DATE_FORMAT(date, '%Y-%m')";
 
         $data = Invoice::select(

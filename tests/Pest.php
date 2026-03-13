@@ -56,7 +56,7 @@ function step(string $name, Closure $closure)
     } finally {
         $duration = round((microtime(true) - $start) * 1000, 2);
         $timestamp = now()->format('H:i:s');
-        
+
         // Find the actual test file in the backtrace
         $file = 'unknown';
         foreach (debug_backtrace() as $trace) {
@@ -72,15 +72,13 @@ function step(string $name, Closure $closure)
             'status' => $status,
             'duration_ms' => $duration,
             'timestamp' => $timestamp,
-            'error' => $errorMessage
+            'error' => $errorMessage,
         ];
 
         $logPath = storage_path('logs/test_steps.jsonl');
-        file_put_contents($logPath, json_encode($stepData) . PHP_EOL, FILE_APPEND);
-        
+        file_put_contents($logPath, json_encode($stepData).PHP_EOL, FILE_APPEND);
+
         // Use a very specific prefix and ensure it's on a new line
-        echo PHP_EOL . "##STEP_DATA##" . json_encode($stepData) . "##" . PHP_EOL;
+        echo PHP_EOL.'##STEP_DATA##'.json_encode($stepData).'##'.PHP_EOL;
     }
 }
-
-

@@ -39,6 +39,7 @@ class PurchaseOrderPolicy
         if ($user->role === 'stock_manager') {
             return in_array($purchaseOrder->status, ['final_approved', 'ordered']);
         }
+
         return false;
     }
 
@@ -47,6 +48,7 @@ class PurchaseOrderPolicy
         if ($user->role === 'hr_manager') {
             return true;
         }
+
         return $user->role === 'stock_manager' && $purchaseOrder->status === 'pending_initial_approval';
     }
 

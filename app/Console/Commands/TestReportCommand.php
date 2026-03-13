@@ -30,8 +30,8 @@ class TestReportCommand extends Command
 
         $timestamp = now()->format('Y-m-d_H-i-s');
         $reportDir = storage_path("test-reports/{$timestamp}");
-        
-        if (!File::exists($reportDir)) {
+
+        if (! File::exists($reportDir)) {
             File::makeDirectory($reportDir, 0755, true);
         }
 
@@ -52,8 +52,8 @@ class TestReportCommand extends Command
         $command = "php artisan test --testdox-html={$htmlReportPath} --log-junit={$xmlReportPath}";
 
         // Execute tests
-        $this->info("Running tests...");
-        
+        $this->info('Running tests...');
+
         // Clear old steps log
         $logPath = storage_path('logs/test_steps.jsonl');
         if (File::exists($logPath)) {
@@ -82,6 +82,7 @@ class TestReportCommand extends Command
                     if (trim($cleanLine)) {
                         echo $cleanLine;
                     }
+
                     continue;
                 }
                 echo $line;
@@ -91,10 +92,8 @@ class TestReportCommand extends Command
             $resultCode = proc_close($process);
         }
 
-
-
         $this->newLine();
-        
+
         if ($resultCode === 0) {
             $this->info('Test suite passed successfully!');
         } else {
@@ -114,32 +113,31 @@ class TestReportCommand extends Command
 
         // Convert XML to JSON
         if (File::exists($xmlReportPath)) {
-            $this->info("Converting XML report to JSON...");
+            $this->info('Converting XML report to JSON...');
             $xmlContent = simplexml_load_file($xmlReportPath);
             if ($xmlContent !== false) {
                 // Merge steps into JSON report
                 $jsonArray = json_decode(json_encode($xmlContent), true);
                 $jsonArray['scenario_steps'] = $scenarioSteps;
                 File::put($jsonReportPath, json_encode($jsonArray, JSON_PRETTY_PRINT));
-                $this->info("JSON report generated successfully.");
+                $this->info('JSON report generated successfully.');
             }
         }
 
         // Generate Custom HTML Report
-        $this->info("Generating custom HTML report...");
+        $this->info('Generating custom HTML report...');
         $html = $this->generateCustomHtml($scenarioSteps, $timestamp, $resultCode === 0);
         File::put($htmlReportPath, $html);
-
 
         $this->newLine();
         $this->info('--- Report Summary ---');
         $this->line("Directory: {$reportDir}");
-        $this->line("- HTML Report: " . basename($htmlReportPath));
-        $this->line("- JSON Report: " . basename($jsonReportPath));
+        $this->line('- HTML Report: '.basename($htmlReportPath));
+        $this->line('- JSON Report: '.basename($jsonReportPath));
         if (File::exists($xmlReportPath)) {
-            $this->line("- XML Report:  " . basename($xmlReportPath));
+            $this->line('- XML Report:  '.basename($xmlReportPath));
         }
-        
+
         $this->newLine();
     }
 
@@ -147,7 +145,7 @@ class TestReportCommand extends Command
     {
         $statusColor = $passed ? '#10b981' : '#ef4444';
         $statusText = $passed ? 'PASSED' : 'FAILED';
-        
+
         // Group steps by file
         $grouped = [];
         foreach ($steps as $step) {
@@ -186,14 +184,14 @@ class TestReportCommand extends Command
             <div class="status-badge"><?php echo $statusText; ?></div>
         </div>
         
-        <?php foreach ($grouped as $file => $fileSteps): ?>
+        <?php foreach ($grouped as $file => $fileSteps) { ?>
         <div class="scenario-card">
             <div class="scenario-header" onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
                 <h3 style="margin:0"><?php echo str_replace('ScenarioTest.php', '', $file); ?> Workflow</h3>
                 <span class="meta"><?php echo count($fileSteps); ?> Steps</span>
             </div>
             <div class="scenario-content">
-                <?php foreach ($fileSteps as $step): ?>
+                <?php foreach ($fileSteps as $step) { ?>
                 <div class="step-row">
                     <div>
                         <span class="<?php echo strtolower($step['status']); ?>">
@@ -206,10 +204,10 @@ class TestReportCommand extends Command
                         <span style="margin-left: 1.5rem"><?php echo $step['duration_ms']; ?> ms</span>
                     </div>
                 </div>
-                <?php endforeach; ?>
+                <?php } ?>
             </div>
         </div>
-        <?php endforeach; ?>
+        <?php } ?>
     </div>
 </body>
 </html>
@@ -217,4 +215,3 @@ class TestReportCommand extends Command
         return ob_get_clean();
     }
 }
-

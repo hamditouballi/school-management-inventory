@@ -15,14 +15,14 @@ class SetLocale
     public function handle(Request $request, Closure $next)
     {
         $locale = Session::get('locale', config('app.locale'));
-        
+
         // Validate locale
-        if (!array_key_exists($locale, config('app.available_locales'))) {
+        if (! array_key_exists($locale, config('app.available_locales'))) {
             $locale = config('app.locale');
         }
-        
+
         App::setLocale($locale);
-        
+
         return $next($request);
     }
 }

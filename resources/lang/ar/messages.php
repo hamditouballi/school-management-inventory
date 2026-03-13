@@ -86,7 +86,12 @@ return [
     'approved' => 'موافق عليه',
     'rejected' => 'مرفوض',
     'fulfilled' => 'منفذ',
+    'received' => 'تم الاستلام',
     'hr_approved' => 'موافق عليه',
+    'confirm_receipt' => 'تأكيد الاستلام',
+    'receipt_confirmed' => 'تم تأكيد الاستلام!',
+    'unconfirmed' => 'غير مؤكد',
+    'awaiting_confirmation' => 'في انتظار التأكيد',
     'total_price' => 'السعر الإجمالي',
 
     // Purchase Orders

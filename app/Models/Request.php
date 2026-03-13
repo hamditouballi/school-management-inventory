@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Request extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'status', 'dateCreated', 'image_path'];
+
+    protected $fillable = ['user_id', 'status', 'dateCreated', 'image_path', 'confirmed_received_at'];
 
     protected $casts = [
         'dateCreated' => 'datetime',
+        'confirmed_received_at' => 'datetime',
     ];
 
     public function user()

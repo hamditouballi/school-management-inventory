@@ -4,7 +4,7 @@ This is a Laravel 11 + PHP 8.2 application with a Blade/TailwindCSS frontend.
 
 ## Project Overview
 
-- **Framework**: Laravel 11.31
+- **Framework**: Laravel 11.48
 - **PHP Version**: 8.2+
 - **Testing**: Pest PHP
 - **Code Style**: Laravel Pint (PSR-12 + Laravel conventions)
@@ -34,12 +34,13 @@ RTL support is configured in `config/app.php` under `available_locales`. The lay
 | Route | Controller | Description |
 |-------|------------|-------------|
 | `/` | - | Welcome page |
-| `/login` | - | Login page |
-| `/dashboard` | WebController | Dashboard with stats |
-| `/items` | WebController | Items management |
-| `/requests` | WebController | Requests management |
-| `/purchase-orders` | WebController | Purchase orders management |
-| `/invoices` | WebController | Invoices management |
+| `/login` | AuthWebController | Login page |
+| `/dashboard` | DashboardController | Dashboard with stats |
+| `/items` | - | Items management (Blade view) |
+| `/requests` | - | Requests management (Blade view) |
+| `/purchase-orders` | - | Purchase orders management (Blade view) |
+| `/invoices` | - | Invoices management (Blade view) |
+| `/locale/{locale}` | LocaleController | Language switching |
 
 ### API Routes
 
@@ -47,11 +48,25 @@ RTL support is configured in `config/app.php` under `available_locales`. The lay
 |----------|------------|-------------|
 | `GET /api/items` | ItemController | List/create items |
 | `GET /api/requests` | RequestController | List/create requests |
+| `POST /api/requests/{request}/fulfill` | RequestController | Fulfill a request |
+| `PUT /api/requests/{request}/status` | RequestController | Update request status |
 | `GET /api/purchase-orders` | PurchaseOrderController | List/create POs |
+| `POST /api/purchase-orders/{po}/initial-approval` | PurchaseOrderController | Initial approval |
+| `POST /api/purchase-orders/{po}/final-approval` | PurchaseOrderController | Final approval |
+| `POST /api/purchase-orders/{po}/proposals` | PurchaseOrderController | Submit supplier proposals |
+| `PUT /api/purchase-orders/{po}/status` | PurchaseOrderController | Update PO status |
 | `GET /api/invoices` | InvoiceController | List/create invoices |
-| `GET /api/stats/*` | StatsController | Dashboard statistics |
+| `GET /api/stats/dashboard` | StatsController | Dashboard stats |
+| `GET /api/stats/consumption` | StatsController | Consumption stats |
+| `GET /api/stats/consumption-by-department` | StatsController | Consumption by department |
+| `GET /api/stats/low-stock` | StatsController | Low stock items |
+| `GET /api/stats/spending` | StatsController | Spending stats |
+| `GET /api/stats/top-items` | StatsController | Top items |
+| `GET /api/reports/consumed-materials` | ReportController | Consumed materials report |
+| `GET /api/reports/department-consumption` | ReportController | Department consumption |
 | `POST /api/login` | AuthController | API login |
 | `POST /api/logout` | AuthController | API logout |
+| `GET /api/me` | AuthController | Get current user |
 
 ---
 

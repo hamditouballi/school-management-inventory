@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\BonDeSortie;
 use App\Models\Request as RequestModel;
 use App\Models\RequestItem;
-use App\Models\BonDeSortie;
-use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -53,6 +52,7 @@ class RequestController extends Controller
             return response()->json($requestModel->load(['requestItems.item', 'user']), 201);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -65,7 +65,7 @@ class RequestController extends Controller
     public function updateStatus(Request $request, RequestModel $requestModel)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,hr_approved,rejected,fulfilled',
+            'status' => 'required|in:pending,hr_approved,rejected,fulfilled,received',
         ]);
 
         $requestModel->update(['status' => $validated['status']]);
@@ -110,9 +110,11 @@ class RequestController extends Controller
             if (empty($insufficientItems)) {
                 $requestModel->update(['status' => 'fulfilled']);
                 DB::commit();
+
                 return response()->json(['message' => 'Request fulfilled successfully', 'request' => $requestModel]);
             } else {
                 DB::rollBack();
+
                 return response()->json([
                     'error' => 'Insufficient stock for some items',
                     'insufficient_items' => $insufficientItems,
@@ -121,7 +123,41 @@ class RequestController extends Controller
             }
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function confirmReceipt(Request $request, RequestModel $requestModel)
+    {
+        if ($request->user()->id !== $requestModel->user_id) {
+            return response()->json(['error' => 'Only the requester can confirm receipt'], 403);
+        }
+
+        if ($requestModel->status !== 'fulfilled') {
+            return response()->json(['error' => 'Request must be fulfilled before confirming receipt'], 400);
+        }
+
+        $requestModel->update([
+            'status' => 'received',
+            'confirmed_received_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Receipt confirmed successfully', 'request' => $requestModel]);
+    }
+
+    public function unconfirmed(Request $request)
+    {
+        if (! in_array($request->user()->role, ['stock_manager', 'finance_manager'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $requests = RequestModel::with(['user.department', 'requestItems.item'])
+            ->where('status', 'fulfilled')
+            ->whereNull('confirmed_received_at')
+            ->orderBy('dateCreated', 'desc')
+            ->get();
+
+        return response()->json($requests);
     }
 }

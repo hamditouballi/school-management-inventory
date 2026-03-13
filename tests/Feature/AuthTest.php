@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\User;
-use function Pest\Laravel\{post, defaultHeaders, get, actingAs};
+
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
+use function Pest\Laravel\post;
 
 beforeEach(function () {
     $this->user = User::factory()->create([

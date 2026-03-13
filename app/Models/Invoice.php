@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
+
     protected $fillable = ['type', 'supplier', 'date', 'id_responsible_finance', 'id_purchase_order', 'id_purchase_order_item', 'file_path', 'image_path'];
 
     protected $appends = ['total_amount'];

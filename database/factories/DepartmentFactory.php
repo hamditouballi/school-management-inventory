@@ -12,7 +12,7 @@ class DepartmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->unique()->company() . ' Department',
+            'name' => fake()->unique()->company().' Department',
         ];
     }
 }
