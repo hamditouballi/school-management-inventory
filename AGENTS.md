@@ -1,6 +1,6 @@
 # AGENTS.md - Development Guidelines for This Project
 
-This is a Laravel 11 + PHP 8.2 application with a Vue.js/TailwindCSS frontend.
+This is a Laravel 11 + PHP 8.2 application with a Blade/TailwindCSS frontend.
 
 ## Project Overview
 
@@ -9,6 +9,60 @@ This is a Laravel 11 + PHP 8.2 application with a Vue.js/TailwindCSS frontend.
 - **Testing**: Pest PHP
 - **Code Style**: Laravel Pint (PSR-12 + Laravel conventions)
 - **Frontend**: Vite + TailwindCSS + AlpineJS
+- **Authentication**: Laravel Sanctum (API tokens)
+
+---
+
+## Supported Locales
+
+The application supports 3 languages with RTL support:
+
+| Code | Language | Direction |
+|------|----------|-----------|
+| en | English | LTR |
+| fr | Français | LTR |
+| ar | العربية | RTL |
+
+RTL support is configured in `config/app.php` under `available_locales`. The layout (`resources/views/layouts/app.blade.php`) automatically applies RTL styles when Arabic is active.
+
+---
+
+## Pages / Routes
+
+### Web Routes (Page Controllers)
+
+| Route | Controller | Description |
+|-------|------------|-------------|
+| `/` | - | Welcome page |
+| `/login` | - | Login page |
+| `/dashboard` | WebController | Dashboard with stats |
+| `/items` | WebController | Items management |
+| `/requests` | WebController | Requests management |
+| `/purchase-orders` | WebController | Purchase orders management |
+| `/invoices` | WebController | Invoices management |
+
+### API Routes
+
+| Endpoint | Controller | Description |
+|----------|------------|-------------|
+| `GET /api/items` | ItemController | List/create items |
+| `GET /api/requests` | RequestController | List/create requests |
+| `GET /api/purchase-orders` | PurchaseOrderController | List/create POs |
+| `GET /api/invoices` | InvoiceController | List/create invoices |
+| `GET /api/stats/*` | StatsController | Dashboard statistics |
+| `POST /api/login` | AuthController | API login |
+| `POST /api/logout` | AuthController | API logout |
+
+---
+
+## User Roles
+
+| Role | Permissions |
+|------|-------------|
+| `director` | View requests |
+| `stock_manager` | Manage items, requests, purchase orders |
+| `hr_manager` | Approve requests, purchase orders |
+| `finance_manager` | Manage invoices, final approval |
 
 ---
 
@@ -117,7 +171,7 @@ php artisan route:list
 ### Imports
 
 - **Use FQCN**: Always use fully qualified class names for core Laravel classes
-- **Group Imports**: 
+- **Group Imports**:
   1. Framework imports
   2. Package imports
   3. Application imports
@@ -249,12 +303,20 @@ test('it can list all invoices', function () {
 
 ## Translation / Localization
 
-This app supports multiple languages (English, Arabic, French). All user-facing strings should use translation keys.
+This app supports multiple languages (English, Arabic, French). All user-facing strings must use translation keys - no hardcoded text.
 
 ### Translation Files
 
 - **Location**: `resources/lang/{locale}/messages.php`
 - **Supported Locales**: `en`, `ar`, `fr` (configured in `config/app.php`)
+
+### Adding New Translations
+
+When adding new UI text, you must add translations to ALL three locale files:
+
+1. Add the key to `resources/lang/en/messages.php` (base)
+2. Add the key to `resources/lang/ar/messages.php`
+3. Add the key to `resources/lang/fr/messages.php`
 
 ### Usage in Blade Templates
 
@@ -270,10 +332,28 @@ For JavaScript strings, use the translation in blade template:
 Notification.success('{{ __('messages.success_message') }}');
 ```
 
-### Adding New Translations
+### Pagination Translation Pattern
 
-1. Add the key to both `resources/lang/en/messages.php` (base) and `resources/lang/ar/messages.php`
-2. Use descriptive keys following the existing pattern (e.g., `entity_action`)
+Use this pattern for pagination info:
+
+```blade
+{{ __('messages.showing') }} <span id="showingFrom">0</span> {{ __('messages.to') }} <span id="showingTo">0</span> {{ __('messages.of') }} <span id="totalItems">0</span> {{ __('messages.items') }}
+```
+
+### Status Translation Pattern
+
+For translatable status values in JavaScript, use a translation object:
+
+```javascript
+const statusTranslations = {
+    pending_initial_approval: '{{ __('messages.pending_initial_approval') }}',
+    initial_approved: '{{ __('messages.initial_approved') }}',
+    // ...
+};
+
+// Usage
+`${statusTranslations[po.status] || po.status}`
+```
 
 ### Clearing Cache
 
@@ -284,25 +364,51 @@ php artisan view:clear
 php artisan config:clear
 ```
 
-### Example Translation Keys
+---
 
-```php
-// In messages.php
-'loading' => 'Loading...',
-'error_loading' => 'Error loading',
-'no_data_found' => 'No data found',
-'success_message' => 'Operation completed successfully!',
-'error_message' => 'An error occurred. Please try again.',
+## RTL (Right-to-Left) Support
+
+The application supports RTL for Arabic. The layout (`resources/views/layouts/app.blade.php`) handles this automatically:
+
+- Sets `dir` attribute on `<html>` tag based on locale
+- Adds `direction: rtl` to body when Arabic is active
+- Includes `.rtl-flip` class for flipping icons/arrows
+
+### RTL Table Styling
+
+Tables automatically align to the right in RTL mode via CSS in the layout:
+
+```css
+[dir="rtl"] table th, 
+[dir="rtl"] table td {
+    text-align: right !important;
+}
+```
+
+### Adding RTL-Specific Styles
+
+For components that need different styling in RTL mode, use the `[dir="rtl"]` selector:
+
+```css
+[dir="rtl"] .some-class {
+    /* RTL-specific styles */
+}
 ```
 
 ---
 
 ## Architecture Notes
 
-- **Web Controllers**: Located in `app/Http/Controllers/Web/`
+- **Web Controllers**: Located in `app/Http/Controllers/Web/` (implicit, using closures)
 - **API Controllers**: Located in `app/Http/Controllers/Api/`
 - **Models**: Located in `app/Models/`
 - **Migrations**: Located in `database/migrations/`
 - **Factories**: Located in `database/factories/`
 - **Seeders**: Located in `database/seeders/`
 - **Tests**: Located in `tests/Feature/` and `tests/Unit/`
+- **Views**: Located in `resources/views/`
+  - `resources/views/layouts/` - Layout templates
+  - `resources/views/items/` - Items page
+  - `resources/views/requests/` - Requests page
+  - `resources/views/purchase-orders/` - Purchase orders page
+  - `resources/views/invoices/` - Invoices page

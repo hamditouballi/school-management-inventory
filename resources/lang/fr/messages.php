@@ -211,6 +211,7 @@ return [
     'error_submitting_proposals' => 'Erreur lors de l\'envoi des propositions',
     'error_selecting_supplier' => 'Erreur lors de la sélection du fournisseur',
     'error_updating_status' => 'Erreur lors de la mise à jour du statut',
+    'all_statuses' => 'Tous les statuts',
     'error_creating_po' => 'Erreur lors de la création du bon de commande',
     'error_updating_po' => 'Erreur lors de la mise à jour du bon de commande',
     'manual' => 'Manuel',

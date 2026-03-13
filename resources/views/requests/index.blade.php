@@ -77,8 +77,8 @@
         </div>
         <div class="px-6 py-4 border-t flex items-center justify-between">
             <div class="text-sm text-gray-700">
-                Showing <span id="showingFrom">0</span> to <span id="showingTo">0</span> of <span
-                    id="totalRequests">0</span> requests
+                {{ __('messages.showing') }} <span id="showingFrom">0</span> {{ __('messages.to') }} <span id="showingTo">0</span> {{ __('messages.of') }} <span
+                    id="totalRequests">0</span> {{ __('messages.requests') }}
             </div>
             <div id="pagination" class="flex gap-2">
             </div>
