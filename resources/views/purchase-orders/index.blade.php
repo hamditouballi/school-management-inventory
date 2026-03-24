@@ -128,6 +128,7 @@
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.date') }} *</label>
                             <input type="date" id="poDate" name="date" required
+                                value="{{ date('Y-m-d') }}"
                                 class="w-full px-3 py-2 border rounded">
                         </div>
                     </div>

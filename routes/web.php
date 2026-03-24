@@ -42,4 +42,8 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/invoices', function () {
         return view('invoices.index');
     })->name('invoices.page');
+
+    Route::get('/bon-sortie', function () {
+        return view('bon-sortie.index');
+    })->name('bon-sortie.page');
 });

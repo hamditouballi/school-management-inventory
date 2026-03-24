@@ -1,0 +1,25 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE requests MODIFY COLUMN status 
+                ENUM('pending', 'hr_approved', 'rejected', 'fulfilled', 'received') 
+                DEFAULT 'pending'");
+        }
+    }
+
+    public function down(): void
+    {
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE requests MODIFY COLUMN status 
+                ENUM('pending', 'hr_approved', 'rejected', 'fulfilled') 
+                DEFAULT 'pending'");
+        }
+    }
+};

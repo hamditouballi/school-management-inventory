@@ -41,6 +41,7 @@
                     <option value="pending">{{ __('messages.pending') }}</option>
                     <option value="hr_approved">{{ __('messages.hr_approved') }}</option>
                     <option value="rejected">{{ __('messages.rejected') }}</option>
+                    <option value="fulfilled">{{ __('messages.fulfilled') }}</option>
                     <option value="received">{{ __('messages.received') }}</option>
                 </select>
             </div>
@@ -328,16 +329,18 @@
             }
 
             function renderRequests() {
-                // Filter out unconfirmed fulfilled requests when on "all" tab
-                if (currentTab === 'all') {
-                    filteredRequests = allRequests.filter(req => {
+                let displayRequests = filteredRequests;
+
+                // Filter out unconfirmed fulfilled requests from "all" tab only if no filters active
+                if (currentTab === 'all' && !document.getElementById('searchInput').value && !document.getElementById('statusFilter').value && !document.getElementById('dateFrom').value) {
+                    displayRequests = filteredRequests.filter(req => {
                         return !(req.status === 'fulfilled' && !req.confirmed_received_at);
                     });
                 }
 
                 const start = (currentPage - 1) * requestsPerPage;
                 const end = start + requestsPerPage;
-                const pageRequests = filteredRequests.slice(start, end);
+                const pageRequests = displayRequests.slice(start, end);
 
                 const tbody = document.getElementById('requestsBody');
                 const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
@@ -650,7 +653,16 @@
                             pending: 'bg-yellow-100 text-yellow-800',
                             hr_approved: 'bg-blue-100 text-blue-800',
                             rejected: 'bg-red-100 text-red-800',
-                            fulfilled: 'bg-green-100 text-green-800'
+                            fulfilled: 'bg-green-100 text-green-800',
+                            received: 'bg-purple-100 text-purple-800'
+                        };
+
+                        const statusTranslations = {
+                            pending: '{{ __('messages.pending') }}',
+                            hr_approved: '{{ __('messages.hr_approved') }}',
+                            rejected: '{{ __('messages.rejected') }}',
+                            fulfilled: '{{ __('messages.fulfilled') }}',
+                            received: '{{ __('messages.received') }}'
                         };
 
                         const html = `
@@ -662,7 +674,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.status') }}</p>
-                            <span class="px-2 py-1 text-xs rounded ${statusColors[req.status]}">${req.status}</span>
+                            <span class="px-2 py-1 text-xs rounded ${statusColors[req.status]}">${statusTranslations[req.status] || req.status}</span>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.requester') }}</p>

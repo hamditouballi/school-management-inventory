@@ -136,6 +136,16 @@
                             </a>
                         @endif
 
+                        @if (in_array(auth()->user()->role, ['stock_manager', 'hr_manager']))
+                            <a href="{{ route('bon-sortie.page') }}"
+                                class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
+                       {{ request()->routeIs('bon-sortie.*')
+                           ? 'bg-red-600 text-white shadow-md scale-105'
+                           : 'text-green-800 hover:bg-white hover:shadow-md hover:scale-105' }}">
+                                {{ __('messages.bon_de_sortie') }}
+                            </a>
+                        @endif
+
                     </div>
                 @endauth
 
@@ -244,6 +254,14 @@
                             class="block px-4 py-2 rounded-lg
                        {{ request()->routeIs('invoices.*') ? 'bg-red-600 text-white' : 'text-green-700 hover:bg-green-50' }}">
                             {{ __('messages.invoices') }}
+                        </a>
+                    @endif
+
+                    @if (in_array(auth()->user()->role, ['stock_manager', 'hr_manager']))
+                        <a href="{{ route('bon-sortie.page') }}"
+                            class="block px-4 py-2 rounded-lg
+                       {{ request()->routeIs('bon-sortie.*') ? 'bg-red-600 text-white' : 'text-green-700 hover:bg-green-50' }}">
+                            {{ __('messages.bon_de_sortie') }}
                         </a>
                     @endif
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BonDeSortieController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\PurchaseOrderController;
@@ -52,4 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Reports
     Route::get('/reports/consumed-materials', [ReportController::class, 'consumedMaterials']);
     Route::get('/reports/department-consumption', [ReportController::class, 'departmentConsumption']);
+
+    // Bon de Sortie
+    Route::apiResource('bon-sortie', BonDeSortieController::class);
 });

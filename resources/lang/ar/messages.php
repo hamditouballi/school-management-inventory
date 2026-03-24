@@ -7,6 +7,7 @@ return [
     'requests' => 'الطلبات',
     'purchase_orders' => 'أوامر الشراء',
     'invoices' => 'الفواتير',
+    'bon_de_sortie' => 'بطاقة الخروج',
     'logout' => 'تسجيل الخروج',
     'login' => 'تسجيل الدخول',
 
@@ -121,6 +122,22 @@ return [
 
     'view_and_manage_purchase_orders' => 'عرض وإدارة أوامر الشراء',
     'view_and_manage_invoices' => 'عرض وإدارة الفواتير',
+    'view_and_manage_bon_sortie' => 'عرض وإدارة بطاقات الخروج',
+
+    // Bon Sortie
+    'bon_sortie_details' => 'تفاصيل بطاقة الخروج',
+    'create_bon_sortie' => 'إنشاء بطاقة خروج',
+    'edit_bon_sortie' => 'تعديل بطاقة الخروج',
+    'bon_sortie_created' => 'تم إنشاء بطاقة الخروج بنجاح',
+    'bon_sortie_updated' => 'تم تحديث بطاقة الخروج بنجاح',
+    'bon_sortie_deleted' => 'تم حذف بطاقة الخروج بنجاح',
+    'confirm_delete_bon_sortie' => 'هل أنت متأكد من حذف بطاقة الخروج هذه؟',
+    'select_request' => 'اختر طلب',
+    'select_item' => 'اختر مادة',
+    'responsible_stock' => 'مسؤول المخزون',
+    'error_loading' => 'خطأ في التحميل',
+    'error_saving' => 'خطأ في الحفظ',
+    'error_deleting' => 'خطأ في الحذف',
     'invoice_image' => 'صورة الفاتورة',
 
     // Invoices

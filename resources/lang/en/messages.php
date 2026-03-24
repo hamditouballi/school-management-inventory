@@ -7,6 +7,7 @@ return [
     'requests' => 'Requests',
     'purchase_orders' => 'Purchase Orders',
     'invoices' => 'Invoices',
+    'bon_de_sortie' => 'Bon Sortie',
     'logout' => 'Logout',
     'login' => 'Login',
 
@@ -157,6 +158,22 @@ return [
     'view_and_manage_item_requests' => 'View and manage item requests',
     'view_and_manage_purchase_orders' => 'View and manage purchase orders',
     'view_and_manage_invoices' => 'View and manage invoices',
+    'view_and_manage_bon_sortie' => 'View and manage bons de sortie',
+
+    // Bon Sortie
+    'bon_sortie_details' => 'Bon Sortie Details',
+    'create_bon_sortie' => 'Create Bon Sortie',
+    'edit_bon_sortie' => 'Edit Bon Sortie',
+    'bon_sortie_created' => 'Bon Sortie created successfully',
+    'bon_sortie_updated' => 'Bon Sortie updated successfully',
+    'bon_sortie_deleted' => 'Bon Sortie deleted successfully',
+    'confirm_delete_bon_sortie' => 'Are you sure you want to delete this bon de sortie?',
+    'select_request' => 'Select Request',
+    'select_item' => 'Select Item',
+    'responsible_stock' => 'Responsible Stock',
+    'error_loading' => 'Error loading data',
+    'error_saving' => 'Error saving data',
+    'error_deleting' => 'Error deleting data',
 
     // Notifications
     'success' => 'Success',

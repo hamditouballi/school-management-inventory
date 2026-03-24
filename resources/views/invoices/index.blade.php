@@ -89,7 +89,7 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.type') }} *</label>
-                            <select id="type" name="type" required class="w-full px-3 py-2 border rounded">
+                            <select id="type" name="type" required class="w-full px-3 py-2 border rounded" disabled>
                                 <option value="incoming">{{ __('messages.incoming') }}</option>
                                 <option value="return">{{ __('messages.return') }}</option>
                             </select>
@@ -304,6 +304,7 @@
                 document.getElementById('editInvoiceId').value = '';
                 selectedPOId = null;
                 document.getElementById('invoiceItemsList').innerHTML = '';
+                document.getElementById('type').disabled = false;
                 invoiceItemCounter = 0;
                 addInvoiceItem();
                 document.getElementById('createModal').classList.remove('hidden');
@@ -325,6 +326,7 @@
                         document.getElementById('supplier').value = po.supplier;
                         document.getElementById('date').value = new Date().toISOString().split('T')[0];
                         document.getElementById('type').value = 'incoming';
+                        document.getElementById('type').disabled = true;
 
                         // Clear and populate items with checkboxes
                         document.getElementById('invoiceItemsList').innerHTML = '';
@@ -358,6 +360,7 @@
                         document.getElementById('supplier').value = inv.supplier;
                         document.getElementById('date').value = inv.date;
                         document.getElementById('type').value = inv.type || 'incoming';
+                        document.getElementById('type').disabled = false;
 
                         // Show existing invoice image if available
                         if (inv.image_path) {

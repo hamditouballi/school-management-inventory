@@ -58,6 +58,14 @@ class InvoiceController extends Controller
 
             $invoice = Invoice::create($invoiceData);
 
+            // Update PO status to ordered if invoice is linked to a PO
+            if (isset($validated['purchase_order_id']) && $validated['purchase_order_id']) {
+                $purchaseOrder = \App\Models\PurchaseOrder::find($validated['purchase_order_id']);
+                if ($purchaseOrder && $purchaseOrder->status === 'final_approved') {
+                    $purchaseOrder->update(['status' => 'ordered']);
+                }
+            }
+
             // Create invoice items and add/update inventory
             foreach ($validated['items'] as $index => $itemData) {
                 // Handle per-item image upload
