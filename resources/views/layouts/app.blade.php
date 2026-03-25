@@ -74,7 +74,7 @@
                     <img src="{{ asset('images/logo-al-amine.png') }}" class="h-14 transition-transform hover:scale-105"
                         alt="AL Amine Logo">
 
-                    <div class="hidden sm:block font-logo border-l-2 border-green-700 pl-2 ml-2 logo-text">
+                    <div class="hidden 2xl:block font-logo border-l-2 border-green-700 pl-2 ml-2 logo-text">
                         <p class="text-green-700 text-lg font-bold tracking-wide">
                             Complexe Scolaire
                         </p>
