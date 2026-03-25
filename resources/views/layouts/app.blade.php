@@ -7,9 +7,6 @@
     <title>@yield('title', 'School Inventory System')</title>
 
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     @stack('styles')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
