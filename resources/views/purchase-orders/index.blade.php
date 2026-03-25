@@ -3,6 +3,59 @@
 
 @section('title', __('messages.purchase_orders'))
 
+@push('styles')
+<style>
+.ts-wrapper .ts-control .item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.ts-wrapper .ts-control .item img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+}
+.ts-dropdown .ts-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+}
+.ts-dropdown .ts-option img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+.ts-dropdown .ts-option .item-info {
+    flex: 1;
+    min-width: 0;
+}
+.ts-dropdown .ts-option .item-name {
+    font-weight: 500;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.ts-dropdown .ts-option .item-meta {
+    font-size: 11px;
+    color: #6b7280;
+    display: flex;
+    gap: 8px;
+}
+.ts-dropdown .ts-option .item-price {
+    font-weight: 600;
+    color: #059669;
+    flex-shrink: 0;
+}
+</style>
+@endpush
+
 @section('content')
     <div class="mb-6 flex justify-between items-center">
         <div>
@@ -424,13 +477,16 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             </div>
             <div id="existing_item_${currentIndex}" class="space-y-2">
                 <label class="block text-xs font-medium">{{ __('messages.item') }} *</label>
-                <select name="items[${currentIndex}][item_id]" onchange="setActive(this)" class="w-full px-3 py-2 border rounded text-sm">
+                <select name="items[${currentIndex}][item_id]" id="item_select_${currentIndex}" onchange="setActive(this)" class="item-select w-full">
     <option value="">{{ __('messages.select_item') }}</option>
     ${allItems.map(item => `
                                                                                                                         <option
                                                                                                   value="${item.id}"
-                                                                                                  data-item="${encodeURIComponent(JSON.stringify(item))}">
-                                                                                                  ${item.designation} - ${item.price}
+                                                                                                  data-item="${encodeURIComponent(JSON.stringify(item))}"
+                                                                                                  data-image-path="${item.image_path || ''}"
+                                                                                                  data-category-name="${item.category?.name || ''}"
+                                                                                                  data-price="${item.price || ''}">
+                                                                                                  ${item.designation}
                                                                                                 </option>
 
                                                                                                                     `).join('')}
@@ -471,6 +527,45 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
 
                 container.appendChild(itemDiv);
                 poItemCounter++;
+                initItemSelect(currentIndex);
+            }
+
+            function initItemSelect(index) {
+                const selectEl = document.getElementById(`item_select_${index}`);
+                if (!selectEl || selectEl.dataset.tomSelectInit) return;
+                
+                const ts = new TomSelect(selectEl, {
+                    plugins: ['dropdown_input'],
+                    searchField: ['text', 'categoryName'],
+                    render: {
+                        option: function(data, escape) {
+                            console.log('Rendering option:', data);
+                            const image = data.imagePath ? `<img src="/storage/${data.imagePath}" alt="" class="w-10 h-10 object-cover rounded border border-gray-200">` : '<div class="w-10 h-10 rounded border border-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xs">N/A</div>';
+                            const categoryName = data.categoryName || '';
+                            const price = data.price ? parseFloat(data.price).toFixed(2) : '';
+                            return `<div class="flex items-center gap-3 p-2">
+                                ${image}
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-medium text-gray-900 truncate">${escape(data.text)}</div>
+                                    ${categoryName ? `<div class="text-xs text-gray-500">${escape(categoryName)}</div>` : ''}
+                                </div>
+                                ${price ? `<div class="text-green-600 font-semibold text-sm">${price}</div>` : ''}
+                            </div>`;
+                        },
+                        item: function(data, escape) {
+                            const image = data.imagePath ? `<img src="/storage/${data.imagePath}" alt="" class="w-6 h-6 object-cover rounded">` : '';
+                            return `<div class="flex items-center gap-2">${image}<span>${escape(data.text)}</span></div>`;
+                        }
+                    },
+                    onChange: function(value) {
+                        const originalSelect = document.querySelector(`select[name="items[${index}][item_id]"]`);
+                        if (originalSelect) {
+                            setActive(originalSelect);
+                        }
+                    }
+                });
+                
+                selectEl.dataset.tomSelectInit = 'true';
             }
 
             function removePOItem(button) {
@@ -480,29 +575,36 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             function toggleItemType(index, type) {
                 const existingDiv = document.getElementById(`existing_item_${index}`);
                 const newDiv = document.getElementById(`new_item_${index}`);
-                const itemSelect = document.querySelector(`select[name="items[${index}][item_id]"]`);
+                const itemSelect = document.getElementById(`item_select_${index}`);
                 const itemNameInput = document.querySelector(`input[name="items[${index}][new_item_name]"]`);
 
                 if (type === 'existing') {
                     existingDiv.classList.remove('hidden');
                     newDiv.classList.add('hidden');
-                    itemSelect.required = true;
+                    if (itemSelect) itemSelect.required = true;
                     itemNameInput.required = false;
                     itemNameInput.value = '';
                 } else {
                     existingDiv.classList.add('hidden');
                     newDiv.classList.remove('hidden');
-                    itemSelect.required = false;
-                    itemSelect.value = '';
+                    if (itemSelect) {
+                        itemSelect.required = false;
+                        if (itemSelect.tomselect) {
+                            itemSelect.tomselect.clear();
+                        } else {
+                            itemSelect.value = '';
+                        }
+                    }
                     itemNameInput.required = true;
                 }
             }
 
             function setActive(select) {
-                const option = select.options[select.selectedIndex];
-                if (!option.dataset.item) return;
+                const originalSelect = select.tagName === 'SELECT' ? select : document.querySelector(`select[name="${select.name}"]`);
+                const option = originalSelect.options[originalSelect.selectedIndex];
+                if (!option || !option.dataset.item) return;
 
-                const index = select.name.match(/\d+/)[0];
+                const index = originalSelect.name.match(/\d+/)[0];
 
                 activeItems[index] = JSON.parse(
                     decodeURIComponent(option.dataset.item)
