@@ -217,7 +217,45 @@
                 loadRequests();
                 loadItemsForSelect();
                 loadUnconfirmedCount();
+                setInterval(updateAllCountdowns, 1000);
             });
+
+            function getTimeRemaining(pendingUntil) {
+                if (!pendingUntil) return null;
+                const now = new Date().getTime();
+                const deadline = new Date(pendingUntil).getTime();
+                const diff = deadline - now;
+                if (diff <= 0) return { expired: true, hours: 0, minutes: 0, seconds: 0, total: 0 };
+                
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                return { expired: false, hours, minutes, seconds, total: diff };
+            }
+
+            function formatCountdown(time) {
+                if (time.expired) return '<span class="text-red-600 font-semibold">Expired</span>';
+                const h = time.hours > 0 ? `${time.hours}h ` : '';
+                return `<span class="font-mono">${h}${time.minutes}m ${time.seconds}s</span>`;
+            }
+
+            function getCountdownColor(time) {
+                if (time.expired) return 'text-red-600';
+                if (time.total < 6 * 60 * 60 * 1000) return 'text-red-600'; // < 6h
+                if (time.total < 12 * 60 * 60 * 1000) return 'text-yellow-600'; // < 12h
+                return 'text-green-600'; // > 12h
+            }
+
+            function updateAllCountdowns() {
+                document.querySelectorAll('.countdown-timer').forEach(el => {
+                    const pendingUntil = el.dataset.pendingUntil;
+                    if (pendingUntil) {
+                        const time = getTimeRemaining(pendingUntil);
+                        el.innerHTML = formatCountdown(time);
+                        el.className = `${getCountdownColor(time)} text-xs countdown-timer font-semibold`;
+                    }
+                });
+            }
 
             function loadUnconfirmedCount() {
                 const endpoint = (isStockManager || isFinanceManager) 
@@ -371,6 +409,8 @@
                             const qty = item.quantity_requested || item.quantityRequested || 0;
                             return sum + (price * qty);
                         }, 0);
+                        
+                        const pendingUntil = req.pending_until || req.pendingUntil;
 
                         return `
             <tr class="hover:bg-gray-50">
@@ -397,6 +437,7 @@
                                             ? "{{ __('messages.received') }}"
                                             : req.status
                     }</span>
+                    ${req.status === 'pending' && pendingUntil ? `<div class="countdown-timer flex  mt-1 ${getCountdownColor(getTimeRemaining(pendingUntil))} text-xs font-semibold" data-pending-until="${pendingUntil}">${formatCountdown(getTimeRemaining(pendingUntil))}</div>` : ''}
                 </td>
                 <td class="px-6 py-4">${dateCreated ? new Date(dateCreated).toLocaleDateString() : 'N/A'}</td>
                 ${isHrManager && req.status === 'pending' ? `
@@ -649,6 +690,7 @@
                     .then(res => res.json())
                     .then(req => {
                         const requestItems = req.request_items || req.requestItems || [];
+                        const pendingUntil = req.pending_until || req.pendingUntil;
                         const statusColors = {
                             pending: 'bg-yellow-100 text-yellow-800',
                             hr_approved: 'bg-blue-100 text-blue-800',
@@ -675,6 +717,7 @@
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.status') }}</p>
                             <span class="px-2 py-1 text-xs rounded ${statusColors[req.status]}">${statusTranslations[req.status] || req.status}</span>
+                            ${req.status === 'pending' && pendingUntil ? `<div id="modalCountdown" class="countdown-timer mt-1 text-xs font-semibold" data-pending-until="${pendingUntil}"></div>` : ''}
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.requester') }}</p>

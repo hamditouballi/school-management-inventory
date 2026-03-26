@@ -6,6 +6,7 @@ return [
     'items' => 'المواد',
     'requests' => 'الطلبات',
     'purchase_orders' => 'أوامر الشراء',
+    'purchase_&_sortie' => 'الشراء والخروج',
     'invoices' => 'الفواتير',
     'bon_de_sortie' => 'بطاقة الخروج',
     'logout' => 'تسجيل الخروج',
@@ -365,4 +366,18 @@ return [
 
     // N/A
     'not_available' => 'غ/م',
+
+    // Notification messages
+    'notification_new_request_pending' => 'قدم :name طلب #:id',
+    'notification_request_approved' => 'تمت الموافقة على طلبك #:id',
+    'notification_request_rejected' => 'تم رفض طلبك #:id',
+    'notification_other_hr_approved' => 'وافق :hr_name على الطلب #:id',
+    'notification_new_approved_request' => 'وافق :hr_name على الطلب #:id - جاهز للتنفيذ',
+    'notifications' => 'الإشعارات',
+    'mark_all_as_read' => 'تحديد الكل كمقروء',
+    'no_notifications' => 'لا توجد إشعارات',
+    'notification_expired' => 'انتهت صلاحية طلبك #:id',
+    'all_notifications' => 'الكل',
+    'unread' => 'غير مقروء',
+    'view_all' => 'عرض الكل',
 ];

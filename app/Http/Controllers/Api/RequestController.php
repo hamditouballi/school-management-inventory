@@ -6,8 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\BonDeSortie;
 use App\Models\Request as RequestModel;
 use App\Models\RequestItem;
+use App\Models\User;
+use App\Notifications\OtherHrApproved;
+use App\Notifications\RequestApproved;
+use App\Notifications\RequestNeedsApproval;
+use App\Notifications\RequestRejected;
+use App\Notifications\StockManagerNewApprovedRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class RequestController extends Controller
 {
@@ -15,7 +22,6 @@ class RequestController extends Controller
     {
         $query = RequestModel::with(['user.department', 'requestItems.item']);
 
-        // Filter by role
         if ($request->user()->role === 'director') {
             $query->where('user_id', $request->user()->id);
         }
@@ -37,6 +43,7 @@ class RequestController extends Controller
                 'user_id' => $request->user()->id,
                 'status' => 'pending',
                 'dateCreated' => now(),
+                'pending_until' => now()->addHours(24),
             ]);
 
             foreach ($validated['items'] as $item) {
@@ -48,6 +55,8 @@ class RequestController extends Controller
             }
 
             DB::commit();
+
+            $this->notifyHrManagersNewRequest($requestModel);
 
             return response()->json($requestModel->load(['requestItems.item', 'user']), 201);
         } catch (\Exception $e) {
@@ -68,9 +77,49 @@ class RequestController extends Controller
             'status' => 'required|in:pending,hr_approved,rejected,fulfilled,received',
         ]);
 
-        $requestModel->update(['status' => $validated['status']]);
+        $newStatus = $validated['status'];
+        $oldStatus = $requestModel->status;
+
+        $requestModel->update(['status' => $newStatus]);
+
+        if ($newStatus === 'hr_approved' && $oldStatus !== 'hr_approved') {
+            $this->notifyOnApproval($requestModel, $request->user());
+        } elseif ($newStatus === 'rejected' && $oldStatus !== 'rejected') {
+            $this->notifyOnRejection($requestModel);
+        }
 
         return response()->json($requestModel);
+    }
+
+    private function notifyHrManagersNewRequest(RequestModel $requestModel): void
+    {
+        $hrManagers = User::where('role', 'hr_manager')->get();
+
+        Notification::send($hrManagers, new RequestNeedsApproval($requestModel));
+    }
+
+    private function notifyOnApproval(RequestModel $requestModel, User $approver): void
+    {
+        Notification::send($requestModel->user, new RequestApproved($requestModel));
+
+        $otherHrManagers = User::where('role', 'hr_manager')
+            ->where('id', '!=', $approver->id)
+            ->get();
+
+        if ($otherHrManagers->isNotEmpty()) {
+            Notification::send($otherHrManagers, new OtherHrApproved($requestModel, $approver->name));
+        }
+
+        $stockManagers = User::where('role', 'stock_manager')->get();
+
+        if ($stockManagers->isNotEmpty()) {
+            Notification::send($stockManagers, new StockManagerNewApprovedRequest($requestModel, $approver->name));
+        }
+    }
+
+    private function notifyOnRejection(RequestModel $requestModel): void
+    {
+        Notification::send($requestModel->user, new RequestRejected($requestModel));
     }
 
     public function fulfill(Request $request, RequestModel $requestModel)
@@ -93,10 +142,8 @@ class RequestController extends Controller
                         'requested' => $requestItem->quantity_requested,
                     ];
                 } else {
-                    // Decrease stock
                     $item->decrement('quantity', $requestItem->quantity_requested);
 
-                    // Create Bon de Sortie
                     BonDeSortie::create([
                         'request_id' => $requestModel->id,
                         'item_id' => $item->id,

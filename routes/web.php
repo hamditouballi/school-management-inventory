@@ -46,4 +46,15 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/bon-sortie', function () {
         return view('bon-sortie.index');
     })->name('bon-sortie.page');
+
+    Route::get('/notifications', function () {
+        return view('notifications.index');
+    })->name('notifications.page');
+
+    // Notifications API (JSON endpoints for AJAX)
+    Route::get('/api/notifications', [App\Http\Controllers\Api\NotificationController::class, 'index']);
+    Route::get('/api/notifications/recent', [App\Http\Controllers\Api\NotificationController::class, 'recent']);
+    Route::get('/api/notifications/unread-count', [App\Http\Controllers\Api\NotificationController::class, 'unreadCount']);
+    Route::post('/api/notifications/{id}/read', [App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
+    Route::post('/api/notifications/read-all', [App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
 });

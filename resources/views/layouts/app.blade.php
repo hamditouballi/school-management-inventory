@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'School Inventory System')</title>
 
     <link rel="icon" href="{{ asset('images/favicon.png') }}">
@@ -13,6 +14,7 @@
     <script src="{{ asset('js/chart.js') }}"></script>
     <script src="{{ asset('js/alpine.js') }}" defer></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
+    <script src="{{ asset('js/notifications-inbox.js') }}"></script>
 
 
     @if (config('app.available_locales')[app()->getLocale()]['dir'] === 'rtl')
@@ -43,7 +45,7 @@
     @endif
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-100" @auth data-auth="true" @else data-auth="false" @endauth>
 
     <nav x-data="{ mobileOpen: false }"
         class="sticky top-0 z-50
@@ -115,13 +117,35 @@
                         </a>
 
                         @if (in_array(auth()->user()->role, ['stock_manager', 'hr_manager']))
-                            <a href="{{ route('purchase-orders.page') }}"
-                                class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
-                       {{ request()->routeIs('purchase-orders.*')
+                            <div x-data="{ open: false }" class="relative">
+                                <button @click="open=!open" @click.away="open=false"
+                                    class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1
+                       {{ request()->routeIs('purchase-orders.*', 'bon-sortie.*')
                            ? 'bg-red-600 text-white shadow-md scale-105'
                            : 'text-green-800 hover:bg-white hover:shadow-md hover:scale-105' }}">
-                                {{ __('messages.purchase_orders') }}
-                            </a>
+                                    <span>{{ __('messages.purchase_&_sortie') }}</span>
+                                    <svg class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                <div x-show="open" x-transition
+                                    class="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border z-40 overflow-hidden">
+                                    <a href="{{ route('purchase-orders.page') }}"
+                                        class="block px-4 py-2 text-sm transition-colors
+                                       {{ request()->routeIs('purchase-orders.*')
+                                           ? 'bg-red-50 text-red-700 font-medium'
+                                           : 'text-gray-700 hover:bg-gray-50' }}">
+                                        {{ __('messages.purchase_orders') }}
+                                    </a>
+                                    <a href="{{ route('bon-sortie.page') }}"
+                                        class="block px-4 py-2 text-sm transition-colors
+                                       {{ request()->routeIs('bon-sortie.*')
+                                           ? 'bg-red-50 text-red-700 font-medium'
+                                           : 'text-gray-700 hover:bg-gray-50' }}">
+                                        {{ __('messages.bon_de_sortie') }}
+                                    </a>
+                                </div>
+                            </div>
                         @endif
 
                         @if (in_array(auth()->user()->role, ['finance_manager', 'hr_manager']))
@@ -134,21 +158,44 @@
                             </a>
                         @endif
 
-                        @if (in_array(auth()->user()->role, ['stock_manager', 'hr_manager']))
-                            <a href="{{ route('bon-sortie.page') }}"
-                                class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
-                       {{ request()->routeIs('bon-sortie.*')
-                           ? 'bg-red-600 text-white shadow-md scale-105'
-                           : 'text-green-800 hover:bg-white hover:shadow-md hover:scale-105' }}">
-                                {{ __('messages.bon_de_sortie') }}
-                            </a>
-                        @endif
+
 
                     </div>
                 @endauth
 
                 <!-- RIGHT DESKTOP -->
                 <div class="hidden md:flex items-center space-x-4">
+
+                    <!-- Notification Bell -->
+                    <div x-data="{ open: false }" class="relative" @auth data-auth="true" @else data-auth="false" @endauth
+                         x-on:open-dropdown.window="open && NotificationInbox.updateDropdown()">
+                        <button @click="open=!open; open && NotificationInbox.updateDropdown()" class="relative p-2 text-green-700 hover:bg-green-50 rounded-lg transition">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            <span id="notification-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1"></span>
+                        </button>
+
+                        <div x-show="open" x-transition @click.away="open=false"
+                            class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border z-50 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                                <span class="font-semibold text-gray-800">{{ __('messages.notifications') }}</span>
+                                <div class="flex items-center gap-2">
+                                    <button @click="NotificationInbox.markAllAsRead()" class="text-xs text-green-600 hover:text-green-700 font-medium">
+                                        {{ __('messages.mark_all_as_read') }}
+                                    </button>
+                                    <a href="{{ route('notifications.page') }}" class="text-sm text-green-600 hover:text-green-700">
+                                        {{ __('messages.view_all') }}
+                                    </a>
+                                </div>
+                            </div>
+                            <div id="notification-list" class="max-h-96 overflow-y-auto">
+                                <div class="px-4 py-6 text-center text-gray-500 text-sm">
+                                    <p>{{ __('messages.loading') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Language Switcher -->
                     <div x-data="{ open: false }" class="relative">
@@ -240,11 +287,28 @@
                     </a>
 
                     @if (in_array(auth()->user()->role, ['stock_manager', 'hr_manager']))
-                        <a href="{{ route('purchase-orders.page') }}"
-                            class="block px-4 py-2 rounded-lg
-                       {{ request()->routeIs('purchase-orders.*') ? 'bg-red-600 text-white' : 'text-green-700 hover:bg-green-50' }}">
-                            {{ __('messages.purchase_orders') }}
-                        </a>
+                        <div x-data="{ open: false }">
+                            <button @click="open=!open"
+                                class="w-full px-4 py-2 rounded-lg text-left flex items-center justify-between
+                               {{ request()->routeIs('purchase-orders.*', 'bon-sortie.*') ? 'bg-red-600 text-white' : 'text-green-700 hover:bg-green-50' }}">
+                                <span>{{ __('messages.purchase_&_sortie') }}</span>
+                                <svg class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="open" x-transition class="pl-4">
+                                <a href="{{ route('purchase-orders.page') }}"
+                                    class="block px-4 py-2 rounded-lg text-sm
+                                   {{ request()->routeIs('purchase-orders.*') ? 'bg-red-50 text-red-700 font-medium' : 'text-green-700 hover:bg-green-50' }}">
+                                    {{ __('messages.purchase_orders') }}
+                                </a>
+                                <a href="{{ route('bon-sortie.page') }}"
+                                    class="block px-4 py-2 rounded-lg text-sm
+                                   {{ request()->routeIs('bon-sortie.*') ? 'bg-red-50 text-red-700 font-medium' : 'text-green-700 hover:bg-green-50' }}">
+                                    {{ __('messages.bon_de_sortie') }}
+                                </a>
+                            </div>
+                        </div>
                     @endif
 
                     @if (in_array(auth()->user()->role, ['finance_manager', 'hr_manager']))
@@ -255,13 +319,7 @@
                         </a>
                     @endif
 
-                    @if (in_array(auth()->user()->role, ['stock_manager', 'hr_manager']))
-                        <a href="{{ route('bon-sortie.page') }}"
-                            class="block px-4 py-2 rounded-lg
-                       {{ request()->routeIs('bon-sortie.*') ? 'bg-red-600 text-white' : 'text-green-700 hover:bg-green-50' }}">
-                            {{ __('messages.bon_de_sortie') }}
-                        </a>
-                    @endif
+
 
 
 

@@ -6,6 +6,7 @@ return [
     'items' => 'Items',
     'requests' => 'Requests',
     'purchase_orders' => 'Purchase Orders',
+    'purchase_&_sortie' => 'Purchase & Sortie',
     'invoices' => 'Invoices',
     'bon_de_sortie' => 'Bon Sortie',
     'logout' => 'Logout',
@@ -334,4 +335,18 @@ return [
     'box' => 'Box',
     'pack' => 'Pack',
     'piece' => 'Piece',
+
+    // Notification messages
+    'notification_new_request_pending' => ':name submitted request #:id',
+    'notification_request_approved' => 'Your request #:id has been approved',
+    'notification_request_rejected' => 'Your request #:id has been rejected',
+    'notification_other_hr_approved' => ':hr_name approved request #:id',
+    'notification_new_approved_request' => ':hr_name approved request #:id - ready for fulfillment',
+    'notifications' => 'Notifications',
+    'mark_all_as_read' => 'Mark all as read',
+    'no_notifications' => 'No notifications',
+    'notification_expired' => 'Your request #:id has expired',
+    'all_notifications' => 'All',
+    'unread' => 'Unread',
+    'view_all' => 'View All',
 ];

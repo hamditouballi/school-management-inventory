@@ -6,6 +6,7 @@ return [
     'items' => 'Articles',
     'requests' => 'Demandes',
     'purchase_orders' => 'Bons de commande',
+    'purchase_&_sortie' => 'Achat & Sortie',
     'invoices' => 'Factures',
     'bon_de_sortie' => 'Bons de sortie',
     'logout' => 'Déconnexion',
@@ -325,4 +326,18 @@ return [
     'unit_optional' => 'Unité',
     'unit_price_optional' => 'Prix unitaire',
     'not_available' => 'N/D',
+
+    // Notification messages
+    'notification_new_request_pending' => ':name a soumis la demande #:id',
+    'notification_request_approved' => 'Votre demande #:id a été approuvée',
+    'notification_request_rejected' => 'Votre demande #:id a été rejetée',
+    'notification_other_hr_approved' => ':hr_name a approuvé la demande #:id',
+    'notification_new_approved_request' => ':hr_name a approuvé la demande #:id - prête à être exécutée',
+    'notifications' => 'Notifications',
+    'mark_all_as_read' => 'Tout marquer comme lu',
+    'no_notifications' => 'Aucune notification',
+    'notification_expired' => 'Votre demande #:id a expiré',
+    'all_notifications' => 'Toutes',
+    'unread' => 'Non lu',
+    'view_all' => 'Voir tout',
 ];

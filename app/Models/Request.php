@@ -9,11 +9,12 @@ class Request extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'status', 'dateCreated', 'image_path', 'confirmed_received_at'];
+    protected $fillable = ['user_id', 'status', 'dateCreated', 'image_path', 'confirmed_received_at', 'pending_until'];
 
     protected $casts = [
         'dateCreated' => 'datetime',
         'confirmed_received_at' => 'datetime',
+        'pending_until' => 'datetime',
     ];
 
     public function user()
