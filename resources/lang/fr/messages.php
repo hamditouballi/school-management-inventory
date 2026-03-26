@@ -102,6 +102,8 @@ return [
     'po_updated_success' => 'Bon de commande mis à jour!',
     'po_approved' => 'Bon de commande approuvé!',
     'po_rejected' => 'Bon de commande rejeté!',
+    'po_marked_ordered' => 'Bon de commande marqué comme commandé!',
+    'confirm_reject_proposals' => 'Êtes-vous sûr de vouloir rejeter toutes les propositions? Cela rejettera le bon de commande.',
     'pending_hr' => 'En attente',
     'approved_hr' => 'Approuvé',
     'rejected_hr' => 'Rejeté',

@@ -102,6 +102,8 @@ return [
     'po_updated_success' => 'تم تحديث أمر الشراء بنجاح!',
     'po_approved' => 'تمت الموافقة على أمر الشراء!',
     'po_rejected' => 'تم رفض أمر الشراء!',
+    'po_marked_ordered' => 'تم وضع أمر الشراء كـمطلوب!',
+    'confirm_reject_proposals' => 'هل أنت متأكد أنك تريد رفض جميع العروض؟ سيؤدي هذا إلى رفض أمر الشراء.',
     'pending_hr' => 'معلق  ',
     'approved_hr' => 'موافق عليه  ',
     'rejected_hr' => 'مرفوض  ',

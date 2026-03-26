@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Management Inventory - Database Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .diagram-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .mermaid {
+            font-size: 14px;
+        }
+        .legend {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .legend-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .legend-section h3 {
+            margin-top: 0;
+            color: #444;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .legend-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .legend-section li {
+            padding: 5px 0;
+            color: #666;
+        }
+        .enum-box {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>School Management Inventory - Database Schema</h1>
+        
+        <div class="diagram-container">
+            <pre class="mermaid">
+erDiagram
+    users {
+        bigint id PK
+        string name
+        string username
+        string email
+        timestamp email_verified_at
+        string password
+        string remember_token
+        string role
+        bigint department_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    departments {
+        bigint id PK
+        string name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    personal_access_tokens {
+        bigint id PK
+        string tokenable_type
+        bigint tokenable_id
+        string name
+        string token
+        text abilities
+        timestamp last_used_at
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    sessions {
+        string id PK
+        bigint user_id FK
+        string ip_address
+        text user_agent
+        longtext payload
+        int last_activity
+    }
+
+    password_reset_tokens {
+        string email PK
+        string token
+        timestamp created_at
+    }
+
+    categories {
+        bigint id PK
+        string name
+        text description
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    items {
+        bigint id PK
+        string designation
+        text description
+        decimal quantity
+        decimal price
+        string unit
+        decimal low_stock_threshold
+        string image_path
+        bigint category_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    requests {
+        bigint id PK
+        bigint user_id FK
+        string status
+        string image_path
+        timestamp dateCreated
+        timestamp confirmed_received_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    request_items {
+        bigint id PK
+        bigint item_id FK
+        bigint request_id FK
+        decimal quantity_requested
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    purchase_orders {
+        bigint id PK
+        date date
+        bigint id_responsible_stock FK
+        string status
+        string supplier
+        decimal total_amount
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    purchase_order_items {
+        bigint id PK
+        bigint item_id FK
+        bigint purchase_order_id FK
+        decimal quantity
+        decimal unit_price
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    purchase_order_suppliers {
+        bigint id PK
+        bigint purchase_order_id FK
+        string supplier_name
+        decimal price
+        string quality_rating
+        text notes
+        boolean is_selected
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    invoices {
+        bigint id PK
+        string type
+        string supplier
+        text description
+        decimal quantity
+        decimal price
+        date date
+        bigint id_responsible_finance FK
+        bigint id_purchase_order_item FK
+        string file_path
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    invoice_items {
+        bigint id PK
+        bigint invoice_id FK
+        string item_name
+        text description
+        decimal quantity
+        decimal unit_price
+        string image_path
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    bon_de_sorties {
+        bigint id PK
+        bigint request_id FK
+        bigint item_id FK
+        decimal quantity
+        date date
+        bigint id_responsible_stock FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    notifications {
+        uuid id PK
+        string type
+        string notifiable_type
+        bigint notifiable_id
+        text data
+        timestamp read_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ requests : "requests"
+    users ||--o{ departments : "belongsTo"
+    departments ||--o{ users : "hasMany"
+    categories ||--o{ items : "hasMany"
+    items }o--|| categories : "belongsTo"
+    requests ||--o{ request_items : "hasMany"
+    request_items }o--|| requests : "belongsTo"
+    items ||--o{ request_items : "hasMany"
+    request_items }o--|| items : "belongsTo"
+    requests ||--o{ bon_de_sorties : "hasMany"
+    bon_de_sorties }o--|| requests : "belongsTo"
+    items ||--o{ bon_de_sorties : "hasMany"
+    bon_de_sorties }o--|| items : "belongsTo"
+    bon_de_sorties }o--|| users : "responsible"
+    users ||--o{ purchase_orders : "hasMany"
+    purchase_orders }o--|| users : "responsible"
+    purchase_orders ||--o{ purchase_order_items : "hasMany"
+    purchase_order_items }o--|| purchase_orders : "belongsTo"
+    items ||--o{ purchase_order_items : "hasMany"
+    purchase_order_items }o--|| items : "belongsTo"
+    purchase_orders ||--o{ purchase_order_suppliers : "hasMany"
+    purchase_order_suppliers }o--|| purchase_orders : "belongsTo"
+    users ||--o{ invoices : "hasMany"
+    invoices }o--|| users : "responsible"
+    invoices }o--|| purchase_order_items : "belongsTo"
+    invoices ||--o{ invoice_items : "hasMany"
+    invoice_items }o--|| invoices : "belongsTo"
+            </pre>
+        </div>
+
+        <div class="legend">
+            <div class="legend-section">
+                <h3>Enums</h3>
+                <h4>Request Status</h4>
+                <ul>
+                    <li><span class="enum-box">pending</span></li>
+                    <li><span class="enum-box">hr_approved</span></li>
+                    <li><span class="enum-box">rejected</span></li>
+                    <li><span class="enum-box">fulfilled</span></li>
+                    <li><span class="enum-box">received</span></li>
+                </ul>
+                <h4>Purchase Order Status</h4>
+                <ul>
+                    <li><span class="enum-box">pending_initial_approval</span></li>
+                    <li><span class="enum-box">initial_approved</span></li>
+                    <li><span class="enum-box">pending_final_approval</span></li>
+                    <li><span class="enum-box">final_approved</span></li>
+                    <li><span class="enum-box">rejected</span></li>
+                    <li><span class="enum-box">ordered</span></li>
+                </ul>
+            </div>
+            <div class="legend-section">
+                <h3>&nbsp;</h3>
+                <h4>User Roles</h4>
+                <ul>
+                    <li><span class="enum-box">director</span></li>
+                    <li><span class="enum-box">stock_manager</span></li>
+                    <li><span class="enum-box">finance_manager</span></li>
+                    <li><span class="enum-box">hr_manager</span></li>
+                    <li><span class="enum-box">pm_manager</span></li>
+                    <li><span class="enum-box">logistics_manager</span></li>
+                </ul>
+                <h4>Invoice Types</h4>
+                <ul>
+                    <li><span class="enum-box">incoming</span></li>
+                    <li><span class="enum-box">return</span></li>
+                </ul>
+            </div>
+            <div class="legend-section">
+                <h3>Tables Summary</h3>
+                <ul>
+                    <li><strong>Users & Auth:</strong> users, departments, personal_access_tokens, sessions, password_reset_tokens</li>
+                    <li><strong>Inventory:</strong> items, categories, bon_de_sorties</li>
+                    <li><strong>Requests:</strong> requests, request_items</li>
+                    <li><strong>Purchase Orders:</strong> purchase_orders, purchase_order_items, purchase_order_suppliers</li>
+                    <li><strong>Invoices:</strong> invoices, invoice_items</li>
+                    <li><strong>System:</strong> notifications</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            er: {
+                diagramPadding: 20,
+                entityPadding: 15,
+                useMaxWidth: true
+            }
+        });
+    </script>
+</body>
+</html>

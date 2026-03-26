@@ -1,0 +1,271 @@
+@startuml School_Management_Inventory
+
+skinparam packageStyle rectangle
+
+package "Users & Auth" {
+  class users {
+    - id: bigint
+    - name: string
+    - username: string
+    - email: string
+    - email_verified_at: timestamp?
+    - password: string
+    - remember_token: string?
+    - role: string?
+    - department_id: bigint?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class departments {
+    - id: bigint
+    - name: string
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class personal_access_tokens {
+    - id: bigint
+    - tokenable_type: string
+    - tokenable_id: bigint
+    - name: string
+    - token: string
+    - abilities: text?
+    - last_used_at: timestamp?
+    - expires_at: timestamp?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class sessions {
+    - id: string
+    - user_id: bigint?
+    - ip_address: string?
+    - user_agent: text?
+    - payload: longtext
+    - last_activity: int
+  }
+
+  class password_reset_tokens {
+    - email: string
+    - token: string
+    - created_at: timestamp?
+  }
+}
+
+package "Inventory" {
+  class categories {
+    - id: bigint
+    - name: string
+    - description: text?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class items {
+    - id: bigint
+    - designation: string
+    - description: text?
+    - quantity: decimal(10,2)
+    - price: decimal(10,2)
+    - unit: string
+    - low_stock_threshold: decimal(10,2)?
+    - image_path: string?
+    - category_id: bigint?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class bon_de_sorties {
+    - id: bigint
+    - request_id: bigint
+    - item_id: bigint
+    - quantity: decimal(10,2)
+    - date: date
+    - id_responsible_stock: bigint
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+}
+
+package "Requests" {
+  class requests {
+    - id: bigint
+    - user_id: bigint
+    - status: enum
+    - image_path: string?
+    - dateCreated: timestamp
+    - confirmed_received_at: timestamp?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class request_items {
+    - id: bigint
+    - item_id: bigint
+    - request_id: bigint
+    - quantity_requested: decimal(10,2)
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+}
+
+package "Purchase Orders" {
+  class purchase_orders {
+    - id: bigint
+    - date: date
+    - id_responsible_stock: bigint
+    - status: enum
+    - supplier: string?
+    - total_amount: decimal(10,2)
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class purchase_order_items {
+    - id: bigint
+    - item_id: bigint
+    - purchase_order_id: bigint
+    - quantity: decimal(10,2)
+    - unit_price: decimal(10,2)
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class purchase_order_suppliers {
+    - id: bigint
+    - purchase_order_id: bigint
+    - supplier_name: string
+    - price: decimal(10,2)
+    - quality_rating: string?
+    - notes: text?
+    - is_selected: boolean
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+}
+
+package "Invoices" {
+  class invoices {
+    - id: bigint
+    - type: enum?
+    - supplier: string
+    - description: text
+    - quantity: decimal(10,2)
+    - price: decimal(10,2)
+    - date: date
+    - id_responsible_finance: bigint
+    - id_purchase_order_item: bigint?
+    - file_path: string?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+
+  class invoice_items {
+    - id: bigint
+    - invoice_id: bigint
+    - item_name: string
+    - description: text?
+    - quantity: decimal(10,2)
+    - unit_price: decimal(10,2)
+    - image_path: string?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+}
+
+package "System" {
+  class notifications {
+    - id: uuid
+    - type: string
+    - notifiable_type: string
+    - notifiable_id: bigint
+    - data: text
+    - read_at: timestamp?
+    - created_at: timestamp?
+    - updated_at: timestamp?
+  }
+}
+
+' Enumerations
+note top of requests
+  Request Status:
+  - pending
+  - hr_approved
+  - rejected
+  - fulfilled
+  - received
+end note
+
+note top of purchase_orders
+  Purchase Order Status:
+  - pending_initial_approval
+  - initial_approved
+  - pending_final_approval
+  - final_approved
+  - rejected
+  - ordered
+end note
+
+note top of users
+  User Roles:
+  - director
+  - stock_manager
+  - finance_manager
+  - hr_manager
+  - pm_manager
+  - logistics_manager
+end note
+
+note top of invoices
+  Invoice Types:
+  - incoming
+  - return
+end note
+
+' Relationships
+users "1" --> "0..1" departments : belongsTo
+departments "1" --> "0..*" users : hasMany
+
+items "0..*" --> "0..1" categories : belongsTo
+categories "1" --> "0..*" items : hasMany
+
+requests "0..*" --> "1" users : belongsTo (requester)
+users "1" --> "0..*" requests : hasMany
+
+request_items "0..*" --> "1" requests : belongsTo
+requests "1" --> "0..*" request_items : hasMany
+
+request_items "0..*" --> "1" items : belongsTo
+items "1" --> "0..*" request_items : hasMany
+
+bon_de_sorties "0..*" --> "1" requests : belongsTo
+requests "1" --> "0..*" bon_de_sorties : hasMany
+
+bon_de_sorties "0..*" --> "1" items : belongsTo
+items "1" --> "0..*" bon_de_sorties : hasMany
+
+bon_de_sorties "0..*" --> "1" users : belongsTo (responsible)
+
+purchase_orders "0..*" --> "1" users : belongsTo (responsible)
+users "1" --> "0..*" purchase_orders : hasMany
+
+purchase_order_items "0..*" --> "1" purchase_orders : belongsTo
+purchase_orders "1" --> "0..*" purchase_order_items : hasMany
+
+purchase_order_items "0..*" --> "1" items : belongsTo
+items "1" --> "0..*" purchase_order_items : hasMany
+
+purchase_order_suppliers "0..*" --> "1" purchase_orders : belongsTo
+purchase_orders "1" --> "0..*" purchase_order_suppliers : hasMany
+
+invoices "0..*" --> "1" users : belongsTo (responsible)
+users "1" --> "0..*" invoices : hasMany
+
+invoices "0..*" --> "0..1" purchase_order_items : belongsTo
+purchase_order_items "0..1" --> "0..*" invoices : hasMany
+
+invoice_items "0..*" --> "1" invoices : belongsTo
+invoices "1" --> "0..*" invoice_items : hasMany
+
+@enduml

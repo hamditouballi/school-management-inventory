@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.5" xmlns:xmi="http://www.omg.org/spec/XMI/20131001" xmlns:UML="http://www.omg.org/spec/UML/20131001">
+  <xmi:Documentation>
+    <xmi:exporter>School Management Inventory Database Diagram</xmi:exporter>
+    <xmi:exporterVersion>1.0</xmi:exporterVersion>
+  </xmi:Documentation>
+  
+  <UML:Model xmi:id="Model_SchoolManagement" name="School Management Inventory">
+    <UML:package>
+      <!-- Users Package -->
+      <UML:Package xmi:id="Package_Users" name="Users &amp; Auth">
+        <UML:ownedElement>
+          <UML:Class xmi:id="Class_users" name="users" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="name" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="username" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="email" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="email_verified_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="password" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="remember_token" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="role" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="department_id" visibility="public" type="UMLPrimitiveType.Integer" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_departments" name="departments" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="name" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_personal_access_tokens" name="personal_access_tokens" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="tokenable_type" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="tokenable_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="name" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="token" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="abilities" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="last_used_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="expires_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_sessions" name="sessions" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="user_id" visibility="public" type="UMLPrimitiveType.Integer" isOptional="true"/>
+            <UML:attribute name="ip_address" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="user_agent" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="payload" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="last_activity" visibility="public" type="UMLPrimitiveType.Integer"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_password_reset_tokens" name="password_reset_tokens" visibility="public">
+            <UML:attribute name="email" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="token" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+        </UML:ownedElement>
+      </UML:Package>
+      
+      <!-- Inventory Package -->
+      <UML:Package xmi:id="Package_Inventory" name="Inventory">
+        <UML:ownedElement>
+          <UML:Class xmi:id="Class_categories" name="categories" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="name" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="description" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_items" name="items" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="designation" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="description" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="quantity" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="price" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="unit" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="low_stock_threshold" visibility="public" type="UMLPrimitiveType.Decimal" isOptional="true"/>
+            <UML:attribute name="image_path" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="category_id" visibility="public" type="UMLPrimitiveType.Integer" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_bon_de_sorties" name="bon_de_sorties" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="request_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="item_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="quantity" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="date" visibility="public" type="UMLPrimitiveType.Date"/>
+            <UML:attribute name="id_responsible_stock" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+        </UML:ownedElement>
+      </UML:Package>
+      
+      <!-- Requests Package -->
+      <UML:Package xmi:id="Package_Requests" name="Requests">
+        <UML:ownedElement>
+          <UML:Class xmi:id="Class_requests" name="requests" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="user_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="status" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="image_path" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="dateCreated" visibility="public" type="UMLPrimitiveType.DateTime"/>
+            <UML:attribute name="confirmed_received_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_request_items" name="request_items" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="item_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="request_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="quantity_requested" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+        </UML:ownedElement>
+      </UML:Package>
+      
+      <!-- Purchase Orders Package -->
+      <UML:Package xmi:id="Package_PurchaseOrders" name="Purchase Orders">
+        <UML:ownedElement>
+          <UML:Class xmi:id="Class_purchase_orders" name="purchase_orders" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="date" visibility="public" type="UMLPrimitiveType.Date"/>
+            <UML:attribute name="id_responsible_stock" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="status" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="supplier" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="total_amount" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_purchase_order_items" name="purchase_order_items" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="item_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="purchase_order_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="quantity" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="unit_price" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_purchase_order_suppliers" name="purchase_order_suppliers" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="purchase_order_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="supplier_name" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="price" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="quality_rating" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="notes" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="is_selected" visibility="public" type="UMLPrimitiveType.Boolean"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+        </UML:ownedElement>
+      </UML:Package>
+      
+      <!-- Invoices Package -->
+      <UML:Package xmi:id="Package_Invoices" name="Invoices">
+        <UML:ownedElement>
+          <UML:Class xmi:id="Class_invoices" name="invoices" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="type" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="supplier" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="description" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="quantity" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="price" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="date" visibility="public" type="UMLPrimitiveType.Date"/>
+            <UML:attribute name="id_responsible_finance" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="id_purchase_order_item" visibility="public" type="UMLPrimitiveType.Integer" isOptional="true"/>
+            <UML:attribute name="file_path" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+          
+          <UML:Class xmi:id="Class_invoice_items" name="invoice_items" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="invoice_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="item_name" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="description" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="quantity" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="unit_price" visibility="public" type="UMLPrimitiveType.Decimal"/>
+            <UML:attribute name="image_path" visibility="public" type="UMLPrimitiveType.String" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+        </UML:ownedElement>
+      </UML:Package>
+      
+      <!-- System Package -->
+      <UML:Package xmi:id="Package_System" name="System">
+        <UML:ownedElement>
+          <UML:Class xmi:id="Class_notifications" name="notifications" visibility="public">
+            <UML:attribute name="id" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="type" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="notifiable_type" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="notifiable_id" visibility="public" type="UMLPrimitiveType.Integer"/>
+            <UML:attribute name="data" visibility="public" type="UMLPrimitiveType.String"/>
+            <UML:attribute name="read_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="created_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+            <UML:attribute name="updated_at" visibility="public" type="UMLPrimitiveType.DateTime" isOptional="true"/>
+          </UML:Class>
+        </UML:ownedElement>
+      </UML:Package>
+    </UML:package>
+    
+    <!-- Enumerations -->
+    <UML:Enumeration xmi:id="Enum_request_status" name="request_status">
+      <UML:ownedLiteral name="pending"/>
+      <UML:ownedLiteral name="hr_approved"/>
+      <UML:ownedLiteral name="rejected"/>
+      <UML:ownedLiteral name="fulfilled"/>
+      <UML:ownedLiteral name="received"/>
+    </UML:Enumeration>
+    
+    <UML:Enumeration xmi:id="Enum_purchase_order_status" name="purchase_order_status">
+      <UML:ownedLiteral name="pending_initial_approval"/>
+      <UML:ownedLiteral name="initial_approved"/>
+      <UML:ownedLiteral name="pending_final_approval"/>
+      <UML:ownedLiteral name="final_approved"/>
+      <UML:ownedLiteral name="rejected"/>
+      <UML:ownedLiteral name="ordered"/>
+    </UML:Enumeration>
+    
+    <UML:Enumeration xmi:id="Enum_user_role" name="user_role">
+      <UML:ownedLiteral name="director"/>
+      <UML:ownedLiteral name="stock_manager"/>
+      <UML:ownedLiteral name="finance_manager"/>
+      <UML:ownedLiteral name="hr_manager"/>
+      <UML:ownedLiteral name="pm_manager"/>
+      <UML:ownedLiteral name="logistics_manager"/>
+    </UML:Enumeration>
+    
+    <UML:Enumeration xmi:id="Enum_invoice_type" name="invoice_type">
+      <UML:ownedLiteral name="incoming"/>
+      <UML:ownedLiteral name="return"/>
+    </UML:Enumeration>
+    
+    <!-- Associations -->
+    <UML:Association xmi:id="Assoc_users_departments">
+      <UML:end name="users" type="Class_users" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="department" type="Class_departments" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="0..1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_items_categories">
+      <UML:end name="items" type="Class_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="category" type="Class_categories" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="0..1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_requests_users">
+      <UML:end name="requests" type="Class_requests" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="requester" type="Class_users" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_request_items_requests">
+      <UML:end name="request_items" type="Class_request_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="request" type="Class_requests" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_request_items_items">
+      <UML:end name="request_items" type="Class_request_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="item" type="Class_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_bon_de_sorties_requests">
+      <UML:end name="bon_de_sorties" type="Class_bon_de_sorties" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="request" type="Class_requests" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_bon_de_sorties_items">
+      <UML:end name="bon_de_sorties" type="Class_bon_de_sorties" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="item" type="Class_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_bon_de_sorties_responsible">
+      <UML:end name="bon_de_sorties" type="Class_bon_de_sorties" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="responsible" type="Class_users" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_purchase_orders_responsible">
+      <UML:end name="purchase_orders" type="Class_purchase_orders" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="responsible" type="Class_users" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_purchase_order_items_purchase_orders">
+      <UML:end name="purchase_order_items" type="Class_purchase_order_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="purchase_order" type="Class_purchase_orders" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_purchase_order_items_items">
+      <UML:end name="purchase_order_items" type="Class_purchase_order_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="item" type="Class_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_purchase_order_suppliers_purchase_orders">
+      <UML:end name="purchase_order_suppliers" type="Class_purchase_order_suppliers" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="purchase_order" type="Class_purchase_orders" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_invoices_responsible">
+      <UML:end name="invoices" type="Class_invoices" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="responsible" type="Class_users" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_invoices_purchase_order_items">
+      <UML:end name="invoices" type="Class_invoices" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="purchase_order_item" type="Class_purchase_order_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="0..1"/>
+      </UML:end>
+    </UML:Association>
+    
+    <UML:Association xmi:id="Assoc_invoice_items_invoices">
+      <UML:end name="invoice_items" type="Class_invoice_items" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="*"/>
+      </UML:end>
+      <UML:end name="invoice" type="Class_invoices" aggregation="none" isOrdered="false" isUnique="false" isDerived="false">
+        <UML:multiplicity value="1"/>
+      </UML:end>
+    </UML:Association>
+  </UML:Model>
+</xmi:XMI>

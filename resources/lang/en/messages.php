@@ -117,6 +117,8 @@ return [
     'not_available' => 'N/A',
     'po_approved' => 'Purchase order approved!',
     'po_rejected' => 'Purchase order rejected!',
+    'po_marked_ordered' => 'Purchase order marked as ordered!',
+    'confirm_reject_proposals' => 'Are you sure you want to reject all proposals? This will reject the purchase order.',
     'pending_hr' => 'Pending HR',
     'approved_hr' => 'Approved HR',
     'rejected_hr' => 'Rejected HR',

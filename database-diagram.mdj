@@ -1,0 +1,323 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "School Management Inventory",
+    "version": "1.0"
+  },
+  "staruml": {
+    "version": "5.0.0"
+  },
+  "diagrams": [
+    {
+      "_type": "UMLClassDiagram",
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Main Diagram",
+      "ownedViews": []
+    }
+  ],
+  "elements": [
+    {
+      "_type": "UMLModel",
+      "_id": "f1e2d3c4-b5a6-7890-1234-567890abcdef",
+      "name": "School Management Inventory",
+      "documentId": "root",
+      "ownedElements": [
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-users",
+          "name": "Users & Auth",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-users",
+              "name": "users",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-1", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-2", "name": "name", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-3", "name": "username", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-4", "name": "email", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-5", "name": "email_verified_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-6", "name": "password", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-7", "name": "remember_token", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-8", "name": "role", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-9", "name": "department_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-10", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-11", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-departments",
+              "name": "departments",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-20", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-21", "name": "name", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-22", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-23", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-personal_access_tokens",
+              "name": "personal_access_tokens",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-30", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-31", "name": "tokenable_type", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-32", "name": "tokenable_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-33", "name": "name", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-34", "name": "token", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-35", "name": "abilities", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-36", "name": "last_used_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-37", "name": "expires_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-38", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-39", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-sessions",
+              "name": "sessions",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-40", "name": "id", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-41", "name": "user_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-42", "name": "ip_address", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-43", "name": "user_agent", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-44", "name": "payload", "type": "longtext", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-45", "name": "last_activity", "type": "int", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-password_reset_tokens",
+              "name": "password_reset_tokens",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-50", "name": "email", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-51", "name": "token", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-52", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-inventory",
+          "name": "Inventory",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-categories",
+              "name": "categories",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-60", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-61", "name": "name", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-62", "name": "description", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-63", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-64", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-items",
+              "name": "items",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-70", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-71", "name": "designation", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-72", "name": "description", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-73", "name": "quantity", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-74", "name": "price", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-75", "name": "unit", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-76", "name": "low_stock_threshold", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-77", "name": "image_path", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-78", "name": "category_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-79", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-80", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-bon_de_sorties",
+              "name": "bon_de_sorties",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-90", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-91", "name": "request_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-92", "name": "item_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-93", "name": "quantity", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-94", "name": "date", "type": "date", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-95", "name": "id_responsible_stock", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-96", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-97", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-requests",
+          "name": "Requests",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-requests",
+              "name": "requests",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-100", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-101", "name": "user_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-102", "name": "status", "type": "enum", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-103", "name": "image_path", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-104", "name": "dateCreated", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-105", "name": "confirmed_received_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-106", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-107", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-request_items",
+              "name": "request_items",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-110", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-111", "name": "item_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-112", "name": "request_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-113", "name": "quantity_requested", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-114", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-115", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-purchase-orders",
+          "name": "Purchase Orders",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-purchase_orders",
+              "name": "purchase_orders",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-120", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-121", "name": "date", "type": "date", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-122", "name": "id_responsible_stock", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-123", "name": "status", "type": "enum", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-124", "name": "supplier", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-125", "name": "total_amount", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-126", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-127", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-purchase_order_items",
+              "name": "purchase_order_items",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-130", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-131", "name": "item_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-132", "name": "purchase_order_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-133", "name": "quantity", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-134", "name": "unit_price", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-135", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-136", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-purchase_order_suppliers",
+              "name": "purchase_order_suppliers",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-140", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-141", "name": "purchase_order_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-142", "name": "supplier_name", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-143", "name": "price", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-144", "name": "quality_rating", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-145", "name": "notes", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-146", "name": "is_selected", "type": "boolean", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-147", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-148", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-invoices",
+          "name": "Invoices",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-invoices",
+              "name": "invoices",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-150", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-151", "name": "type", "type": "enum", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-152", "name": "supplier", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-153", "name": "description", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-154", "name": "quantity", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-155", "name": "price", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-156", "name": "date", "type": "date", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-157", "name": "id_responsible_finance", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-158", "name": "id_purchase_order_item", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-159", "name": "file_path", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-160", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-161", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            },
+            {
+              "_type": "UMLClass",
+              "_id": "cls-invoice_items",
+              "name": "invoice_items",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-170", "name": "id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-171", "name": "invoice_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-172", "name": "item_name", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-173", "name": "description", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-174", "name": "quantity", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-175", "name": "unit_price", "type": "decimal(10,2)", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-176", "name": "image_path", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-177", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-178", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            }
+          ]
+        },
+        {
+          "_type": "UMLPackage",
+          "_id": "pkg-system",
+          "name": "System",
+          "ownedElements": [
+            {
+              "_type": "UMLClass",
+              "_id": "cls-notifications",
+              "name": "notifications",
+              "ownedElements": [],
+              "attributes": [
+                {"_type": "UMLAttribute", "_id": "attr-180", "name": "id", "type": "uuid", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-181", "name": "type", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-182", "name": "notifiable_type", "type": "string", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-183", "name": "notifiable_id", "type": "bigint", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-184", "name": "data", "type": "text", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public"},
+                {"_type": "UMLAttribute", "_id": "attr-185", "name": "read_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-186", "name": "created_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true},
+                {"_type": "UMLAttribute", "_id": "attr-187", "name": "updated_at", "type": "timestamp", "isDerived": false, "isStatic": false, "isLeaf": false, "visibility": "public", "isOptional": true}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

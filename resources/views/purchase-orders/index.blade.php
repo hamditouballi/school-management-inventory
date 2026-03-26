@@ -65,7 +65,7 @@
             </p>
         </div>
         @if (auth()->user()->role === 'stock_manager')
-            <button onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            <button dusk="create-po-btn" onclick="showCreateModal()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                 {{ __('messages.create_purchase_order') }}
             </button>
         @endif
@@ -180,7 +180,7 @@
                         <input type="hidden" id="poSupplier" name="supplier" value="">
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.date') }} *</label>
-                            <input type="date" id="poDate" name="date" required
+                            <input type="date" id="poDate" name="date" required dusk="po-date-input"
                                 value="{{ date('Y-m-d') }}"
                                 class="w-full px-3 py-2 border rounded">
                         </div>
@@ -188,14 +188,14 @@
                     <div>
                         <label class="block text-sm font-medium mb-2">{{ __('messages.items') }} *</label>
                         <div id="poItemsList" class="space-y-4"></div>
-                        <button type="button" onclick="addPOItem()"
+                        <button type="button" dusk="add-item-btn" onclick="addPOItem()"
                             class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">+ {{ __('messages.add_item') }}</button>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeCreateModal()"
                         class="px-4 py-2 border rounded hover:bg-gray-100">{{ __('messages.cancel') }}</button>
-                    <button type="submit" id="submitBtn"
+                    <button type="submit" id="submitBtn" dusk="submit-po-btn"
                         class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.create') }}</button>
                 </div>
             </form>
@@ -332,21 +332,23 @@
                 <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${statusTranslations[po.status] || po.status}</span></td>
                 <td class="px-6 py-4">${new Date(po.date).toLocaleDateString()}</td>
                 ${(isHRManager || isStockManager) ? `
-                                                                                                            <td class="px-6 py-4">
-                                                                                                                ${isHRManager && po.status === 'pending_initial_approval' ? `
-                            <button onclick="approveInitial(${po.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve_initial') }}</button>
-                            <button onclick="rejectInitial(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.reject') }}</button>
+                                                                                                             <td class="px-6 py-4">
+                                                                                                                 ${isHRManager && po.status === 'pending_initial_approval' ? `
+                            <button dusk="initial-approve-btn-${po.id}" onclick="approveInitial(${po.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve_initial') }}</button>
+                            <button dusk="initial-reject-btn-${po.id}" onclick="rejectInitial(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.reject') }}</button>
                         ` : isHRManager && po.status === 'pending_final_approval' ? `
-                            <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.select_final') }}</button>
+                            <button dusk="select-supplier-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.select_final') }}</button>
                         ` : isStockManager && po.status === 'pending_initial_approval' ? `
                             <button onclick="editPO(${po.id})" class="text-blue-600 hover:text-blue-800 mr-2">{{ __('messages.edit') }}</button>
                             <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                         ` : isStockManager && po.status === 'initial_approved' ? `
-                            <button onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800">{{ __('messages.add_proposals') }}</button>
+                            <button dusk="add-proposals-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800">{{ __('messages.add_proposals') }}</button>
+                        ` : isStockManager && po.status === 'final_approved' ? `
+                            <button dusk="mark-ordered-btn-${po.id}" onclick="markAsOrdered(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.mark_ordered') }}</button>
                         ` : `
                             <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                         `}
-                                                                                                            </td>
+                                                                                                             </td>
                                                                                                         ` : ''}
             </tr>
         `;
@@ -512,7 +514,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-medium mb-1">{{ __('messages.quantity') }}</label>
-                    <input type="number" name="items[${currentIndex}][quantity]" required min="0.01" step="0.01" class="w-full px-3 py-2 border rounded text-sm">
+                    <input type="number" name="items[${currentIndex}][quantity]" required min="0.01" step="0.01" class="w-full px-3 py-2 border rounded text-sm" dusk="quantity-input-${currentIndex}">
                 </div>
                 <div>
                     <label class="block text-xs font-medium mb-1">{{ __('messages.unit') }}</label>
@@ -782,14 +784,14 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
 
                 <!-- Proposals Section -->
                 ${po.proposals && po.proposals.length > 0 ? `
-                                                                                                    <div class="mt-6 pt-4 border-t">
-                                                                                                        <h4 class="font-semibold mb-3">{{ __('messages.supplier_proposals') }}</h4>
-                                                                                                        <div class="grid gap-4" id="finalSelectionForm">
-                                                                                                            ${po.proposals.map(prop => `
+                                                                                                     <div class="mt-6 pt-4 border-t">
+                                                                                                         <h4 class="font-semibold mb-3">{{ __('messages.supplier_proposals') }}</h4>
+                                                                                                         <div class="grid gap-4" id="finalSelectionForm" dusk="proposal-select-modal">
+                                                                                                             ${po.proposals.map((prop, idx) => `
                                 <label class="border p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-50 ${prop.is_selected ? 'bg-green-50 border-green-200' : 'bg-white'}">
                                     <div class="flex items-center gap-4">
                                         ${isHRManager && po.status === 'pending_final_approval' ? `
-                                                                                                            <input type="radio" name="selected_proposal" value="${prop.id}" class="w-5 h-5 text-blue-600">
+                                                                                                            <input type="radio" name="selected_proposal" value="${prop.id}" class="w-5 h-5 text-blue-600" dusk="select-proposal-radio-${idx}">
                                                                                                         ` : ''}
                                         <div>
                                             <h5 class="font-bold">${prop.supplier_name}</h5>
@@ -804,25 +806,26 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                 </label>
                             `).join('')}
                                                                                                         </div>
-                                                                                                        ${isHRManager && po.status === 'pending_final_approval' ? `
-                                            <div class="mt-6 pt-4 border-t flex justify-end">
-                                                <button onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.accept') }}</button>
-                                            </div>
-                                        ` : ''}
+                                                                                                          ${isHRManager && po.status === 'pending_final_approval' ? `
+                                                                                                              <div class="mt-6 pt-4 border-t flex justify-end gap-3">
+                                                                                                                  <button dusk="reject-proposals-btn" onclick="rejectProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject') }}</button>
+                                                                                                                  <button dusk="confirm-final-approval-btn" onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.accept') }}</button>
+                                                                                                              </div>
+                                                                                                          ` : ''}
                                                                                                     </div>
                                                                                                 ` : ''}
 
                 <!-- Add Proposals Form for Stock Manager -->
                 ${isStockManager && po.status === 'initial_approved' ? `
-                                                                                                    <div class="mt-6 pt-4 border-t">
-                                                                                                        <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.add_supplier_proposals') }}</h4>
-                                                                                                        <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
-                                                                                                            <div id="proposalsList" class="space-y-4 mb-4">
-                                                                                                                <!-- First proposal always visible -->
-                                                                                                                <div class="border p-4 rounded bg-orange-50 proposal-entry">
-                                                                                                                    <div class="grid grid-cols-2 gap-4">
-                                                                                                                        <div><label class="block text-xs font-semibold">{{ __('messages.supplier_name') }}</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
-                                                                                                                        <div><label class="block text-xs font-semibold">{{ __('messages.unit_price') }}</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                                                                                                     <div class="mt-6 pt-4 border-t">
+                                                                                                         <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.add_supplier_proposals') }}</h4>
+                                                                                                         <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
+                                                                                                             <div id="proposalsList" class="space-y-4 mb-4">
+                                                                                                                 <!-- First proposal always visible -->
+                                                                                                                 <div class="border p-4 rounded bg-orange-50 proposal-entry" dusk="proposal-entry-0">
+                                                                                                                     <div class="grid grid-cols-2 gap-4">
+                                                                                                                         <div><label class="block text-xs font-semibold">{{ __('messages.supplier_name') }}</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm" dusk="proposal-supplier-0"></div>
+                                                                                                                         <div><label class="block text-xs font-semibold">{{ __('messages.unit_price') }}</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm" dusk="proposal-price-0"></div>
                                                                                                                         <div>
                                                                                                                             <label class="block text-xs font-semibold">{{ __('messages.quality_rating') }}</label>
                                                                                                                             <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
@@ -843,21 +846,26 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
-                                                                                                            <div class="mt-6 pt-4 border-t flex justify-between items-center">
-                                                                                                                <button type="button" onclick="addProposalField()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-semibold text-sm">{{ __('messages.add_supplier') }}</button>
-                                                                                                                <button type="submit" class="z-10 px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 w-32">{{ __('messages.accept') }}</button>
-                                                                                                            </div>
+                                                                                                             <div class="mt-6 pt-4 border-t flex justify-between items-center">
+                                                                                                                 <button type="button" dusk="add-proposal-btn" onclick="addProposalField()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-semibold text-sm">{{ __('messages.add_supplier') }}</button>
+                                                                                                                 <button type="submit" dusk="submit-proposals-btn" class="z-10 px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 w-32">{{ __('messages.accept') }}</button>
+                                                                                                             </div>
                                                                                                         </form>
                                                                                                     </div>
                                                                                                 ` : ''}
 
                 <!-- Action Buttons -->
                 ${isHRManager && po.status === 'pending_initial_approval' ? `
-                                                                                                    <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                        <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve_initial') }}</button>
-                                                                                                        <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
-                                                                                                    </div>
-                                                                                                ` : ''}
+                                                                                                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                                                                                                         <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve_initial') }}</button>
+                                                                                                         <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
+                                                                                                     </div>
+                                                                                                 ` : ''}
+                ${isStockManager && po.status === 'final_approved' ? `
+                                                                                                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                                                                                                         <button onclick="markAsOrdered(${po.id})" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">{{ __('messages.mark_ordered') }}</button>
+                                                                                                     </div>
+                                                                                                 ` : ''}
             `;
                         document.getElementById('detailsContent').innerHTML = html;
                     })
@@ -941,30 +949,32 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
 
             function submitFinalSelection(poId) {
                 const selectedRadio = document.querySelector('input[name="selected_proposal"]:checked');
-
                 if (!selectedRadio) {
-                    Notification.error('{{ __('messages.select_supplier_proposal') }}');
+                    Notification.error('{{ __('messages.select_proposal_first') }}');
                     return;
                 }
+                fetch(`/api/purchase-orders/${poId}/final-approval`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            proposal_id: selectedRadio.value
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        closeDetailsModal();
+                        loadPOs();
+                        Notification.success('{{ __('messages.supplier_selected') }}');
+                    })
+                    .catch(err => Notification.error('{{ __('messages.error_selecting_supplier') }}'));
+            }
 
-                if (confirm('{{ __('messages.confirm_select_supplier') }}')) {
-                    fetch(`/api/purchase-orders/${poId}/final-approval`, {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                proposal_id: selectedRadio.value
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            closeDetailsModal();
-                            loadPOs();
-                            Notification.success('{{ __('messages.supplier_selected') }}');
-                        })
-                        .catch(err => Notification.error('{{ __('messages.error_selecting_supplier') }}'));
+            function rejectProposals(poId) {
+                if (confirm('{{ __('messages.confirm_reject_proposals') }}')) {
+                    updateInitialApproval(poId, 'reject');
                 }
             }
 
@@ -976,6 +986,26 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 if (confirm('{{ __('messages.confirm_reject_po') }}')) {
                     updateInitialApproval(id, 'reject');
                 }
+            }
+
+            function markAsOrdered(id) {
+                fetch(`/api/purchase-orders/${id}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status: 'ordered'
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        closeDetailsModal();
+                        loadPOs();
+                        Notification.success('{{ __('messages.po_marked_ordered') }}');
+                    })
+                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}'));
             }
 
             function updateInitialApproval(id, action) {
