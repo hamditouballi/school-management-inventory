@@ -5,8 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\User;
+use App\Notifications\PurchaseOrderFinalApproved;
+use App\Notifications\PurchaseOrderInitialApproved;
+use App\Notifications\PurchaseOrderInitialRejected;
+use App\Notifications\PurchaseOrderNeedsFinalApproval;
+use App\Notifications\PurchaseOrderNeedsInitialApproval;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class PurchaseOrderController extends Controller
 {
@@ -77,6 +84,11 @@ class PurchaseOrderController extends Controller
             }
 
             DB::commit();
+
+            $hrManagers = User::where('role', 'hr_manager')->get();
+            if ($hrManagers->isNotEmpty()) {
+                Notification::send($hrManagers, new PurchaseOrderNeedsInitialApproval($purchaseOrder));
+            }
 
             return response()->json($purchaseOrder->load('purchaseOrderItems.item'), 201);
         } catch (\Exception $e) {
@@ -208,6 +220,23 @@ class PurchaseOrderController extends Controller
         $status = $validated['action'] === 'approve' ? 'initial_approved' : 'rejected';
         $purchaseOrder->update(['status' => $status]);
 
+        $stockManager = $purchaseOrder->responsibleStock;
+
+        if ($validated['action'] === 'approve') {
+            $financeManagers = User::where('role', 'finance_manager')->get();
+            if ($financeManagers->isNotEmpty()) {
+                Notification::send($financeManagers, new PurchaseOrderNeedsFinalApproval($purchaseOrder));
+            }
+        }
+
+        if ($stockManager) {
+            if ($validated['action'] === 'approve') {
+                Notification::send($stockManager, new PurchaseOrderInitialApproved($purchaseOrder, $request->user()->name));
+            } else {
+                Notification::send($stockManager, new PurchaseOrderInitialRejected($purchaseOrder, $request->user()->name));
+            }
+        }
+
         return response()->json($purchaseOrder);
     }
 
@@ -240,6 +269,16 @@ class PurchaseOrderController extends Controller
 
             $purchaseOrder->update(['status' => 'pending_final_approval']);
             DB::commit();
+
+            $hrManagers = User::where('role', 'hr_manager')->get();
+            if ($hrManagers->isNotEmpty()) {
+                Notification::send($hrManagers, new PurchaseOrderNeedsFinalApproval($purchaseOrder));
+            }
+
+            $financeManagers = User::where('role', 'finance_manager')->get();
+            if ($financeManagers->isNotEmpty()) {
+                Notification::send($financeManagers, new PurchaseOrderNeedsFinalApproval($purchaseOrder));
+            }
 
             return response()->json($purchaseOrder->load('proposals'));
         } catch (\Exception $e) {
@@ -278,6 +317,11 @@ class PurchaseOrderController extends Controller
             ]);
 
             DB::commit();
+
+            $stockManager = $purchaseOrder->responsibleStock;
+            if ($stockManager) {
+                Notification::send($stockManager, new PurchaseOrderFinalApproved($purchaseOrder, $request->user()->name));
+            }
 
             return response()->json($purchaseOrder->load('proposals'));
         } catch (\Exception $e) {

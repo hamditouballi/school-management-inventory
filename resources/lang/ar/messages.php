@@ -380,4 +380,15 @@ return [
     'all_notifications' => 'الكل',
     'unread' => 'غير مقروء',
     'view_all' => 'عرض الكل',
+
+    // Purchase Order Notifications
+    'notification_po_needs_initial_approval' => 'قدم :name أمر شراء #:id للموافقة',
+    'notification_po_initial_approved' => 'تمت الموافقة على أمر الشراء #:id',
+    'notification_po_initial_rejected' => 'تم رفض أمر الشراء #:id',
+    'notification_po_needs_final_approval' => 'أمر الشراء #:id من :name يحتاج موافقة نهائية',
+    'notification_po_final_approved' => 'تمت الموافقة على أمر الشراء #:id. المورد: :supplier',
+    'notification_po_final_rejected' => 'تم رفض أمر الشراء #:id',
+
+    // Mark as Ordered
+    'mark_ordered' => 'وضع علامة كمرتب',
 ];

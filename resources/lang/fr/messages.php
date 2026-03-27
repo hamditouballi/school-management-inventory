@@ -340,4 +340,15 @@ return [
     'all_notifications' => 'Toutes',
     'unread' => 'Non lu',
     'view_all' => 'Voir tout',
+
+    // Purchase Order Notifications
+    'notification_po_needs_initial_approval' => ':name a soumis le bon de commande #:id pour approbation',
+    'notification_po_initial_approved' => 'Votre bon de commande #:id a été initialement approuvé',
+    'notification_po_initial_rejected' => 'Votre bon de commande #:id a été rejeté',
+    'notification_po_needs_final_approval' => 'Le bon de commande #:id de :name nécessite une approbation finale',
+    'notification_po_final_approved' => 'Votre bon de commande #:id a été approuvé. Fournisseur: :supplier',
+    'notification_po_final_rejected' => 'Votre bon de commande #:id a été rejeté',
+
+    // Mark as Ordered
+    'mark_ordered' => 'Marquer comme commandé',
 ];

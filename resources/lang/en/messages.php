@@ -349,4 +349,15 @@ return [
     'all_notifications' => 'All',
     'unread' => 'Unread',
     'view_all' => 'View All',
+
+    // Purchase Order Notifications
+    'notification_po_needs_initial_approval' => ':name submitted purchase order #:id for approval',
+    'notification_po_initial_approved' => 'Your purchase order #:id has been initially approved',
+    'notification_po_initial_rejected' => 'Your purchase order #:id has been rejected',
+    'notification_po_needs_final_approval' => 'Purchase order #:id from :name needs final approval',
+    'notification_po_final_approved' => 'Your purchase order #:id has been approved. Supplier: :supplier',
+    'notification_po_final_rejected' => 'Your purchase order #:id has been rejected',
+
+    // Mark as Ordered
+    'mark_ordered' => 'Mark as Ordered',
 ];
