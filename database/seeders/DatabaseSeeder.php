@@ -16,10 +16,10 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             CategorySeeder::class,
             UserSeeder::class,
-            ArticlesSeeder::class,
-            RequestSeeder::class,
-            PurchaseOrderSeeder::class,
-            InvoiceSeeder::class,
+            // ArticlesSeeder::class,
+            // RequestSeeder::class,
+            // PurchaseOrderSeeder::class,
+            // InvoiceSeeder::class,
         ]);
     }
 }

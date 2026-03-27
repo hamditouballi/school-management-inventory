@@ -42,4 +42,9 @@ class Item extends Model
     {
         return $this->hasMany(BonDeSortie::class);
     }
+
+    public function supplierItems()
+    {
+        return $this->hasMany(SupplierItem::class);
+    }
 }

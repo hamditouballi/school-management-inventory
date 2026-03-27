@@ -47,6 +47,10 @@ Route::middleware('auth:web')->group(function () {
         return view('bon-sortie.index');
     })->name('bon-sortie.page');
 
+    Route::get('/suppliers', function () {
+        return view('suppliers.index');
+    })->name('suppliers.page');
+
     Route::get('/notifications', function () {
         return view('notifications.index');
     })->name('notifications.page');

@@ -65,7 +65,7 @@ class UserSeeder extends Seeder
         // Stock Manager
         User::create([
             'name' => 'Stock Manager',
-            'username' => 'fix the ',
+            'username' => 'stock_manager',
             'email' => 'stock@school.com',
             'password' => Hash::make('password'),
             'role' => 'stock_manager',

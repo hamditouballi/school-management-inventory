@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
+use App\Models\Supplier;
 use App\Models\User;
 use App\Notifications\PurchaseOrderFinalApproved;
 use App\Notifications\PurchaseOrderInitialApproved;
@@ -19,7 +20,7 @@ class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        return response()->json(PurchaseOrder::with(['purchaseOrderItems.item', 'responsibleStock', 'proposals'])->orderBy('date', 'desc')->get());
+        return response()->json(PurchaseOrder::with(['purchaseOrderItems.item', 'responsibleStock', 'supplier', 'parent', 'children.supplier', 'children.purchaseOrderItems.item'])->orderBy('date', 'desc')->get());
     }
 
     public function store(Request $request)
@@ -324,6 +325,96 @@ class PurchaseOrderController extends Controller
             }
 
             return response()->json($purchaseOrder->load('proposals'));
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function split(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        if ($purchaseOrder->status !== 'initial_approved') {
+            return response()->json(['error' => 'Order must be initially approved before splitting'], 400);
+        }
+
+        if ($purchaseOrder->children()->exists()) {
+            return response()->json(['error' => 'This order has already been split'], 400);
+        }
+
+        $validated = $request->validate([
+            'assignments' => 'required|array|min:1',
+            'assignments.*.supplier_id' => 'required|exists:suppliers,id',
+            'assignments.*.items' => 'required|array|min:1',
+            'assignments.*.items.*.item_id' => 'required|exists:items,id',
+            'assignments.*.items.*.quantity' => 'required|numeric|min:0.01',
+            'assignments.*.items.*.unit_price' => 'required|numeric|min:0',
+        ]);
+
+        $allItemIds = collect($validated['assignments'])->flatMap(function ($assignment) {
+            return collect($assignment['items'])->pluck('item_id');
+        });
+
+        $poItemIds = $purchaseOrder->purchaseOrderItems()->pluck('item_id');
+
+        $missingItems = $poItemIds->diff($allItemIds);
+        if ($missingItems->isNotEmpty()) {
+            $items = \App\Models\Item::whereIn('id', $missingItems)->pluck('designation')->toArray();
+
+            return response()->json(['error' => 'All items must be assigned to a supplier. Missing: '.implode(', ', $items)], 400);
+        }
+
+        DB::beginTransaction();
+        try {
+            $newPOs = [];
+
+            foreach ($validated['assignments'] as $assignment) {
+                $supplier = Supplier::find($assignment['supplier_id']);
+                $items = $assignment['items'];
+
+                $totalAmount = collect($items)->sum(function ($item) {
+                    return $item['quantity'] * $item['unit_price'];
+                });
+
+                $newPO = PurchaseOrder::create([
+                    'date' => $purchaseOrder->date,
+                    'id_responsible_stock' => $purchaseOrder->id_responsible_stock,
+                    'status' => 'pending_initial_approval',
+                    'parent_id' => $purchaseOrder->id,
+                    'supplier_id' => $supplier->id,
+                    'supplier' => $supplier->name,
+                    'total_amount' => $totalAmount,
+                ]);
+
+                foreach ($items as $itemData) {
+                    PurchaseOrderItem::create([
+                        'purchase_order_id' => $newPO->id,
+                        'item_id' => $itemData['item_id'],
+                        'quantity' => $itemData['quantity'],
+                        'unit_price' => $itemData['unit_price'],
+                    ]);
+                }
+
+                $newPOs[] = $newPO;
+            }
+
+            $purchaseOrder->update(['status' => 'split']);
+
+            $hrManagers = User::where('role', 'hr_manager')->get();
+            if ($hrManagers->isNotEmpty()) {
+                foreach ($newPOs as $po) {
+                    Notification::send($hrManagers, new PurchaseOrderNeedsInitialApproval($po));
+                }
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Purchase order split successfully',
+                'original_po' => $purchaseOrder->fresh(),
+                'new_purchase_orders' => PurchaseOrder::with(['purchaseOrderItems.item', 'supplier', 'responsibleStock'])
+                    ->whereIn('id', collect($newPOs)->pluck('id'))->get(),
+            ]);
         } catch (\Exception $e) {
             DB::rollBack();
 

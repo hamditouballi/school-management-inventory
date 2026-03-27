@@ -120,7 +120,7 @@
                             <div x-data="{ open: false }" class="relative">
                                 <button @click="open=!open" @click.away="open=false"
                                     class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-1
-                       {{ request()->routeIs('purchase-orders.*', 'bon-sortie.*')
+                       {{ request()->routeIs('purchase-orders.*', 'bon-sortie.*', 'suppliers.*')
                            ? 'bg-red-600 text-white shadow-md scale-105'
                            : 'text-green-800 hover:bg-white hover:shadow-md hover:scale-105' }}">
                                     <span>{{ __('messages.purchase_&_sortie') }}</span>
@@ -136,6 +136,13 @@
                                            ? 'bg-red-50 text-red-700 font-medium'
                                            : 'text-gray-700 hover:bg-gray-50' }}">
                                         {{ __('messages.purchase_orders') }}
+                                    </a>
+                                    <a href="{{ route('suppliers.page') }}"
+                                        class="block px-4 py-2 text-sm transition-colors
+                                       {{ request()->routeIs('suppliers.*')
+                                           ? 'bg-red-50 text-red-700 font-medium'
+                                           : 'text-gray-700 hover:bg-gray-50' }}">
+                                        {{ __('messages.suppliers') }}
                                     </a>
                                     <a href="{{ route('bon-sortie.page') }}"
                                         class="block px-4 py-2 text-sm transition-colors

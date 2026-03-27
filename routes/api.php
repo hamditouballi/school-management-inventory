@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\StatsController;
+use App\Http\Controllers\Api\SupplierController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -37,7 +38,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/purchase-orders/{purchaseOrder}/initial-approval', [PurchaseOrderController::class, 'initialApproval']);
     Route::post('/purchase-orders/{purchaseOrder}/proposals', [PurchaseOrderController::class, 'addProposals']);
     Route::post('/purchase-orders/{purchaseOrder}/final-approval', [PurchaseOrderController::class, 'finalApproval']);
+    Route::post('/purchase-orders/{purchaseOrder}/split', [PurchaseOrderController::class, 'split']);
     Route::apiResource('purchase-orders', PurchaseOrderController::class);
+
+    // Suppliers
+    Route::get('/suppliers/all-with-items', [SupplierController::class, 'allWithItems']);
+    Route::apiResource('suppliers', SupplierController::class);
+    Route::get('/suppliers/{supplier}/items', [SupplierController::class, 'items']);
+    Route::post('/suppliers/{supplier}/items', [SupplierController::class, 'addItem']);
+    Route::put('/suppliers/{supplier}/items/{itemId}', [SupplierController::class, 'updateItem']);
+    Route::delete('/suppliers/{supplier}/items/{itemId}', [SupplierController::class, 'removeItem']);
 
     // Invoices
     Route::apiResource('invoices', InvoiceController::class);

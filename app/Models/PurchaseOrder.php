@@ -9,10 +9,11 @@ class PurchaseOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date', 'id_responsible_stock', 'status', 'supplier', 'total_amount'];
+    protected $fillable = ['date', 'id_responsible_stock', 'status', 'supplier', 'total_amount', 'parent_id', 'supplier_id'];
 
     protected $casts = [
         'date' => 'date',
+        'total_amount' => 'decimal:2',
     ];
 
     public function responsibleStock()
@@ -23,6 +24,21 @@ class PurchaseOrder extends Model
     public function purchaseOrderItems()
     {
         return $this->hasMany(PurchaseOrderItem::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(PurchaseOrder::class, 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'parent_id');
     }
 
     public function proposals()
