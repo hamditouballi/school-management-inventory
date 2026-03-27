@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
+use App\Models\SupplierItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
 {
@@ -116,5 +118,77 @@ class SupplierController extends Controller
         $suppliers = Supplier::with(['supplierItems.item'])->get();
 
         return response()->json($suppliers);
+    }
+
+    public function stats(Supplier $supplier): JsonResponse
+    {
+        $dateField = DB::getDriverName() === 'sqlite'
+            ? "strftime('%Y-%m', date)"
+            : "DATE_FORMAT(date, '%Y-%m')";
+
+        $totalOrders = $supplier->purchaseOrders()->count();
+        $totalSpent = $supplier->purchaseOrders()->sum('total_amount');
+        $itemsCount = $supplier->supplierItems()->count();
+        $avgOrderValue = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
+
+        $monthlySpending = $supplier->purchaseOrders()
+            ->select(DB::raw("$dateField as month"), DB::raw('SUM(total_amount) as total'))
+            ->where('date', '>=', now()->subMonths(12))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        $statusBreakdown = $supplier->purchaseOrders()
+            ->select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('count', 'status')
+            ->toArray();
+
+        $recentOrders = $supplier->purchaseOrders()
+            ->with(['purchaseOrderItems.item'])
+            ->orderBy('date', 'desc')
+            ->limit(5)
+            ->get();
+
+        $supplierItemIds = $supplier->supplierItems()->pluck('item_id');
+
+        $priceComparison = SupplierItem::whereIn('item_id', $supplierItemIds)
+            ->where('supplier_id', '!=', $supplier->id)
+            ->with(['item', 'supplier'])
+            ->get()
+            ->groupBy('item_id')
+            ->map(function ($items) use ($supplier) {
+                $item = $items->first()->item;
+                $supplierPrice = $supplier->supplierItems()->where('item_id', $item->id)->first()?->unit_price ?? 0;
+                $minPrice = $items->min('unit_price');
+                $isCheapest = $supplierPrice <= $minPrice;
+
+                $otherPrices = $items->map(fn ($si) => [
+                    'supplier' => $si->supplier->name,
+                    'price' => $si->unit_price,
+                ])->values();
+
+                return [
+                    'item' => $item->designation,
+                    'your_price' => $supplierPrice,
+                    'best_price' => $minPrice,
+                    'is_cheapest' => $isCheapest,
+                    'other_prices' => $otherPrices,
+                ];
+            })
+            ->values();
+
+        return response()->json([
+            'supplier' => $supplier,
+            'total_orders' => $totalOrders,
+            'total_spent' => $totalSpent,
+            'items_count' => $itemsCount,
+            'avg_order_value' => $avgOrderValue,
+            'monthly_spending' => $monthlySpending,
+            'status_breakdown' => $statusBreakdown,
+            'recent_orders' => $recentOrders,
+            'price_comparison' => $priceComparison,
+        ]);
     }
 }

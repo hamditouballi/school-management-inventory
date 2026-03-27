@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/suppliers/{supplier}/items', [SupplierController::class, 'addItem']);
     Route::put('/suppliers/{supplier}/items/{itemId}', [SupplierController::class, 'updateItem']);
     Route::delete('/suppliers/{supplier}/items/{itemId}', [SupplierController::class, 'removeItem']);
+    Route::get('/suppliers/{supplier}/stats', [SupplierController::class, 'stats']);
 
     // Invoices
     Route::apiResource('invoices', InvoiceController::class);

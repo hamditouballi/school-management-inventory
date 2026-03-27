@@ -425,4 +425,33 @@ return [
 
     // Mark as Ordered
     'mark_ordered' => 'وضع علامة كمرتب',
+
+    // Supplier Stats
+    'supplier_stats' => 'إحصائيات المورد',
+    'view_stats' => 'عرض الإحصائيات',
+    'total_orders' => 'إجمالي الطلبات',
+    'total_spent' => 'إجمالي الإنفاق',
+    'items_available' => 'المتوفر من الأصناف',
+    'monthly_spending' => 'الإنفاق الشهري',
+    'order_status' => 'حالة الطلبات',
+    'recent_orders' => 'الطلبات الأخيرة',
+    'price_comparison' => 'مقارنة الأسعار',
+    'other_suppliers' => 'موردون آخرون',
+    'no_comparison' => 'لا يوجد مورد آخر يقدم هذا الصنف',
+    'avg_order_value' => 'متوسط قيمة الطلب',
+    'supplier_is_cheapest' => 'أفضل سعر',
+    'supplier_not_cheapest' => 'أعلى من الأفضل',
+    'supplier_detail' => 'تفاصيل المورد',
+    'no_orders_yet' => 'لا توجد طلبات بعد',
+    'best_price' => 'أفضل سعر',
+    'your_price' => 'سعرك',
+    'other_prices' => 'أسعار أخرى',
+    'view_supplier' => 'عرض المورد',
+    'supplier_stats_title' => 'إحصائيات لـ :supplier',
+    'spending_trend' => 'اتجاه الإنفاق',
+    'order_history' => 'سجل الطلبات',
+    'items_offered' => 'العروض المتاحة',
+    'pricing_audit' => 'مراجعة الأسعار',
+    'compare_prices' => 'مقارنة الأسعار',
+    'back' => 'رجوع',
 ];

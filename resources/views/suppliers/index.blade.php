@@ -131,7 +131,6 @@
                 }
                 const response = await fetch('/api/suppliers', { headers });
                 
-                console.log('Response status:', response.status);
                 console.log('Token:', token ? 'present' : 'missing');
                 
                 if (response.status === 401) {
@@ -172,6 +171,9 @@
                         </button>
                     </td>
                     <td class="px-6 py-4">
+                        @if (auth()->user()->role === 'stock_manager' || auth()->user()->role === 'hr_manager')
+                            <button onclick="viewSupplierStats(${supplier.id})" class="text-purple-600 hover:underline mr-2">{{ __('messages.view_stats') }}</button>
+                        @endif
                         @if (auth()->user()->role === 'stock_manager')
                             <button onclick="editSupplier(${supplier.id})" class="text-blue-600 hover:underline mr-2">{{ __('messages.edit') }}</button>
                             <button onclick="deleteSupplier(${supplier.id})" class="text-red-600 hover:underline">{{ __('messages.delete') }}</button>
@@ -395,6 +397,10 @@
             } catch (error) {
                 Notification.error(error.message);
             }
+        }
+
+        function viewSupplierStats(id) {
+            window.location.href = `/suppliers/${id}`;
         }
 
         function escapeHtml(text) {

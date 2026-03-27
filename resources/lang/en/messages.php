@@ -394,4 +394,33 @@ return [
 
     // Mark as Ordered
     'mark_ordered' => 'Mark as Ordered',
+
+    // Supplier Stats
+    'supplier_stats' => 'Supplier Statistics',
+    'view_stats' => 'View Stats',
+    'total_orders' => 'Total Orders',
+    'total_spent' => 'Total Spent',
+    'items_available' => 'Items Available',
+    'monthly_spending' => 'Monthly Spending',
+    'order_status' => 'Order Status',
+    'recent_orders' => 'Recent Orders',
+    'price_comparison' => 'Price Comparison',
+    'other_suppliers' => 'Other Suppliers',
+    'no_comparison' => 'No other suppliers offer this item',
+    'avg_order_value' => 'Avg Order Value',
+    'supplier_is_cheapest' => 'Best Price',
+    'supplier_not_cheapest' => 'Higher than Best',
+    'supplier_detail' => 'Supplier Detail',
+    'no_orders_yet' => 'No orders yet',
+    'best_price' => 'Best Price',
+    'your_price' => 'Your Price',
+    'other_prices' => 'Other Prices',
+    'view_supplier' => 'View Supplier',
+    'supplier_stats_title' => 'Statistics for :supplier',
+    'spending_trend' => 'Spending Trend',
+    'order_history' => 'Order History',
+    'items_offered' => 'Items Offered',
+    'pricing_audit' => 'Pricing Audit',
+    'compare_prices' => 'Compare Prices',
+    'back' => 'Back',
 ];

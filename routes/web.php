@@ -51,6 +51,10 @@ Route::middleware('auth:web')->group(function () {
         return view('suppliers.index');
     })->name('suppliers.page');
 
+    Route::get('/suppliers/{id}', function ($id) {
+        return view('suppliers.show', ['supplierId' => $id]);
+    })->name('suppliers.show');
+
     Route::get('/notifications', function () {
         return view('notifications.index');
     })->name('notifications.page');
