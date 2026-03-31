@@ -3,23 +3,22 @@
 namespace Database\Factories;
 
 use App\Models\Item;
+use App\Models\PropositionGroup;
 use App\Models\PurchaseOrder;
-use App\Models\PurchaseOrderItem;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-class PurchaseOrderItemFactory extends Factory
+class PropositionGroupFactory extends Factory
 {
-    protected $model = PurchaseOrderItem::class;
+    protected $model = PropositionGroup::class;
 
     public function definition(): array
     {
         return [
+            'id' => fn () => (string) Str::uuid(),
             'purchase_order_id' => PurchaseOrder::factory(),
             'item_id' => Item::factory(),
-            'init_quantity' => fake()->numberBetween(1, 100),
-            'unit_price' => fake()->randomFloat(2, 5, 500),
-            'image_path' => null,
-            'new_item_name' => null,
+            'proposition_order' => 0,
         ];
     }
 }

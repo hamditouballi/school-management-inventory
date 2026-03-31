@@ -816,94 +816,68 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                                                                     `}
                 </div>
 
-                <!-- Proposals Section (New Structure) -->
-                ${po.propositions && po.propositions.length > 0 ? `
-                    <div class="mt-6 pt-4 border-t">
-                        <h4 class="font-semibold mb-3">{{ __('messages.supplier_proposals') }}</h4>
-                        <div class="space-y-4">
-                            ${poItems.map(item => {
-                                const itemProposals = po.propositions.filter(p => p.item_id === item.item_id);
-                                return `
-                                    <div class="border rounded-lg p-4 bg-gray-50">
-                                        <div class="flex items-center gap-3 mb-3 pb-2 border-b">
-                                            ${item.item?.image_path ? `<img src="/storage/${item.item.image_path}" class="w-10 h-10 object-cover rounded">` : '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs">N/A</div>'}
-                                            <div>
-                                                <p class="font-semibold">${item.item?.designation || item.new_item_name || 'Item'}</p>
-                                                <p class="text-xs text-gray-500">{{ __('messages.quantity_needed') }}: ${parseFloat(item.init_quantity).toFixed(2)}</p>
-                                            </div>
-                                        </div>
-                                        ${itemProposals.length > 0 ? `
-                                            <div class="space-y-2 pl-4">
-                                                ${itemProposals.map((prop, idx) => `
-                                                    <div class="flex justify-between items-center p-3 rounded bg-white border">
-                                                        <div>
-                                                            <p class="font-medium">${prop.supplier?.name || 'N/A'}</p>
-                                                            <p class="text-sm text-gray-600">{{ __('messages.unit_price') }}: <span class="font-semibold text-green-600">{{ __('messages.currency') }} ${parseFloat(prop.unit_price).toFixed(2)}</span></p>
-                                                            <p class="text-sm text-gray-600">{{ __('messages.quantity') }}: ${parseFloat(prop.quantity).toFixed(2)}</p>
-                                                            ${prop.notes ? `<p class="text-xs text-gray-500 mt-1">${prop.notes}</p>` : ''}
-                                                        </div>
-                                                    </div>
-                                                `).join('')}
-                                            </div>
-                                        ` : '<p class="text-sm text-gray-400 italic pl-4">{{ __('messages.no_proposals_for_item') }}</p>'}
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                        
-                        ${isHRManager && po.status === 'pending_final_approval' ? `
-                            <div class="mt-6 pt-4 border-t flex justify-end gap-3">
-                                <button onclick="rejectProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject') }}</button>
-                                <button onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.approve_all_proposals') }}</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                ` : ''}
-
-                <!-- Add Proposals Form for Stock Manager (New Structure) -->
+                <!-- Add Proposals Form for Stock Manager (Grouped Structure) -->
                 ${isStockManager && po.status === 'initial_approved' ? `
                     <div class="mt-6 pt-4 border-t">
                         <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.add_supplier_proposals') }}</h4>
-                        <p class="text-sm text-gray-600 mb-4">{{ __('messages.select_suppliers_for_items') }}</p>
+                        <p class="text-sm text-gray-600 mb-4">{{ __('messages.create_proposal_groups') }}</p>
                         
                         <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
-                            <div id="proposalsList" class="space-y-4">
-                                <!-- Dynamic proposal entries will be added here -->
+                            <div id="proposalGroupsList" class="space-y-6">
+                                <!-- Dynamic proposal groups will be added here -->
                             </div>
                             
                             <div class="mt-4 flex justify-between items-center">
-                                <button type="button" onclick="addProposalEntry()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm">+ {{ __('messages.add_proposal') }}</button>
+                                <button type="button" onclick="addProposalGroup()" class="px-4 py-2 bg-orange-100 text-orange-800 rounded hover:bg-orange-200 text-sm font-semibold">+ {{ __('messages.add_proposal_group') }}</button>
                                 <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.submit_proposals') }}</button>
                             </div>
                         </form>
                     </div>
                 ` : ''}
 
+                <!-- Proposals for HR Manager to Select -->
+                ${isHRManager && po.status === 'pending_final_approval' ? `
+                    <div class="mt-6 pt-4 border-t">
+                        <h4 class="font-semibold mb-3 text-blue-600">{{ __('messages.select_proposal_option') }}</h4>
+                        <p class="text-sm text-gray-600 mb-4">{{ __('messages.select_one_group_per_item') }}</p>
+                        
+                        <div id="hrPropositionGroups" class="space-y-4">
+                            ${renderHRProposalGroups(po)}
+                        </div>
+                        
+                        <div class="mt-6 flex gap-3 justify-end">
+                            <button onclick="rejectAllProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject_all') }}</button>
+                            <button onclick="approveSelectedProposals(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.approve_selected') }}</button>
+                        </div>
+                    </div>
+                ` : ''}
+
                 <!-- Action Buttons -->
                 ${isHRManager && po.status === 'pending_initial_approval' ? `
-                                                                                                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                         <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve_initial') }}</button>
-                                                                                                         <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
-                                                                                                     </div>
-                                                                                                 ` : ''}
+                    <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                        <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve_initial') }}</button>
+                        <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
+                    </div>
+                ` : ''}
                 ${isStockManager && po.status === 'final_approved' ? `
-                                                                                                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                                                                                                         <button onclick="markAsOrdered(${po.id})" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">{{ __('messages.mark_ordered') }}</button>
-                                                                                                     </div>
-                                                                                                 ` : ''}
+                    <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
+                        <button onclick="markAsOrdered(${po.id})" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">{{ __('messages.mark_ordered') }}</button>
+                    </div>
+                ` : ''}
             `;
                         document.getElementById('detailsContent').innerHTML = html;
                         
                         currentPOItems = po.purchase_order_items || [];
                         existingProposals = po.propositions || [];
+                        existingGroups = po.proposition_groups || [];
                         if (allSuppliers.length === 0) {
                             loadSuppliers();
                         }
                         if (po.status === 'initial_approved') {
                             setTimeout(() => {
-                                const list = document.getElementById('proposalsList');
+                                const list = document.getElementById('proposalGroupsList');
                                 if (list && list.children.length === 0) {
-                                    addProposalEntry();
+                                    addProposalGroup();
                                 }
                             }, 100);
                         }
@@ -918,6 +892,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 document.getElementById('detailsModal').classList.add('hidden');
                 currentPOItems = [];
                 existingProposals = [];
+                existingGroups = [];
             }
 
             let allSuppliers = [];
@@ -925,6 +900,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             let currentPOItems = [];
             let proposalCounter = 0;
             let existingProposals = [];
+            let existingGroups = [];
+            let groupCounter = 0;
 
             function loadSuppliers() {
                 Promise.all([
@@ -935,21 +912,23 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     suppliersWithItems.forEach(supplier => {
                         supplierItemsMap[supplier.id] = supplier;
                     });
-                });
+                }).catch(err => console.error('Error loading suppliers:', err));
             }
 
             function getSuppliersForItem(itemId) {
                 const availableSuppliers = [];
+                const itemIdNum = parseInt(itemId);
+                
                 allSuppliers.forEach(supplier => {
                     const supplierData = supplierItemsMap[supplier.id];
                     if (supplierData && supplierData.items) {
-                        const hasItem = supplierData.items.some(si => si.id === itemId);
+                        const hasItem = supplierData.items.some(si => parseInt(si.id) === itemIdNum);
                         if (hasItem) {
-                            const item = supplierData.items.find(si => si.id === itemId);
+                            const item = supplierData.items.find(si => parseInt(si.id) === itemIdNum);
                             availableSuppliers.push({
                                 id: supplier.id,
                                 name: supplier.name,
-                                unit_price: item ? item.pivot?.unit_price || item.unit_price : null
+                                unit_price: item ? item.unit_price : null
                             });
                         }
                     }
@@ -992,62 +971,198 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 }
             }
 
-            function addProposalEntry(itemId = '', itemName = '', defaultQty = '') {
-                const list = document.getElementById('proposalsList');
+            function addProposalGroup(itemId = '') {
+                const list = document.getElementById('proposalGroupsList');
                 if (!list) return;
                 
-                const entryHtml = `
-                    <div class="border p-4 rounded bg-orange-50 proposal-entry" id="proposal-entry-${proposalCounter}">
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-semibold text-orange-600">{{ __('messages.proposal') }} #${proposalCounter + 1}</span>
-                            <button type="button" onclick="removeProposalEntry(${proposalCounter})" class="text-xs text-red-600 hover:text-red-800">{{ __('messages.remove') }}</button>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                            <div>
-                                <label class="block text-xs font-medium mb-1">{{ __('messages.item') }} *</label>
-                                <select name="proposals[${proposalCounter}][item_id]" required class="w-full px-2 py-1 border rounded text-sm item-select" data-proposal-id="${proposalCounter}" onchange="updateProposalItemInfo(${proposalCounter})">
-                                    <option value="">{{ __('messages.select_item') }}</option>
-                                    ${currentPOItems.map(item => {
-                                        const remaining = getRemainingQtyForItem(item.item_id);
-                                        return `<option value="${item.item_id}" data-qty="${item.init_quantity}" ${remaining <= 0 ? 'disabled' : ''}>
-                                            ${item.item?.designation || item.new_item_name || 'Item #' + item.item_id} ${remaining <= 0 ? '({{ __('messages.exhausted') }})' : ''}
-                                        </option>`;
-                                    }).join('')}
-                                </select>
+                const groupId = crypto.randomUUID ? crypto.randomUUID() : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+                const groupOrder = groupCounter;
+                
+                const groupHtml = `
+                    <div class="border-2 border-orange-300 rounded-lg p-4 bg-orange-50 proposal-group" id="${groupId}" data-group-id="${groupId}" data-group-order="${groupOrder}">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-bold text-orange-700">{{ __('messages.proposition') }} #${groupCounter + 1}</span>
+                                <span class="text-xs px-2 py-1 rounded bg-orange-200 text-orange-800">{{ __('messages.competing_option') }}</span>
                             </div>
-                            <div>
+                            <button type="button" onclick="removeProposalGroup('${groupId}')" class="text-xs text-red-600 hover:text-red-800 font-medium">{{ __('messages.remove_group') }}</button>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="block text-xs font-medium mb-1">{{ __('messages.item') }} *</label>
+                            <select name="groups[${groupCounter}][item_id]" required class="w-full px-2 py-1 border rounded text-sm" onchange="onGroupItemChange('${groupId}')">
+                                <option value="">{{ __('messages.select_item') }}</option>
+                                ${currentPOItems.map(item => {
+                                    const remaining = getRemainingQtyForItem(item.item_id);
+                                    const totalRequested = parseFloat(item.init_quantity);
+                                    return `<option value="${item.item_id}" data-qty="${item.init_quantity}" data-remaining="${remaining}">
+                                        ${item.item?.designation || item.new_item_name || 'Item #' + item.item_id} 
+                                        ({{ __('messages.total') }}: ${totalRequested.toFixed(2)})
+                                    </option>`;
+                                }).join('')}
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">{{ __('messages.select_same_item_for_competitors') }}</p>
+                        </div>
+                        
+                        <div class="border-t border-orange-200 pt-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-semibold text-orange-600">{{ __('messages.suppliers_in_this_option') }}</span>
+                                <button type="button" onclick="addSupplierToGroup('${groupId}')" class="text-xs px-2 py-1 bg-white border border-orange-300 rounded hover:bg-orange-100">+ {{ __('messages.add_supplier') }}</button>
+                            </div>
+                            <div class="group-suppliers space-y-2" id="${groupId}-suppliers">
+                                <!-- Supplier entries will be added here -->
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3 pt-2 border-t border-orange-200 flex justify-between text-sm">
+                            <span class="text-gray-600">{{ __('messages.total_qty') }}: <span class="font-semibold group-total-qty">0.00</span></span>
+                            <span class="text-gray-600">{{ __('messages.est_total') }}: <span class="font-semibold text-green-600 group-total-price">{{ __('messages.currency') }} 0.00</span></span>
+                        </div>
+                    </div>
+                `;
+                
+                list.insertAdjacentHTML('beforeend', groupHtml);
+                
+                if (itemId) {
+                    const itemSelect = document.querySelector(`select[name="groups[${groupCounter}][item_id]"]`);
+                    if (itemSelect) {
+                        itemSelect.value = itemId;
+                        onGroupItemChange(groupId);
+                    }
+                }
+                
+                addSupplierToGroup(groupId);
+                groupCounter++;
+            }
+
+            function addSupplierToGroup(groupId) {
+                const suppliersContainer = document.getElementById(groupId + '-suppliers');
+                if (!suppliersContainer) return;
+                
+                const group = document.getElementById(groupId);
+                const groupOrder = group.dataset.groupOrder;
+                const itemSelect = group.querySelector('select[name^="groups["]');
+                const itemId = itemSelect?.value;
+                
+                const supplierIndex = suppliersContainer.children.length;
+                const supplierId = groupId + '-supplier-' + supplierIndex;
+                
+                const supplierHtml = `
+                    <div class="bg-white rounded border p-3 supplier-entry" id="${supplierId}" data-group-id="${groupId}">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs text-gray-500">{{ __('messages.supplier') }} #${supplierIndex + 1}</span>
+                            <button type="button" onclick="removeSupplierEntry('${supplierId}')" class="text-xs text-red-500 hover:text-red-700">×</button>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <div class="col-span-2">
                                 <label class="block text-xs font-medium mb-1">{{ __('messages.supplier') }} *</label>
-                                <select name="proposals[${proposalCounter}][supplier_id]" required class="w-full px-2 py-1 border rounded text-sm supplier-select" data-proposal-id="${proposalCounter}">
-                                    <option value="">{{ __('messages.select_item_first') }}</option>
+                                <select name="groups[${groupOrder}][suppliers][${supplierIndex}][supplier_id]" required class="w-full px-2 py-1 border rounded text-sm supplier-select" onchange="updateSupplierInfo('${supplierId}')">
+                                    <option value="">{{ __('messages.select_supplier') }}</option>
+                                    ${itemId ? getSuppliersForItem(itemId).map(s => `
+                                        <option value="${s.id}" data-price="${s.unit_price || ''}">${s.name}</option>
+                                    `).join('') : '<option value="">{{ __('messages.select_item_first') }}</option>'}
                                 </select>
                             </div>
                             <div>
                                 <label class="block text-xs font-medium mb-1">{{ __('messages.quantity') }} *</label>
-                                <input type="number" name="proposals[${proposalCounter}][quantity]" required step="0.01" min="0.01" value="${defaultQty || ''}" class="w-full px-2 py-1 border rounded text-sm" oninput="updateQuantityValidation(${proposalCounter})">
-                                <p id="qty-info-${proposalCounter}" class="text-xs text-gray-500 mt-1"></p>
+                                <input type="number" name="groups[${groupOrder}][suppliers][${supplierIndex}][quantity]" required step="0.01" min="0.01" class="w-full px-2 py-1 border rounded text-sm" oninput="updateGroupTotals('${groupId}')">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium mb-1">{{ __('messages.unit_price') }} *</label>
-                                <input type="number" name="proposals[${proposalCounter}][unit_price]" required step="0.01" min="0" class="w-full px-2 py-1 border rounded text-sm">
+                                <input type="number" name="groups[${groupOrder}][suppliers][${supplierIndex}][unit_price]" required step="0.01" min="0" class="w-full px-2 py-1 border rounded text-sm" oninput="updateGroupTotals('${groupId}')">
                             </div>
                         </div>
-                        <div class="mt-3">
+                        <div class="mt-2">
                             <label class="block text-xs font-medium mb-1">{{ __('messages.notes') }}</label>
-                            <input type="text" name="proposals[${proposalCounter}][notes]" class="w-full px-2 py-1 border rounded text-sm">
+                            <input type="text" name="groups[${groupOrder}][suppliers][${supplierIndex}][notes]" class="w-full px-2 py-1 border rounded text-sm">
                         </div>
                     </div>
                 `;
-                list.insertAdjacentHTML('beforeend', entryHtml);
                 
-                if (itemId) {
-                    const itemSelect = document.querySelector(`select[name="proposals[${proposalCounter}][item_id]"]`);
-                    if (itemSelect) {
-                        itemSelect.value = itemId;
-                        updateProposalItemInfo(proposalCounter);
+                suppliersContainer.insertAdjacentHTML('beforeend', supplierHtml);
+            }
+
+            function onGroupItemChange(groupId) {
+                const group = document.getElementById(groupId);
+                const itemSelect = group.querySelector('select[name^="groups["]');
+                const itemId = itemSelect?.value;
+                
+                group.querySelectorAll('.supplier-select').forEach(select => {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">{{ __('messages.select_supplier') }}</option>';
+                    
+                    if (itemId) {
+                        getSuppliersForItem(itemId).forEach(s => {
+                            const option = document.createElement('option');
+                            option.value = s.id;
+                            option.textContent = s.name;
+                            option.dataset.price = s.unit_price || '';
+                            select.appendChild(option);
+                        });
+                    }
+                });
+            }
+
+            function updateSupplierInfo(supplierId) {
+                const entry = document.getElementById(supplierId);
+                const supplierSelect = entry.querySelector('.supplier-select');
+                const priceInput = entry.querySelector('input[name$="[unit_price]"]');
+                
+                if (supplierSelect && priceInput) {
+                    const selectedOption = supplierSelect.options[supplierSelect.selectedIndex];
+                    if (selectedOption && selectedOption.dataset.price) {
+                        priceInput.value = selectedOption.dataset.price;
                     }
                 }
+            }
+
+            function updateGroupTotals(groupId) {
+                const group = document.getElementById(groupId);
+                const itemSelect = group.querySelector('select[name^="groups["]');
+                const itemId = parseInt(itemSelect?.value);
+                const poItem = currentPOItems.find(pi => pi.item_id === itemId);
+                const maxQty = poItem ? parseFloat(poItem.init_quantity) : Infinity;
                 
-                proposalCounter++;
+                let totalQty = 0;
+                let totalPrice = 0;
+                
+                group.querySelectorAll('.supplier-entry').forEach(entry => {
+                    const qty = parseFloat(entry.querySelector('input[name$="[quantity]"]')?.value) || 0;
+                    const price = parseFloat(entry.querySelector('input[name$="[unit_price]"]')?.value) || 0;
+                    totalQty += qty;
+                    totalPrice += qty * price;
+                });
+                
+                group.querySelector('.group-total-qty').textContent = totalQty.toFixed(2);
+                group.querySelector('.group-total-price').textContent = '{{ __('messages.currency') }} ' + totalPrice.toFixed(2);
+                
+                const totalDiv = group.querySelector('.group-total-qty');
+                if (totalQty > maxQty) {
+                    totalDiv.classList.add('text-red-600', 'font-bold');
+                    totalDiv.title = '{{ __('messages.exceeds_requested') }} ' + maxQty.toFixed(2);
+                } else {
+                    totalDiv.classList.remove('text-red-600', 'font-bold');
+                    totalDiv.title = '';
+                }
+            }
+
+            function removeSupplierEntry(supplierId) {
+                const entry = document.getElementById(supplierId);
+                if (entry) {
+                    const groupId = entry.dataset.groupId;
+                    entry.remove();
+                    updateGroupTotals(groupId);
+                }
+            }
+
+            function removeProposalGroup(groupId) {
+                const group = document.getElementById(groupId);
+                if (group) {
+                    group.remove();
+                }
             }
 
             function getRemainingQtyForItem(itemId) {
@@ -1061,44 +1176,17 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     }
                 });
                 
-                document.querySelectorAll('.proposal-entry').forEach(entry => {
-                    const entryItemId = entry.querySelector('select[name$="[item_id]"]')?.value;
-                    const entryQty = parseFloat(entry.querySelector('input[name$="[quantity]"]')?.value) || 0;
-                    if (parseInt(entryItemId) === itemId) {
-                        alreadyProposed += entryQty;
+                document.querySelectorAll('.proposal-group').forEach(group => {
+                    const itemSelect = group.querySelector('select[name^="groups["]');
+                    if (itemSelect && parseInt(itemSelect.value) === itemId) {
+                        group.querySelectorAll('.supplier-entry').forEach(entry => {
+                            const entryQty = parseFloat(entry.querySelector('input[name$="[quantity]"]')?.value) || 0;
+                            alreadyProposed += entryQty;
+                        });
                     }
                 });
                 
                 return Math.max(0, totalNeeded - alreadyProposed);
-            }
-
-            function removeProposalEntry(id) {
-                const entry = document.getElementById(`proposal-entry-${id}`);
-                if (entry) {
-                    entry.remove();
-                    refreshItemOptions();
-                }
-            }
-
-            function refreshItemOptions() {
-                document.querySelectorAll('.proposal-entry select[name$="[item_id]"]').forEach(select => {
-                    const options = select.querySelectorAll('option');
-                    options.forEach(option => {
-                        const itemId = parseInt(option.value);
-                        if (itemId) {
-                            const remaining = getRemainingQtyForItem(itemId);
-                            if (remaining > 0) {
-                                option.removeAttribute('disabled');
-                                option.textContent = option.textContent.replace(' ({{ __('messages.exhausted') }})', '');
-                            } else {
-                                option.setAttribute('disabled', 'disabled');
-                                if (!option.textContent.includes('({{ __('messages.exhausted') }})')) {
-                                    option.textContent += ' ({{ __('messages.exhausted') }})';
-                                }
-                            }
-                        }
-                    });
-                });
             }
 
             function validateProposalsTotal(proposals) {
@@ -1127,6 +1215,69 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 }
                 
                 return { valid: true };
+            }
+
+            function renderHRProposalGroups(po) {
+                console.log('renderHRProposalGroups called');
+                console.log('po:', po);
+                console.log('proposition_groups:', po.proposition_groups);
+                
+                if (!po.proposition_groups || po.proposition_groups.length === 0) {
+                    return '<p class="text-gray-500">{{ __('messages.no_propositions_yet') }}</p>';
+                }
+                
+                var html = '';
+                po.proposition_groups.forEach(function(group, groupIdx) {
+                    console.log('Rendering group:', groupIdx, group);
+                    var propositions = group.propositions || [];
+                    console.log('Propositions in group:', propositions);
+                    var totalQty = 0;
+                    var totalPrice = 0;
+                    var itemName = (group.item && group.item.designation) ? group.item.designation : 'Item';
+                    
+                    propositions.forEach(function(p) {
+                        totalQty += parseFloat(p.quantity) || 0;
+                        totalPrice += (parseFloat(p.quantity) || 0) * (parseFloat(p.unit_price) || 0);
+                    });
+                    
+                    var supplierHtml = '';
+                    propositions.forEach(function(prop) {
+                        console.log('Processing prop:', prop);
+                        var supplierName = (prop.supplier && prop.supplier.name) ? prop.supplier.name : 'N/A';
+                        console.log('Supplier name:', supplierName);
+                        var qty = (parseFloat(prop.quantity) || 0).toFixed(2);
+                        var price = (parseFloat(prop.unit_price) || 0).toFixed(2);
+                        supplierHtml += '<div class="flex justify-between items-center p-2 rounded bg-white border">' +
+                            '<div>' +
+                                '<span class="font-medium">' + supplierName + '</span>' +
+                                '<span class="text-sm text-gray-600 ml-2">Qté: ' + qty + '</span>' +
+                            '</div>' +
+                            '<span class="font-semibold text-green-600">DH ' + price + '</span>' +
+                        '</div>';
+                    });
+                    
+                    var borderClass = groupIdx === 0 ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-white';
+                    
+                    html += '<div class="border-2 rounded-lg p-4 ' + borderClass + '">' +
+                        '<div class="flex items-start gap-3">' +
+                            '<input type="radio" name="selectedGroup" value="' + group.id + '" class="mt-1 w-5 h-5" onchange="selectProposalGroup(this)">' +
+                            '<div class="flex-1">' +
+                                '<div class="flex justify-between items-center mb-2">' +
+                                    '<span class="text-xs font-semibold text-gray-500">Proposition #' + (groupIdx + 1) + '</span>' +
+                                    '<span class="text-xs px-2 py-1 rounded bg-gray-100">' + itemName + '</span>' +
+                                '</div>' +
+                                '<div class="space-y-2">' + supplierHtml + '</div>' +
+                                '<div class="mt-2 pt-2 border-t flex justify-between text-sm">' +
+                                    '<span class="text-gray-500">Total Qté: <strong>' + totalQty.toFixed(2) + '</strong></span>' +
+                                    '<span class="text-gray-500">Total: <strong class="text-green-600">DH ' + totalPrice.toFixed(2) + '</strong></span>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                });
+                
+                console.log('Generated HTML length:', html.length);
+                return html;
             }
 
             function updateProposalItemInfo(counter) {
@@ -1177,36 +1328,64 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             function submitProposals(e, poId) {
                 e.preventDefault();
                 const form = e.target;
-                const formData = new FormData(form);
                 
                 const proposals = [];
-                const entries = document.querySelectorAll('.proposal-entry');
-                entries.forEach((entry, idx) => {
-                    const itemId = entry.querySelector('select[name$="[item_id]"]')?.value;
-                    const supplierId = entry.querySelector('select[name$="[supplier_id]"]')?.value;
-                    const quantity = entry.querySelector('input[name$="[quantity]"]')?.value;
-                    const unitPrice = entry.querySelector('input[name$="[unit_price]"]')?.value;
-                    const notes = entry.querySelector('input[name$="[notes]"]')?.value;
-                    
-                    if (itemId && supplierId && quantity && unitPrice) {
-                        proposals.push({
-                            item_id: parseInt(itemId),
-                            supplier_id: parseInt(supplierId),
-                            quantity: parseFloat(quantity),
-                            unit_price: parseFloat(unitPrice),
-                            notes: notes || null
-                        });
-                    }
-                });
-
-                if (proposals.length === 0) {
-                    Notification.error('{{ __('messages.add_at_least_one_proposal') }}');
+                const groups = document.querySelectorAll('.proposal-group');
+                
+                if (groups.length === 0) {
+                    Notification.error('{{ __('messages.add_at_least_one_proposal_group') }}');
                     return;
                 }
+                
+                for (const group of groups) {
+                    const itemSelect = group.querySelector('select[name^="groups["]');
+                    const itemId = parseInt(itemSelect?.value);
+                    const groupOrder = group.dataset.groupOrder;
+                    
+                    if (!itemId) {
+                        Notification.error('{{ __('messages.select_item_for_each_group') }}');
+                        return;
+                    }
+                    
+                    const poItem = currentPOItems.find(pi => pi.item_id === itemId);
+                    const maxQty = poItem ? parseFloat(poItem.init_quantity) : 0;
+                    
+                    let groupTotalQty = 0;
+                    const supplierEntries = group.querySelectorAll('.supplier-entry');
+                    
+                    supplierEntries.forEach(entry => {
+                        const supplierSelect = entry.querySelector('select[name$="[supplier_id]"]');
+                        const qtyInput = entry.querySelector('input[name$="[quantity]"]');
+                        const priceInput = entry.querySelector('input[name$="[unit_price]"]');
+                        const notesInput = entry.querySelector('input[name$="[notes]"]');
+                        
+                        const supplierId = supplierSelect?.value;
+                        const quantity = parseFloat(qtyInput?.value) || 0;
+                        const unitPrice = priceInput?.value;
+                        
+                        if (supplierId && qtyInput?.value && unitPrice) {
+                            groupTotalQty += quantity;
+                            proposals.push({
+                                item_id: itemId,
+                                supplier_id: parseInt(supplierId),
+                                quantity: quantity,
+                                unit_price: parseFloat(unitPrice),
+                                notes: notesInput?.value || null,
+                                proposition_group_id: group.dataset.groupId,
+                                proposition_order: parseInt(groupOrder)
+                            });
+                        }
+                    });
+                    
+                    if (groupTotalQty > maxQty) {
+                        const itemName = poItem?.item?.designation || poItem?.new_item_name || 'Item';
+                        Notification.error(`{{ __('messages.group_exceeds_quantity') }}: ${itemName}. {{ __('messages.maximum') }}: ${maxQty.toFixed(2)}, {{ __('messages.proposed') }}: ${groupTotalQty.toFixed(2)}`);
+                        return;
+                    }
+                }
 
-                const validation = validateProposalsTotal(proposals);
-                if (!validation.valid) {
-                    Notification.error(validation.message);
+                if (proposals.length === 0) {
+                    Notification.error('{{ __('messages.add_at_least_one_supplier') }}');
                     return;
                 }
 
@@ -1222,7 +1401,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     .then(async res => {
                         if (!res.ok) {
                             const errorData = await res.json();
-                            throw new Error(errorData.message || 'Error submitting proposals');
+                            throw new Error(errorData.message || errorData.error || 'Error submitting proposals');
                         }
                         return res.json();
                     })
@@ -1237,8 +1416,63 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     });
             }
 
-            function submitFinalSelection(poId) {
+            function selectProposalGroup(radio) {
+                document.querySelectorAll('.proposal-group').forEach(group => {
+                    const radioInput = group.querySelector('input[type="radio"]');
+                    if (radioInput === radio) {
+                        group.classList.add('border-blue-300', 'bg-blue-50');
+                        group.classList.remove('border-gray-200', 'bg-white');
+                    } else {
+                        group.classList.remove('border-blue-300', 'bg-blue-50');
+                        group.classList.add('border-gray-200', 'bg-white');
+                    }
+                });
+            }
+
+            function approveSelectedProposals(poId) {
+                const selectedRadio = document.querySelector('input[name="selectedGroup"]:checked');
+                if (!selectedRadio) {
+                    Notification.error('{{ __('messages.select_one_proposal_option') }}');
+                    return;
+                }
+                
+                const selectedGroupId = selectedRadio.value;
+                
                 fetch(`/api/purchase-orders/${poId}/final-approval`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ 
+                            action: 'approve',
+                            selected_group_id: selectedGroupId 
+                        })
+                    })
+                    .then(async res => {
+                        if (!res.ok) {
+                            const errorData = await res.json();
+                            throw new Error(errorData.message || errorData.error || 'Error');
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        closeDetailsModal();
+                        loadPOs();
+                        Notification.success('{{ __('messages.proposals_approved') }}');
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Notification.error('{{ __('messages.error_approving') }}: ' + err.message);
+                    });
+            }
+
+            function rejectAllProposals(poId) {
+                if (!confirm('{{ __('messages.confirm_reject_all_proposals') }}')) {
+                    return;
+                }
+                
+                fetch(`/api/purchase-orders/${poId}/proposals/reject`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -1246,19 +1480,35 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         },
                         body: JSON.stringify({})
                     })
-                    .then(res => res.json())
+                    .then(async res => {
+                        if (!res.ok) {
+                            const errorData = await res.json();
+                            throw new Error(errorData.message || errorData.error || 'Error');
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         closeDetailsModal();
                         loadPOs();
-                        Notification.success('{{ __('messages.supplier_selected') }}');
+                        Notification.success('{{ __('messages.proposals_rejected') }}');
                     })
-                    .catch(err => Notification.error('{{ __('messages.error_selecting_supplier') }}'));
+                    .catch(err => {
+                        console.error(err);
+                        Notification.error('{{ __('messages.error_rejecting') }}: ' + err.message);
+                    });
+            }
+
+            function submitFinalSelection(poId) {
+                const selectedRadio = document.querySelector('input[name="selectedGroup"]:checked');
+                if (!selectedRadio) {
+                    Notification.error('{{ __('messages.select_one_proposal_option') }}');
+                    return;
+                }
+                approveSelectedProposals(poId);
             }
 
             function rejectProposals(poId) {
-                if (confirm('{{ __('messages.confirm_reject_proposals') }}')) {
-                    updateInitialApproval(poId, 'reject');
-                }
+                rejectAllProposals(poId);
             }
 
             function approveInitial(id) {

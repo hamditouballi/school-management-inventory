@@ -42,7 +42,6 @@ class PurchaseOrderWorkflowTest extends DuskTestCase
         $this->item = Item::factory()->create([
             'designation' => 'Test Item',
             'quantity' => 100,
-            'price' => 50.00,
         ]);
     }
 

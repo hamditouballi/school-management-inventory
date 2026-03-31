@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Proposition;
+use App\Models\PropositionGroup;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
@@ -31,6 +32,8 @@ class PurchaseOrderController extends Controller
             'children.supplier',
             'propositions.supplier',
             'propositions.item',
+            'propositionGroups.propositions.supplier',
+            'propositionGroups.item',
         ])->orderBy('date', 'desc')->get());
     }
 
@@ -114,6 +117,8 @@ class PurchaseOrderController extends Controller
             'responsibleStock',
             'supplier',
             'propositions',
+            'propositionGroups.propositions.supplier',
+            'propositionGroups.item',
         ]));
     }
 
@@ -255,13 +260,67 @@ class PurchaseOrderController extends Controller
             'proposals.*.quantity' => 'required|numeric|min:0.01',
             'proposals.*.unit_price' => 'required|numeric|min:0',
             'proposals.*.notes' => 'nullable|string',
+            'proposals.*.proposition_group_id' => 'nullable|string|uuid',
+            'proposals.*.proposition_order' => 'nullable|integer|min:0',
         ]);
+
+        $groupQtys = [];
+        foreach ($validated['proposals'] as $proposal) {
+            $groupId = $proposal['proposition_group_id'] ?? $proposal['item_id'];
+            if (! isset($groupQtys[$groupId])) {
+                $groupQtys[$groupId] = 0;
+            }
+            $groupQtys[$groupId] += $proposal['quantity'];
+        }
+
+        foreach ($groupQtys as $groupId => $totalQty) {
+            $itemId = collect($validated['proposals'])
+                ->firstWhere('proposition_group_id', $groupId)['item_id'] ?? null;
+
+            if (! $itemId) {
+                $itemId = $groupId;
+            }
+
+            $poItem = $purchaseOrder->purchaseOrderItems()->where('item_id', $itemId)->first();
+            if ($poItem && $totalQty > $poItem->init_quantity) {
+                $item = $poItem->item;
+
+                return response()->json([
+                    'error' => "Quantity for item '{$item->designation}' exceeds requested amount. Requested: {$poItem->init_quantity}, Proposed: {$totalQty}",
+                ], 422);
+            }
+        }
 
         DB::beginTransaction();
         try {
             $createdPropositions = [];
+            $processedGroups = [];
 
             foreach ($validated['proposals'] as $propositionData) {
+                $groupId = $propositionData['proposition_group_id'] ?? null;
+                $order = $propositionData['proposition_order'] ?? 0;
+
+                if (! $groupId) {
+                    $groupId = (string) \Illuminate\Support\Str::uuid();
+                }
+
+                if (! isset($processedGroups[$groupId])) {
+                    $existingGroup = PropositionGroup::where('id', $groupId)
+                        ->where('purchase_order_id', $purchaseOrder->id)
+                        ->first();
+
+                    if (! $existingGroup) {
+                        $existingGroup = PropositionGroup::create([
+                            'id' => $groupId,
+                            'purchase_order_id' => $purchaseOrder->id,
+                            'item_id' => $propositionData['item_id'],
+                            'proposition_order' => $order,
+                        ]);
+                    }
+
+                    $processedGroups[$groupId] = $existingGroup;
+                }
+
                 $proposition = Proposition::create([
                     'purchase_order_id' => $purchaseOrder->id,
                     'supplier_id' => $propositionData['supplier_id'],
@@ -269,6 +328,8 @@ class PurchaseOrderController extends Controller
                     'quantity' => $propositionData['quantity'],
                     'unit_price' => $propositionData['unit_price'],
                     'notes' => $propositionData['notes'] ?? null,
+                    'proposition_group_id' => $groupId,
+                    'proposition_order' => $order,
                 ]);
                 $createdPropositions[] = $proposition;
             }
@@ -283,8 +344,11 @@ class PurchaseOrderController extends Controller
             }
 
             return response()->json([
-                'purchase_order' => $purchaseOrder->load('propositions.supplier', 'propositions.item'),
-                'propositions' => $createdPropositions,
+                'purchase_order' => $purchaseOrder->load('propositionGroups.propositions.supplier', 'propositionGroups.item', 'propositions.supplier'),
+                'proposition_groups' => PropositionGroup::where('purchase_order_id', $purchaseOrder->id)
+                    ->with('propositions.supplier', 'item')
+                    ->orderBy('proposition_order')
+                    ->get(),
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -300,21 +364,25 @@ class PurchaseOrderController extends Controller
         }
 
         $validated = $request->validate([
-            'approvals' => 'required|array|min:1',
-            'approvals.*.proposition_id' => 'required|exists:propositions,id',
-            'approvals.*.final_quantity' => 'nullable|numeric|min:0',
+            'selected_group_id' => 'required|string|uuid',
         ]);
 
         DB::beginTransaction();
         try {
-            foreach ($validated['approvals'] as $approval) {
-                $proposition = Proposition::find($approval['proposition_id']);
+            $selectedPropositions = Proposition::where('proposition_group_id', $validated['selected_group_id'])
+                ->where('purchase_order_id', $purchaseOrder->id)
+                ->get();
 
-                $poItem = PurchaseOrderItem::create([
+            if ($selectedPropositions->isEmpty()) {
+                return response()->json(['error' => 'No propositions found for selected group'], 400);
+            }
+
+            foreach ($selectedPropositions as $proposition) {
+                PurchaseOrderItem::create([
                     'purchase_order_id' => $purchaseOrder->id,
                     'item_id' => $proposition->item_id,
                     'init_quantity' => $proposition->quantity,
-                    'final_quantity' => $approval['final_quantity'] ?? $proposition->quantity,
+                    'final_quantity' => $proposition->quantity,
                     'unit_price' => $proposition->unit_price,
                     'state' => 'approved',
                     'approved_by' => $request->user()->id,
@@ -336,6 +404,34 @@ class PurchaseOrderController extends Controller
                 'purchaseOrderItems.proposition.supplier',
                 'purchaseOrderItems.approver',
             ]));
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function rejectPropositions(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        if ($purchaseOrder->status !== 'pending_final_approval') {
+            return response()->json(['error' => 'Invalid status for rejecting propositions'], 400);
+        }
+
+        DB::beginTransaction();
+        try {
+            Proposition::where('purchase_order_id', $purchaseOrder->id)->delete();
+            PropositionGroup::where('purchase_order_id', $purchaseOrder->id)->delete();
+
+            $purchaseOrder->update(['status' => 'initial_approved']);
+
+            DB::commit();
+
+            $stockManager = $purchaseOrder->responsibleStock;
+            if ($stockManager) {
+                Notification::send($stockManager, new PurchaseOrderInitialRejected($purchaseOrder, $request->user()->name));
+            }
+
+            return response()->json($purchaseOrder);
         } catch (\Exception $e) {
             DB::rollBack();
 

@@ -16,11 +16,14 @@ class Proposition extends Model
         'quantity',
         'unit_price',
         'notes',
+        'proposition_group_id',
+        'proposition_order',
     ];
 
     protected $casts = [
         'quantity' => 'decimal:2',
         'unit_price' => 'decimal:2',
+        'proposition_order' => 'integer',
     ];
 
     public function supplier()
@@ -36,6 +39,11 @@ class Proposition extends Model
     public function purchaseOrder()
     {
         return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    public function propositionGroup()
+    {
+        return $this->belongsTo(PropositionGroup::class, 'proposition_group_id');
     }
 
     public function purchaseOrderItems()

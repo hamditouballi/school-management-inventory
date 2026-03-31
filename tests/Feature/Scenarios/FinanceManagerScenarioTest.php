@@ -38,7 +38,7 @@ test('finance manager full workflow scenario', function () {
         $poItem = PurchaseOrderItem::factory()->create([
             'purchase_order_id' => $po->id,
             'item_id' => $item->id,
-            'quantity' => 100,
+            'init_quantity' => 100,
             'unit_price' => 5.00,
         ]);
 
