@@ -1257,10 +1257,11 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     });
                     
                     var borderClass = groupIdx === 0 ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-white';
+                    var radioChecked = groupIdx === 0 ? 'checked' : '';
                     
-                    html += '<div class="border-2 rounded-lg p-4 ' + borderClass + '">' +
+                    html += '<div class="border-2 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow ' + borderClass + '" onclick="selectProposalCard(this, \'' + group.id + '\')" data-group-id="' + group.id + '">' +
                         '<div class="flex items-start gap-3">' +
-                            '<input type="radio" name="selectedGroup" value="' + group.id + '" class="mt-1 w-5 h-5" onchange="selectProposalGroup(this)">' +
+                            '<input type="radio" name="selectedGroup" value="' + group.id + '" class="mt-1 w-5 h-5" ' + radioChecked + '>' +
                             '<div class="flex-1">' +
                                 '<div class="flex justify-between items-center mb-2">' +
                                     '<span class="text-xs font-semibold text-gray-500">Proposition #' + (groupIdx + 1) + '</span>' +
@@ -1416,17 +1417,25 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     });
             }
 
-            function selectProposalGroup(radio) {
-                document.querySelectorAll('.proposal-group').forEach(group => {
-                    const radioInput = group.querySelector('input[type="radio"]');
-                    if (radioInput === radio) {
-                        group.classList.add('border-blue-300', 'bg-blue-50');
-                        group.classList.remove('border-gray-200', 'bg-white');
-                    } else {
-                        group.classList.remove('border-blue-300', 'bg-blue-50');
-                        group.classList.add('border-gray-200', 'bg-white');
-                    }
+            function selectProposalCard(card, groupId) {
+                document.querySelectorAll('[data-group-id]').forEach(c => {
+                    c.classList.remove('border-blue-300', 'bg-blue-50');
+                    c.classList.add('border-gray-200', 'bg-white');
+                    const radio = c.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = false;
                 });
+                
+                card.classList.add('border-blue-300', 'bg-blue-50');
+                card.classList.remove('border-gray-200', 'bg-white');
+                const radio = card.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+            }
+
+            function selectProposalGroup(radio) {
+                const card = radio.closest('[data-group-id]');
+                if (card) {
+                    selectProposalCard(card, radio.value);
+                }
             }
 
             function approveSelectedProposals(poId) {

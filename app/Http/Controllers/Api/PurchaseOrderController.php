@@ -422,7 +422,7 @@ class PurchaseOrderController extends Controller
             Proposition::where('purchase_order_id', $purchaseOrder->id)->delete();
             PropositionGroup::where('purchase_order_id', $purchaseOrder->id)->delete();
 
-            $purchaseOrder->update(['status' => 'initial_approved']);
+            $purchaseOrder->update(['status' => 'rejected']);
 
             DB::commit();
 
