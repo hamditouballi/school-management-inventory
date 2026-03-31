@@ -205,6 +205,9 @@ return [
     'total' => 'Total',
     'select_same_item_for_competitors' => 'Vous pouvez sélectionner le même article dans différents groupes pour créer des propositions concurrentes',
     'no_propositions_yet' => 'Aucune proposition soumise pour le moment',
+    'select_all_items' => 'Veuillez sélectionner une proposition pour tous les articles',
+    'ready_to_approve' => 'Prêt à approuver',
+    'select_one_group_per_item' => 'Sélectionnez UNE option de proposition pour chaque article. Plusieurs fournisseurs dans une option collaboreront.',
 
     // Invoices
     'create_invoice' => '+ Créer une facture',

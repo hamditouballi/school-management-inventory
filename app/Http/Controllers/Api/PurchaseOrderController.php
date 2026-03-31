@@ -364,20 +364,40 @@ class PurchaseOrderController extends Controller
         }
 
         $validated = $request->validate([
-            'selected_group_id' => 'required|string|uuid',
+            'selected_group_ids' => 'required|array',
+            'selected_group_ids.*' => 'required|string|uuid',
         ]);
+
+        $poItemIds = $purchaseOrder->purchaseOrderItems()->pluck('item_id')->toArray();
+
+        $selectedGroups = PropositionGroup::whereIn('id', $validated['selected_group_ids'])
+            ->where('purchase_order_id', $purchaseOrder->id)
+            ->get();
+
+        if ($selectedGroups->isEmpty()) {
+            return response()->json(['error' => 'No valid groups selected'], 400);
+        }
+
+        $selectedGroupItemIds = $selectedGroups->pluck('item_id')->toArray();
+        $missingItems = array_diff($poItemIds, $selectedGroupItemIds);
+
+        if (! empty($missingItems)) {
+            return response()->json(['error' => 'Select a proposal for all items in the purchase order'], 422);
+        }
+
+        $allPropositions = Proposition::whereIn('proposition_group_id', $validated['selected_group_ids'])
+            ->where('purchase_order_id', $purchaseOrder->id)
+            ->get();
+
+        if ($allPropositions->isEmpty()) {
+            return response()->json(['error' => 'No propositions found for selected groups'], 400);
+        }
 
         DB::beginTransaction();
         try {
-            $selectedPropositions = Proposition::where('proposition_group_id', $validated['selected_group_id'])
-                ->where('purchase_order_id', $purchaseOrder->id)
-                ->get();
+            $purchaseOrder->purchaseOrderItems()->delete();
 
-            if ($selectedPropositions->isEmpty()) {
-                return response()->json(['error' => 'No propositions found for selected group'], 400);
-            }
-
-            foreach ($selectedPropositions as $proposition) {
+            foreach ($allPropositions as $proposition) {
                 PurchaseOrderItem::create([
                     'purchase_order_id' => $purchaseOrder->id,
                     'item_id' => $proposition->item_id,

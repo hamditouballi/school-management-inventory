@@ -209,6 +209,9 @@ return [
     'total' => 'الإجمالي',
     'select_same_item_for_competitors' => 'يمكنك اختيار نفس المادة في مجموعات مختلفة لإنشاء مقترحات تنافسية',
     'no_propositions_yet' => 'لم يتم تقديم أي اقتراحات حتى الآن',
+    'select_all_items' => 'يرجى اختيار اقتراح لجميع المواد',
+    'ready_to_approve' => 'جاهز للموافقة',
+    'select_one_group_per_item' => 'اختر خيار اقتراح واحد لكل مادة. سيتعاون عدة موردين في خيار واحد.',
 
     // Invoices
     'create_invoice' => '+ إنشاء فاتورة',

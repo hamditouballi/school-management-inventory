@@ -318,14 +318,19 @@
                         const isSplit = po.status === 'split';
                         const childCount = po.children ? po.children.length : 0;
                         const poItems = po.purchase_order_items || [];
-                        const firstItemImage = poItems.find(item => item.item?.image_path)?.item?.image_path;
+                        const itemsWithImages = poItems.filter(item => item.item?.image_path).map(item => item.item.image_path);
+                        const extraCount = Math.max(0, poItems.length - 2);
                         const totalQty = poItems.reduce((sum, item) => sum + parseFloat(item.init_quantity || 0), 0);
                         const totalOfChildren = (po.children || []).reduce((sum, c) => sum + parseFloat(c.total_amount || 0), 0);
                         
                         const parentRow = `
             <tr class="hover:bg-gray-50 bg-gray-50" data-po-id="${po.id}">
                 <td class="px-6 py-4">
-                    ${isSplit ? `<button onclick="toggleChildren(${po.id})" class="text-blue-600 font-bold text-lg">▶</button>` : firstItemImage ? `<img src="/storage/${firstItemImage}" class="w-12 h-12 object-cover rounded cursor-pointer" onclick="viewPODetails(${po.id})">` : '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'}
+                    ${isSplit ? `<button onclick="toggleChildren(${po.id})" class="text-blue-600 font-bold text-lg">▶</button>` : `
+                    <div class="flex items-center cursor-pointer" onclick="viewPODetails(${po.id})">
+                        ${itemsWithImages.length > 0 ? itemsWithImages.slice(0, 2).map((img, idx) => `<img src="/storage/${img}" class="w-10 h-10 object-cover rounded-full border-2 border-white ${idx > 0 ? '-ml-3' : ''}">`).join('') : `<div class="w-10 h-10 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>`}
+                        ${extraCount > 0 ? `<div class="w-10 h-10 rounded-full bg-gray-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold -ml-3">+${extraCount}</div>` : ''}
+                    </div>`}
                 </td>
                 <td class="px-6 py-4 font-semibold">${isSplit ? '-' : '#' + po.id}</td>
                 <td class="px-6 py-4">${isSplit ? `<span class="text-blue-600 font-semibold whitespace-nowrap">${childCount} {{ __('messages.sub_orders') }}</span>` : (po.supplier || '-')}</td>
@@ -346,7 +351,7 @@
                           ` : isStockManager && po.status === 'initial_approved' ? `
                               <button dusk="add-proposals-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800">{{ __('messages.add_proposals') }}</button>
                           ` : isStockManager && po.status === 'final_approved' ? `
-                              <button dusk="mark-ordered-btn-${po.id}" onclick="markAsOrdered(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.mark_ordered') }}</button>
+                              <button dusk="mark-ordered-btn-${po.id}" onclick="markOrderedSimple(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.mark_ordered') }}</button>
                           ` : isStockManager && isSplit ? `
                               <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.view') }}</button>
                           ` : `
@@ -733,15 +738,22 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
 
             function viewPODetails(id) {
                 document.getElementById('detailsModal').classList.remove('hidden');
-                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}</p>';
+                document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500 p-4">{{ __('messages.loading') }}</p>';
 
                 fetch(`/api/purchase-orders/${id}`, {
                         headers
                     })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('HTTP ' + res.status);
+                        }
+                        return res.json();
+                    })
                     .then(po => {
+                        if (po.error) {
+                            throw new Error(po.error);
+                        }
                         console.log('PO Data:', po);
-                        console.log('Propositions:', po.propositions);
                         const poItems = po.purchase_order_items || [];
                         const statusColors = {
                             pending_hr: 'bg-yellow-100 text-yellow-800',
@@ -845,9 +857,19 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             ${renderHRProposalGroups(po)}
                         </div>
                         
-                        <div class="mt-6 flex gap-3 justify-end">
-                            <button onclick="rejectAllProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject_all') }}</button>
-                            <button onclick="approveSelectedProposals(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.approve_selected') }}</button>
+                        <div class="mt-6 pt-4 border-t">
+                            <div class="flex items-center justify-between mb-4">
+                                <p id="hrSelectionStatus" class="text-sm text-gray-600">
+                                    <span id="selectedCount">0</span> of <span id="totalItems">0</span> items selected
+                                </p>
+                                <div id="hrApprovalStatus" class="text-sm text-green-600 hidden">
+                                    ✓ {{ __('messages.ready_to_approve') }}
+                                </div>
+                            </div>
+                            <div class="flex gap-3 justify-end">
+                                <button onclick="rejectAllProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject_all') }}</button>
+                                <button id="approveSelectedBtn" onclick="approveSelectedProposals(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 opacity-50 cursor-not-allowed" disabled>{{ __('messages.approve_selected') }}</button>
+                            </div>
                         </div>
                     </div>
                 ` : ''}
@@ -881,10 +903,20 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                 }
                             }, 100);
                         }
+                        if (po.status === 'pending_final_approval') {
+                            setTimeout(() => {
+                                const totalItemsEl = document.getElementById('totalItems');
+                                if (totalItemsEl) {
+                                    totalItemsEl.textContent = totalItems;
+                                    updateSelectionProgress();
+                                }
+                            }, 100);
+                        }
                     })
-                    .catch(() => {
+                    .catch(err => {
+                        console.error('Error loading PO:', err);
                         document.getElementById('detailsContent').innerHTML =
-                            '<p class="text-red-500">{{ __('messages.error_loading_details') }}</p>';
+                            '<p class="text-red-500 p-4">{{ __('messages.error_loading_details') }}: ' + err.message + '</p>';
                     });
             }
 
@@ -902,6 +934,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             let existingProposals = [];
             let existingGroups = [];
             let groupCounter = 0;
+            let selectedGroups = {};
+            let totalItems = 0;
 
             function loadSuppliers() {
                 Promise.all([
@@ -1218,67 +1252,145 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             }
 
             function renderHRProposalGroups(po) {
-                console.log('renderHRProposalGroups called');
-                console.log('po:', po);
-                console.log('proposition_groups:', po.proposition_groups);
+                selectedGroups = {};
                 
                 if (!po.proposition_groups || po.proposition_groups.length === 0) {
                     return '<p class="text-gray-500">{{ __('messages.no_propositions_yet') }}</p>';
                 }
                 
+                var groupsByItem = {};
+                po.proposition_groups.forEach(function(group) {
+                    var itemId = group.item_id;
+                    if (!groupsByItem[itemId]) {
+                        groupsByItem[itemId] = {
+                            item: group.item,
+                            groups: []
+                        };
+                    }
+                    groupsByItem[itemId].groups.push(group);
+                });
+                
+                totalItems = Object.keys(groupsByItem).length;
+                
                 var html = '';
-                po.proposition_groups.forEach(function(group, groupIdx) {
-                    console.log('Rendering group:', groupIdx, group);
-                    var propositions = group.propositions || [];
-                    console.log('Propositions in group:', propositions);
-                    var totalQty = 0;
-                    var totalPrice = 0;
-                    var itemName = (group.item && group.item.designation) ? group.item.designation : 'Item';
+                var itemIndex = 0;
+                
+                Object.keys(groupsByItem).forEach(function(itemId) {
+                    var itemData = groupsByItem[itemId];
+                    var itemName = (itemData.item && itemData.item.designation) ? itemData.item.designation : 'Item';
+                    var itemImage = itemData.item && itemData.item.image_path ? itemData.item.image_path : null;
                     
-                    propositions.forEach(function(p) {
-                        totalQty += parseFloat(p.quantity) || 0;
-                        totalPrice += (parseFloat(p.quantity) || 0) * (parseFloat(p.unit_price) || 0);
-                    });
+                    html += '<div class="border rounded-lg p-4 bg-white shadow-sm">';
                     
-                    var supplierHtml = '';
-                    propositions.forEach(function(prop) {
-                        console.log('Processing prop:', prop);
-                        var supplierName = (prop.supplier && prop.supplier.name) ? prop.supplier.name : 'N/A';
-                        console.log('Supplier name:', supplierName);
-                        var qty = (parseFloat(prop.quantity) || 0).toFixed(2);
-                        var price = (parseFloat(prop.unit_price) || 0).toFixed(2);
-                        supplierHtml += '<div class="flex justify-between items-center p-2 rounded bg-white border">' +
-                            '<div>' +
-                                '<span class="font-medium">' + supplierName + '</span>' +
-                                '<span class="text-sm text-gray-600 ml-2">Qté: ' + qty + '</span>' +
+                    html += '<div class="flex items-center gap-3 mb-4 pb-3 border-b">';
+                    if (itemImage) {
+                        html += '<img src="/storage/' + itemImage + '" class="w-10 h-10 object-cover rounded">';
+                    } else {
+                        html += '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs">N/A</div>';
+                    }
+                    html += '<span class="font-semibold flex-1">' + itemName + '</span>';
+                    html += '<span class="text-xs px-2 py-1 rounded bg-orange-100 text-orange-800">' + itemData.groups.length + ' proposals</span>';
+                    html += '<span id="item-selected-' + itemId + '" class="text-sm text-gray-400">☐</span>';
+                    html += '</div>';
+                    
+                    html += '<div class="space-y-3">';
+                    itemData.groups.forEach(function(group, groupIdx) {
+                        var propositions = group.propositions || [];
+                        var totalQty = 0;
+                        var totalPrice = 0;
+                        
+                        propositions.forEach(function(p) {
+                            totalQty += parseFloat(p.quantity) || 0;
+                            totalPrice += (parseFloat(p.quantity) || 0) * (parseFloat(p.unit_price) || 0);
+                        });
+                        
+                        var supplierHtml = '';
+                        propositions.forEach(function(prop) {
+                            var supplierName = (prop.supplier && prop.supplier.name) ? prop.supplier.name : 'N/A';
+                            var qty = (parseFloat(prop.quantity) || 0).toFixed(2);
+                            var price = (parseFloat(prop.unit_price) || 0).toFixed(2);
+                            supplierHtml += '<div class="flex justify-between items-center p-2 rounded bg-gray-50 border">' +
+                                '<div class="flex items-center gap-2">' +
+                                    '<span class="font-medium text-sm">' + supplierName + '</span>' +
+                                '</div>' +
+                                '<div class="text-right">' +
+                                    '<span class="text-xs text-gray-500">Qté: ' + qty + '</span>' +
+                                    '<span class="ml-2 font-semibold text-green-600">DH ' + price + '</span>' +
+                                '</div>' +
+                            '</div>';
+                        });
+                        
+                        var borderClass = groupIdx === 0 ? 'border-blue-300' : 'border-gray-200';
+                        
+                        html += '<div class="border-2 rounded-lg p-3 cursor-pointer hover:shadow-md transition-shadow ' + borderClass + ' bg-white" onclick="selectGroupForItem(this, \'' + group.id + '\', ' + itemId + ')" data-group-id="' + group.id + '" data-item-id="' + itemId + '">' +
+                            '<div class="flex items-start gap-3">' +
+                                '<input type="radio" name="item-' + itemId + '" value="' + group.id + '" class="mt-1 w-5 h-5">' +
+                                '<div class="flex-1">' +
+                                    '<div class="flex justify-between items-center mb-2">' +
+                                        '<span class="text-xs font-semibold text-gray-500">Option ' + (groupIdx + 1) + '</span>' +
+                                    '</div>' +
+                                    '<div class="space-y-2 mb-3">' + supplierHtml + '</div>' +
+                                    '<div class="flex justify-between text-sm border-t pt-2">' +
+                                        '<span class="text-gray-500">Total: <strong>' + totalQty.toFixed(2) + '</strong></span>' +
+                                        '<span class="text-gray-500">Est: <strong class="text-green-600">DH ' + totalPrice.toFixed(2) + '</strong></span>' +
+                                    '</div>' +
+                                '</div>' +
                             '</div>' +
-                            '<span class="font-semibold text-green-600">DH ' + price + '</span>' +
                         '</div>';
                     });
                     
-                    var borderClass = groupIdx === 0 ? 'border-blue-300 bg-blue-50' : 'border-gray-200 bg-white';
-                    var radioChecked = groupIdx === 0 ? 'checked' : '';
-                    
-                    html += '<div class="border-2 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow ' + borderClass + '" onclick="selectProposalCard(this, \'' + group.id + '\')" data-group-id="' + group.id + '">' +
-                        '<div class="flex items-start gap-3">' +
-                            '<input type="radio" name="selectedGroup" value="' + group.id + '" class="mt-1 w-5 h-5" ' + radioChecked + '>' +
-                            '<div class="flex-1">' +
-                                '<div class="flex justify-between items-center mb-2">' +
-                                    '<span class="text-xs font-semibold text-gray-500">Proposition #' + (groupIdx + 1) + '</span>' +
-                                    '<span class="text-xs px-2 py-1 rounded bg-gray-100">' + itemName + '</span>' +
-                                '</div>' +
-                                '<div class="space-y-2">' + supplierHtml + '</div>' +
-                                '<div class="mt-2 pt-2 border-t flex justify-between text-sm">' +
-                                    '<span class="text-gray-500">Total Qté: <strong>' + totalQty.toFixed(2) + '</strong></span>' +
-                                    '<span class="text-gray-500">Total: <strong class="text-green-600">DH ' + totalPrice.toFixed(2) + '</strong></span>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>';
+                    html += '</div></div>';
+                    itemIndex++;
                 });
                 
-                console.log('Generated HTML length:', html.length);
                 return html;
+            }
+
+            function selectGroupForItem(card, groupId, itemId) {
+                var itemCards = document.querySelectorAll('[data-item-id="' + itemId + '"]');
+                itemCards.forEach(function(c) {
+                    c.classList.remove('border-blue-300', 'bg-blue-50');
+                    c.classList.add('border-gray-200', 'bg-white');
+                    var radio = c.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = false;
+                });
+                
+                card.classList.add('border-blue-300', 'bg-blue-50');
+                card.classList.remove('border-gray-200', 'bg-white');
+                var radio = card.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
+                
+                selectedGroups[itemId] = groupId;
+                
+                var itemSelectedEl = document.getElementById('item-selected-' + itemId);
+                if (itemSelectedEl) {
+                    itemSelectedEl.textContent = '✓';
+                    itemSelectedEl.classList.remove('text-gray-400');
+                    itemSelectedEl.classList.add('text-green-600');
+                }
+                
+                updateSelectionProgress();
+            }
+
+            function updateSelectionProgress() {
+                var selectedCount = Object.keys(selectedGroups).length;
+                var selectedCountEl = document.getElementById('selectedCount');
+                var approveBtn = document.getElementById('approveSelectedBtn');
+                var statusEl = document.getElementById('hrApprovalStatus');
+                
+                if (selectedCountEl) selectedCountEl.textContent = selectedCount;
+                
+                if (approveBtn && statusEl) {
+                    if (selectedCount === totalItems) {
+                        approveBtn.disabled = false;
+                        approveBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        statusEl.classList.remove('hidden');
+                    } else {
+                        approveBtn.disabled = true;
+                        approveBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        statusEl.classList.add('hidden');
+                    }
+                }
             }
 
             function updateProposalItemInfo(counter) {
@@ -1439,13 +1551,12 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             }
 
             function approveSelectedProposals(poId) {
-                const selectedRadio = document.querySelector('input[name="selectedGroup"]:checked');
-                if (!selectedRadio) {
-                    Notification.error('{{ __('messages.select_one_proposal_option') }}');
+                if (Object.keys(selectedGroups).length !== totalItems) {
+                    Notification.error('{{ __('messages.select_all_items') }}');
                     return;
                 }
                 
-                const selectedGroupId = selectedRadio.value;
+                const selectedGroupIds = Object.values(selectedGroups);
                 
                 fetch(`/api/purchase-orders/${poId}/final-approval`, {
                         method: 'POST',
@@ -1455,7 +1566,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         },
                         body: JSON.stringify({ 
                             action: 'approve',
-                            selected_group_id: selectedGroupId 
+                            selected_group_ids: selectedGroupIds
                         })
                     })
                     .then(async res => {
@@ -1530,7 +1641,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 }
             }
 
-            function markAsOrdered(id) {
+            function markOrderedSimple(id) {
                 fetch(`/api/purchase-orders/${id}/status`, {
                         method: 'PUT',
                         headers: {
@@ -1541,13 +1652,45 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             status: 'ordered'
                         })
                     })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Failed to mark as ordered');
+                        }
+                        return res.json();
+                    })
+                    .then(() => {
+                        loadPOs();
+                        Notification.success('{{ __('messages.po_marked_ordered') }}');
+                    })
+                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}: ' + err.message));
+            }
+
+            function markAsOrdered(id) {
+                const items = currentPOItems.map(item => ({
+                    purchase_order_item_id: item.id,
+                    final_quantity: parseFloat(item.final_quantity) || parseFloat(item.init_quantity)
+                }));
+
+                fetch(`/api/purchase-orders/${id}/mark-delivered`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ items })
+                    })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error('Failed to mark as ordered');
+                        }
+                        return res.json();
+                    })
                     .then(() => {
                         closeDetailsModal();
                         loadPOs();
                         Notification.success('{{ __('messages.po_marked_ordered') }}');
                     })
-                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}'));
+                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}: ' + err.message));
             }
 
             function updateInitialApproval(id, action) {

@@ -202,6 +202,9 @@ return [
     'total' => 'Total',
     'select_same_item_for_competitors' => 'You can select the same item in different groups to create competing proposals',
     'no_propositions_yet' => 'No propositions submitted yet',
+    'select_all_items' => 'Please select a proposal for all items',
+    'ready_to_approve' => 'Ready to approve',
+    'select_one_group_per_item' => 'Select ONE proposal option for each item. Multiple suppliers in an option will collaborate.',
 
     // Invoices
     'create_invoice' => '+ Create Invoice',
