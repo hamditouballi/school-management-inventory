@@ -117,7 +117,21 @@ class SupplierController extends Controller
     {
         $suppliers = Supplier::with(['supplierItems.item'])->get();
 
-        return response()->json($suppliers);
+        $formatted = $suppliers->map(function ($supplier) {
+            return [
+                'id' => $supplier->id,
+                'name' => $supplier->name,
+                'items' => $supplier->supplierItems->map(function ($si) {
+                    return [
+                        'id' => $si->item_id,
+                        'designation' => $si->item?->designation,
+                        'unit_price' => $si->unit_price,
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json($formatted);
     }
 
     public function stats(Supplier $supplier): JsonResponse

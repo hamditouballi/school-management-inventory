@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Proposition;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\Supplier;
@@ -20,12 +21,21 @@ class PurchaseOrderController extends Controller
 {
     public function index()
     {
-        return response()->json(PurchaseOrder::with(['purchaseOrderItems.item', 'responsibleStock', 'supplier', 'parent', 'children.supplier', 'children.purchaseOrderItems.item'])->orderBy('date', 'desc')->get());
+        return response()->json(PurchaseOrder::with([
+            'purchaseOrderItems.item',
+            'purchaseOrderItems.proposition.supplier',
+            'purchaseOrderItems.approver',
+            'responsibleStock',
+            'supplier',
+            'parent',
+            'children.supplier',
+            'propositions.supplier',
+            'propositions.item',
+        ])->orderBy('date', 'desc')->get());
     }
 
     public function store(Request $request)
     {
-        // Handle items from JSON string (FormData submission)
         $items = $request->has('items') && is_string($request->input('items'))
             ? json_decode($request->input('items'), true)
             : $request->input('items');
@@ -43,19 +53,15 @@ class PurchaseOrderController extends Controller
 
         DB::beginTransaction();
         try {
-            $totalAmount = 0;
-
             $purchaseOrder = PurchaseOrder::create([
                 'date' => $validated['date'],
                 'id_responsible_stock' => $request->user()->id,
                 'status' => 'pending_initial_approval',
-                'total_amount' => $totalAmount,
             ]);
 
             foreach ($validated['items'] as $index => $itemData) {
                 $itemId = $itemData['item_id'] ?? null;
 
-                // If new item name is provided, create item in inventory with quantity 0
                 if (! $itemId && isset($itemData['new_item_name'])) {
                     $itemImagePath = null;
                     $imageField = "item_image_{$index}";
@@ -67,7 +73,6 @@ class PurchaseOrderController extends Controller
                         'designation' => $itemData['new_item_name'],
                         'description' => '',
                         'quantity' => 0,
-                        'price' => 0,
                         'unit' => $itemData['unit'] ?? 'unit',
                         'low_stock_threshold' => 50,
                         'image_path' => $itemImagePath,
@@ -79,8 +84,9 @@ class PurchaseOrderController extends Controller
                     'purchase_order_id' => $purchaseOrder->id,
                     'item_id' => $itemId,
                     'new_item_name' => $itemData['new_item_name'] ?? null,
-                    'quantity' => $itemData['quantity'],
+                    'init_quantity' => $itemData['quantity'],
                     'unit_price' => 0,
+                    'state' => 'pending',
                 ]);
             }
 
@@ -101,7 +107,14 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        return response()->json($purchaseOrder->load(['purchaseOrderItems.item', 'responsibleStock', 'proposals']));
+        return response()->json($purchaseOrder->load([
+            'purchaseOrderItems.item',
+            'purchaseOrderItems.proposition.supplier',
+            'purchaseOrderItems.approver',
+            'responsibleStock',
+            'supplier',
+            'propositions',
+        ]));
     }
 
     public function update(Request $request, PurchaseOrder $purchaseOrder)
@@ -110,7 +123,6 @@ class PurchaseOrderController extends Controller
             return response()->json(['error' => 'Can only update pending initial approval orders'], 400);
         }
 
-        // Handle items from JSON string (FormData submission)
         $items = $request->has('items') && is_string($request->input('items'))
             ? json_decode($request->input('items'), true)
             : $request->input('items');
@@ -128,30 +140,19 @@ class PurchaseOrderController extends Controller
 
         DB::beginTransaction();
         try {
-            // Calculate new total
-            $totalAmount = 0;
-
-            // Update PO details
             $purchaseOrder->update([
                 'date' => $validated['date'],
-                'total_amount' => $totalAmount,
             ]);
 
-            // Delete old items
             $purchaseOrder->purchaseOrderItems()->delete();
 
-            // Create new items
             foreach ($validated['items'] as $index => $itemData) {
                 $itemId = $itemData['item_id'] ?? null;
 
-                // If new item name is provided and item doesn't exist yet, create it
                 if (! $itemId && isset($itemData['new_item_name'])) {
-                    // Check if item was already created
                     $existingItem = \App\Models\Item::where('designation', $itemData['new_item_name'])->first();
                     if ($existingItem) {
                         $itemId = $existingItem->id;
-
-                        // Update image if new one provided
                         $imageField = "item_image_{$index}";
                         if ($request->hasFile($imageField)) {
                             $existingItem->update([
@@ -169,7 +170,6 @@ class PurchaseOrderController extends Controller
                             'designation' => $itemData['new_item_name'],
                             'description' => '',
                             'quantity' => 0,
-                            'price' => 0,
                             'unit' => $itemData['unit'] ?? 'unit',
                             'low_stock_threshold' => 50,
                             'image_path' => $itemImagePath,
@@ -182,8 +182,9 @@ class PurchaseOrderController extends Controller
                     'purchase_order_id' => $purchaseOrder->id,
                     'item_id' => $itemId,
                     'new_item_name' => $itemData['new_item_name'] ?? null,
-                    'quantity' => $itemData['quantity'],
+                    'init_quantity' => $itemData['quantity'],
                     'unit_price' => 0,
+                    'state' => 'pending',
                 ]);
             }
 
@@ -241,34 +242,39 @@ class PurchaseOrderController extends Controller
         return response()->json($purchaseOrder);
     }
 
-    public function addProposals(Request $request, PurchaseOrder $purchaseOrder)
+    public function addPropositions(Request $request, PurchaseOrder $purchaseOrder)
     {
         if ($purchaseOrder->status !== 'initial_approved') {
-            return response()->json(['error' => 'Order must be initially approved before adding proposals'], 400);
+            return response()->json(['error' => 'Order must be initially approved before adding propositions'], 400);
         }
-
-        // Decode JSON if it's sent as string
-        $proposals = $request->has('proposals') && is_string($request->input('proposals'))
-            ? json_decode($request->input('proposals'), true)
-            : $request->input('proposals');
-
-        $request->merge(['proposals' => $proposals]);
 
         $validated = $request->validate([
             'proposals' => 'required|array|min:1',
-            'proposals.*.supplier_name' => 'required|string',
-            'proposals.*.price' => 'required|numeric|min:0',
-            'proposals.*.quality_rating' => 'nullable|string',
+            'proposals.*.supplier_id' => 'required|exists:suppliers,id',
+            'proposals.*.item_id' => 'required|exists:items,id',
+            'proposals.*.quantity' => 'required|numeric|min:0.01',
+            'proposals.*.unit_price' => 'required|numeric|min:0',
             'proposals.*.notes' => 'nullable|string',
         ]);
 
         DB::beginTransaction();
         try {
-            foreach ($validated['proposals'] as $proposalData) {
-                $purchaseOrder->proposals()->create($proposalData);
+            $createdPropositions = [];
+
+            foreach ($validated['proposals'] as $propositionData) {
+                $proposition = Proposition::create([
+                    'purchase_order_id' => $purchaseOrder->id,
+                    'supplier_id' => $propositionData['supplier_id'],
+                    'item_id' => $propositionData['item_id'],
+                    'quantity' => $propositionData['quantity'],
+                    'unit_price' => $propositionData['unit_price'],
+                    'notes' => $propositionData['notes'] ?? null,
+                ]);
+                $createdPropositions[] = $proposition;
             }
 
             $purchaseOrder->update(['status' => 'pending_final_approval']);
+
             DB::commit();
 
             $hrManagers = User::where('role', 'hr_manager')->get();
@@ -276,12 +282,10 @@ class PurchaseOrderController extends Controller
                 Notification::send($hrManagers, new PurchaseOrderNeedsFinalApproval($purchaseOrder));
             }
 
-            $financeManagers = User::where('role', 'finance_manager')->get();
-            if ($financeManagers->isNotEmpty()) {
-                Notification::send($financeManagers, new PurchaseOrderNeedsFinalApproval($purchaseOrder));
-            }
-
-            return response()->json($purchaseOrder->load('proposals'));
+            return response()->json([
+                'purchase_order' => $purchaseOrder->load('propositions.supplier', 'propositions.item'),
+                'propositions' => $createdPropositions,
+            ], 201);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -296,26 +300,29 @@ class PurchaseOrderController extends Controller
         }
 
         $validated = $request->validate([
-            'proposal_id' => 'required|exists:purchase_order_suppliers,id',
+            'approvals' => 'required|array|min:1',
+            'approvals.*.proposition_id' => 'required|exists:propositions,id',
+            'approvals.*.final_quantity' => 'nullable|numeric|min:0',
         ]);
-
-        $proposal = $purchaseOrder->proposals()->where('id', $validated['proposal_id'])->first();
-
-        if (! $proposal) {
-            return response()->json(['error' => 'Proposal does not belong to this purchase order'], 400);
-        }
 
         DB::beginTransaction();
         try {
-            // Mark proposal as selected
-            $proposal->update(['is_selected' => true]);
+            foreach ($validated['approvals'] as $approval) {
+                $proposition = Proposition::find($approval['proposition_id']);
 
-            // Update main PO record with final supplier details
-            $purchaseOrder->update([
-                'status' => 'final_approved',
-                'supplier' => $proposal->supplier_name,
-                'total_amount' => $proposal->price,
-            ]);
+                $poItem = PurchaseOrderItem::create([
+                    'purchase_order_id' => $purchaseOrder->id,
+                    'item_id' => $proposition->item_id,
+                    'init_quantity' => $proposition->quantity,
+                    'final_quantity' => $approval['final_quantity'] ?? $proposition->quantity,
+                    'unit_price' => $proposition->unit_price,
+                    'state' => 'approved',
+                    'approved_by' => $request->user()->id,
+                    'proposition_id' => $proposition->id,
+                ]);
+            }
+
+            $purchaseOrder->update(['status' => 'final_approved']);
 
             DB::commit();
 
@@ -324,12 +331,45 @@ class PurchaseOrderController extends Controller
                 Notification::send($stockManager, new PurchaseOrderFinalApproved($purchaseOrder, $request->user()->name));
             }
 
-            return response()->json($purchaseOrder->load('proposals'));
+            return response()->json($purchaseOrder->load([
+                'purchaseOrderItems.item',
+                'purchaseOrderItems.proposition.supplier',
+                'purchaseOrderItems.approver',
+            ]));
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function getSuppliersForPOItems(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        if ($purchaseOrder->status !== 'initial_approved') {
+            return response()->json(['error' => 'Order must be initially approved'], 400);
+        }
+
+        $itemIds = $purchaseOrder->purchaseOrderItems()->pluck('item_id')->filter()->toArray();
+
+        $suppliers = Supplier::with(['items' => function ($query) use ($itemIds) {
+            $query->whereIn('items.id', $itemIds);
+        }])->get()->filter(function ($supplier) {
+            return $supplier->items->isNotEmpty();
+        })->map(function ($supplier) {
+            return [
+                'id' => $supplier->id,
+                'name' => $supplier->name,
+                'items' => $supplier->items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'designation' => $item->designation,
+                        'unit_price' => $item->pivot->unit_price,
+                    ];
+                }),
+            ];
+        });
+
+        return response()->json($suppliers);
     }
 
     public function split(Request $request, PurchaseOrder $purchaseOrder)
@@ -348,7 +388,6 @@ class PurchaseOrderController extends Controller
             'assignments.*.items' => 'required|array|min:1',
             'assignments.*.items.*.item_id' => 'required|exists:items,id',
             'assignments.*.items.*.quantity' => 'required|numeric|min:0.01',
-            'assignments.*.items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
         $allItemIds = collect($validated['assignments'])->flatMap(function ($assignment) {
@@ -372,10 +411,6 @@ class PurchaseOrderController extends Controller
                 $supplier = Supplier::find($assignment['supplier_id']);
                 $items = $assignment['items'];
 
-                $totalAmount = collect($items)->sum(function ($item) {
-                    return $item['quantity'] * $item['unit_price'];
-                });
-
                 $newPO = PurchaseOrder::create([
                     'date' => $purchaseOrder->date,
                     'id_responsible_stock' => $purchaseOrder->id_responsible_stock,
@@ -383,15 +418,15 @@ class PurchaseOrderController extends Controller
                     'parent_id' => $purchaseOrder->id,
                     'supplier_id' => $supplier->id,
                     'supplier' => $supplier->name,
-                    'total_amount' => $totalAmount,
                 ]);
 
                 foreach ($items as $itemData) {
                     PurchaseOrderItem::create([
                         'purchase_order_id' => $newPO->id,
                         'item_id' => $itemData['item_id'],
-                        'quantity' => $itemData['quantity'],
-                        'unit_price' => $itemData['unit_price'],
+                        'init_quantity' => $itemData['quantity'],
+                        'unit_price' => 0,
+                        'state' => 'pending',
                     ]);
                 }
 
@@ -415,6 +450,45 @@ class PurchaseOrderController extends Controller
                 'new_purchase_orders' => PurchaseOrder::with(['purchaseOrderItems.item', 'supplier', 'responsibleStock'])
                     ->whereIn('id', collect($newPOs)->pluck('id'))->get(),
             ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function markDelivered(Request $request, PurchaseOrder $purchaseOrder)
+    {
+        if ($purchaseOrder->status !== 'final_approved' && $purchaseOrder->status !== 'ordered') {
+            return response()->json(['error' => 'Order must be approved before marking as delivered'], 400);
+        }
+
+        $validated = $request->validate([
+            'items' => 'required|array|min:1',
+            'items.*.purchase_order_item_id' => 'required|exists:purchase_order_items,id',
+            'items.*.final_quantity' => 'required|numeric|min:0',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            foreach ($validated['items'] as $itemData) {
+                $poItem = PurchaseOrderItem::find($itemData['purchase_order_item_id']);
+                $poItem->update([
+                    'final_quantity' => $itemData['final_quantity'],
+                    'state' => 'delivered',
+                ]);
+
+                $item = $poItem->item;
+                if ($item) {
+                    $item->increment('quantity', $itemData['final_quantity']);
+                }
+            }
+
+            $purchaseOrder->update(['status' => 'ordered']);
+
+            DB::commit();
+
+            return response()->json($purchaseOrder->load('purchaseOrderItems.item'));
         } catch (\Exception $e) {
             DB::rollBack();
 

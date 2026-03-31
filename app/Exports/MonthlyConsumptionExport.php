@@ -55,14 +55,10 @@ class MonthlyConsumptionExport implements WithEvents, WithMultipleSheets
             }
 
             $totalQuantity = $sorties->sum('quantity');
-            $unitPrice = $item->price;
-            $totalPrice = $totalQuantity * $unitPrice;
 
             $allItems->push([
                 'designation' => $item->designation,
                 'quantity' => $totalQuantity,
-                'unit_price' => $unitPrice,
-                'total_price' => $totalPrice,
                 'category_id' => $item->category_id,
                 'category_name' => $item->category?->name ?? 'AUTRES',
             ]);
@@ -72,7 +68,7 @@ class MonthlyConsumptionExport implements WithEvents, WithMultipleSheets
         $this->sheets[] = new MonthlyConsumptionSheet(
             'CONSOMMATION MENSUELLE',
             $allItems,
-            ['DESIGNATION', 'QUANTITÉ CONSOMMÉE', 'PRIX UNITAIRE', 'PRIX TOTAL'],
+            ['DESIGNATION', 'QUANTITÉ CONSOMMÉE'],
             $this->dateRange,
             false
         );
@@ -82,7 +78,7 @@ class MonthlyConsumptionExport implements WithEvents, WithMultipleSheets
         $this->sheets[] = new MonthlyConsumptionSheet(
             'MARQUEURS',
             $marqueursItems,
-            ['DESIGNATION', 'QUANTITÉ', 'PRIX UNITAIRE', 'PRIX TOTAL', 'OBSERVATIONS'],
+            ['DESIGNATION', 'QUANTITÉ', 'OBSERVATIONS'],
             $this->dateRange,
             true
         );
@@ -92,7 +88,7 @@ class MonthlyConsumptionExport implements WithEvents, WithMultipleSheets
         $this->sheets[] = new MonthlyConsumptionSheet(
             'TONNER',
             $tonnerItems,
-            ['DESIGNATION', 'QUANTITÉ', 'PRIX UNITAIRE', 'PRIX TOTAL', 'OBSERVATIONS'],
+            ['DESIGNATION', 'QUANTITÉ', 'OBSERVATIONS'],
             $this->dateRange,
             true
         );
@@ -106,12 +102,10 @@ class MonthlyConsumptionExport implements WithEvents, WithMultipleSheets
             $categoryItems = $allItems->filter(fn ($item) => $item['category_name'] === $category->name);
             if ($categoryItems->count() > 0) {
                 $categoryQty = $categoryItems->sum('quantity');
-                $categoryTotal = $categoryItems->sum('total_price');
-                $summaryTotal += $categoryTotal;
+                $summaryTotal += $categoryQty;
                 $summaryData->push([
                     'nature' => $category->name,
                     'quantity' => $categoryQty,
-                    'total' => $categoryTotal,
                 ]);
             }
         }
@@ -120,12 +114,10 @@ class MonthlyConsumptionExport implements WithEvents, WithMultipleSheets
         $otherItems = $allItems->filter(fn ($item) => ! $categories->contains('name', $item['category_name']));
         if ($otherItems->count() > 0) {
             $otherQty = $otherItems->sum('quantity');
-            $otherTotal = $otherItems->sum('total_price');
-            $summaryTotal += $otherTotal;
+            $summaryTotal += $otherQty;
             $summaryData->push([
                 'nature' => 'AUTRES',
                 'quantity' => $otherQty,
-                'total' => $otherTotal,
             ]);
         }
 
@@ -172,18 +164,16 @@ class MonthlyConsumptionSheet implements \Maatwebsite\Excel\Concerns\FromArray, 
             $row = [
                 $item['designation'],
                 number_format($item['quantity'], 2),
-                number_format($item['unit_price'], 2).' DH',
-                number_format($item['total_price'], 2).' DH',
             ];
             if ($hasObservations) {
                 $row[] = '';
             }
             $data->push($row);
-            $grandTotal += $item['total_price'];
+            $grandTotal += $item['quantity'];
         }
 
         $data->push([]); // Empty row
-        $totalRow = ['', '', 'TOTAL', number_format($grandTotal, 2).' DH'];
+        $totalRow = ['', 'TOTAL: '.number_format($grandTotal, 2)];
         if ($hasObservations) {
             $totalRow[] = '';
         }
@@ -205,7 +195,7 @@ class MonthlyConsumptionSheet implements \Maatwebsite\Excel\Concerns\FromArray, 
     public function styles(Worksheet $sheet)
     {
         $highestRow = $sheet->getHighestRow();
-        $lastColumn = $this->hasObservations ? 'E' : 'D';
+        $lastColumn = $this->hasObservations ? 'C' : 'B';
 
         // Style title (row 1)
         $sheet->mergeCells("A1:{$lastColumn}1");
@@ -316,15 +306,11 @@ class MonthlyConsumptionSheet implements \Maatwebsite\Excel\Concerns\FromArray, 
         // Set column widths
         if ($this->hasObservations) {
             $sheet->getColumnDimension('A')->setWidth(35);
-            $sheet->getColumnDimension('B')->setWidth(18);
-            $sheet->getColumnDimension('C')->setWidth(18);
-            $sheet->getColumnDimension('D')->setWidth(18);
-            $sheet->getColumnDimension('E')->setWidth(20);
+            $sheet->getColumnDimension('B')->setWidth(22);
+            $sheet->getColumnDimension('C')->setWidth(25);
         } else {
             $sheet->getColumnDimension('A')->setWidth(35);
-            $sheet->getColumnDimension('B')->setWidth(22);
-            $sheet->getColumnDimension('C')->setWidth(20);
-            $sheet->getColumnDimension('D')->setWidth(20);
+            $sheet->getColumnDimension('B')->setWidth(25);
         }
 
         // Center align data columns
@@ -357,20 +343,19 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
         $data->push(['Inventaire des matières consommées']);
         $data->push(['Période: '.$dateRange]);
         $data->push([]); // Empty row
-        $data->push(['NATURE', 'QUANTITÉ TOTALE', 'PRIX TOTAL']);
+        $data->push(['NATURE', 'QUANTITÉ TOTALE']);
 
         $grandTotal = 0;
         foreach ($summaryData as $item) {
             $data->push([
                 $item['nature'],
                 number_format($item['quantity'], 2),
-                number_format($item['total'], 2).' DH',
             ]);
-            $grandTotal += $item['total'];
+            $grandTotal += $item['quantity'];
         }
 
         $data->push([]); // Empty row
-        $data->push(['', 'TOTAL GÉNÉRAL', number_format($grandTotal, 2).' DH']);
+        $data->push(['', 'TOTAL GÉNÉRAL: '.number_format($grandTotal, 2)]);
 
         $this->data = $data->toArray();
     }
@@ -388,11 +373,11 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
     public function styles(Worksheet $sheet)
     {
         $highestRow = $sheet->getHighestRow();
-        $lastColumn = 'C';
+        $lastColumn = 'B';
 
         // Style title (row 1)
-        $sheet->mergeCells('A1:C1');
-        $sheet->getStyle('A1:C1')->applyFromArray([
+        $sheet->mergeCells('A1:B1');
+        $sheet->getStyle('A1:B1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 16,
@@ -409,8 +394,8 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
         ]);
 
         // Style date period (row 2)
-        $sheet->mergeCells('A2:C2');
-        $sheet->getStyle('A2:C2')->applyFromArray([
+        $sheet->mergeCells('A2:B2');
+        $sheet->getStyle('A2:B2')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12,
@@ -426,7 +411,7 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
         ]);
 
         // Style headers (row 4)
-        $sheet->getStyle('A4:C4')->applyFromArray([
+        $sheet->getStyle('A4:B4')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -450,7 +435,7 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
         // Style data rows with alternating colors
         for ($row = 5; $row < $highestRow - 1; $row++) {
             if ($row % 2 == 0) {
-                $sheet->getStyle("A{$row}:C{$row}")->applyFromArray([
+                $sheet->getStyle("A{$row}:B{$row}")->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'F2F2F2'],
@@ -463,7 +448,7 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
                     ],
                 ]);
             } else {
-                $sheet->getStyle("A{$row}:C{$row}")->applyFromArray([
+                $sheet->getStyle("A{$row}:B{$row}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -475,7 +460,7 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
         }
 
         // Style total row (last row)
-        $sheet->getStyle("A{$highestRow}:C{$highestRow}")->applyFromArray([
+        $sheet->getStyle("A{$highestRow}:B{$highestRow}")->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 12,
@@ -498,11 +483,10 @@ class MonthlyConsumptionSummarySheet implements \Maatwebsite\Excel\Concerns\From
 
         // Set column widths
         $sheet->getColumnDimension('A')->setWidth(30);
-        $sheet->getColumnDimension('B')->setWidth(25);
-        $sheet->getColumnDimension('C')->setWidth(25);
+        $sheet->getColumnDimension('B')->setWidth(30);
 
         // Center align data columns
-        $sheet->getStyle('B5:C'.($highestRow - 1))->applyFromArray([
+        $sheet->getStyle('B5:B'.($highestRow - 1))->applyFromArray([
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
             ],

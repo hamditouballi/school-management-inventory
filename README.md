@@ -62,44 +62,50 @@ The system is built on modern, scalable technologies:
 
 The system implements a strict Role-Based Access Control (RBAC) model:
 
-| Role                | Responsibility             | Allowed Actions                                   | Restricted Actions                   |
-| :------------------ | :------------------------- | :------------------------------------------------ | :----------------------------------- |
-| **director**        | Classroom Resource User    | View items, Create requests, Track own requests   | Managing inventory, Modifying POs    |
-| **Stock Manager**   | Warehouse & Inventory      | CRUD items, Approve/Fulfill requests, Create POs  | Financial reports, Final PO approval |
-| **HR Manager**      | Administration & Oversight | Approve POs, Manage users, Full system visibility | Manual invoice entry                 |
-| **Finance Manager** | Financial Control          | Manage invoices, Generate financial reports       | Modifying inventory levels           |
+| Role | Responsibility | Allowed Actions | Restricted Actions |
+| :--- | :--- | :--- | :--- |
+| **director** | Classroom Resource User | View items, Create requests, Track own requests | Managing inventory, Modifying POs |
+| **Stock Manager** | Warehouse & Inventory | CRUD items, Fulfill requests, Create POs, Manage suppliers | Financial reports, PO approval |
+| **HR Manager** | Administration & Oversight | Approve requests/POs, Initial/Final PO approval, System oversight | Manual invoice entry |
+| **Finance Manager** | Financial Control | Manage invoices, Generate financial reports | Modifying inventory levels |
+| **PM Manager** | Project Management | Extended permissions | Varies |
+| **Logistics Manager** | Logistics Operations | Logistics-specific access | Varies |
 
 ---
 
 ## 🔄 Business Workflows (Scenarios)
 
-### 👨‍🏫 director Scenario
+### 👨‍🏫 Director Scenario
 
 1. **Login**: Securely access the portal.
 2. **Browse**: Search the catalog for required items (e.g., Pencils, Paper).
 3. **Request**: Create a multi-item request specifying quantities.
-4. **Track**: Monitor the status as it moves from `pending` to `approved` and finally `fulfilled`.
+4. **Track**: Monitor the status as it moves from `pending` to `hr_approved` to `fulfilled`.
+5. **Confirm**: Optionally confirm receipt when items are delivered.
 
 ### 📦 Stock Manager Scenario
 
 1. **Inventory**: Add new items or update current stock levels.
 2. **Procurement**: Identify low stock and create a **Purchase Order (PO)**.
-3. **Fulfillment**: Review director requests, approve them, and generate a **Bon de Sortie** (Release Slip) upon physical delivery.
-4. **Restock**: Mark POs as `ordered` once supplier confirmation is received.
+3. **Proposals**: Collect supplier proposals after initial HR approval.
+4. **Fulfillment**: Review director requests, fulfill approved ones, and generate a **Bon de Sortie** (Release Slip) upon physical delivery.
+5. **Split**: Split POs across multiple suppliers for best pricing.
+6. **Restock**: Mark POs as `ordered` once supplier confirmation is received.
 
 ### 👔 HR Manager Scenario
 
-1. **Request Review**: Review and approve large or sensitive material requests (`hr_approved`).
-2. **PO Approval**: Perform **Initial Approval** on purchase orders.
+1. **Request Review**: Review and approve material requests (`pending` → `hr_approved`).
+2. **PO Initial Approval**: Perform initial approval on purchase orders.
 3. **Supplier Selection**: Review supplier proposals and grant **Final Approval** to the best offer.
 4. **Auditing**: Monitor overall system activity and reports.
 
 ### 💰 Finance Manager Scenario
 
 1. **Invoice Creation**: Link incoming supplier invoices to existing Purchase Orders.
-2. **Manual Entry**: Create manual invoices for one-off school expenses.
-3. **Documentation**: Upload and attach digital copies (images) of physical invoices.
-4. **Reporting**: Generate spending reports and department consumption trends.
+2. **Manual Entry**: Create standalone invoices for one-off school expenses.
+3. **Line Items**: Add multiple line items to invoices with quantities and prices.
+4. **Documentation**: Upload and attach digital copies (images) of physical invoices.
+5. **Stock Update**: Incoming invoices automatically update inventory levels.
 
 ---
 
@@ -108,18 +114,23 @@ The system implements a strict Role-Based Access Control (RBAC) model:
 The database consists of **29 migrations** defining a highly relational schema:
 
 - **Users & Departments**: Core identity and organizational structure.
-- **Items**: Catalog of materials with `low_stock_threshold` and `quantity`.
-- **Requests & Request Items**: Multi-item request tracking linked to users.
-- **Purchase Orders & Suppliers**: Procurement workflow including multi-supplier proposals.
-- **Invoices & Invoice Items**: Financial records linked to POs or standalone.
+- **Items & Categories**: Catalog of materials with `low_stock_threshold`, `quantity`, and categories.
+- **Requests & Request Items**: Multi-item request tracking with 24-hour pending expiration.
+- **Purchase Orders**: Multi-stage approval workflow with supplier proposals.
+- **Purchase Order Splitting**: Parent-child PO relationships for multi-supplier orders.
+- **Suppliers & Supplier Items**: Supplier directory with item-specific pricing.
+- **Invoices & Invoice Items**: Financial records with line items, linked to POs or standalone.
 - **Bon de Sorties**: Legal/Administrative proof of item delivery from stock.
+- **Notifications**: 11 notification types for workflow events.
 
 ### Key Relationships
 
 - `User` belongs to a `Department`.
 - `Request` belongs to a `User` and has many `RequestItem`.
-- `Invoice` optionally belongs to a `PurchaseOrder`.
-- `PurchaseOrder` has many `PurchaseOrderSupplier` for bidding.
+- `PurchaseOrder` has many `PurchaseOrderItem` and `PurchaseOrderSupplier`.
+- `PurchaseOrder` can have parent/child relationships (split orders).
+- `Invoice` optionally belongs to a `PurchaseOrder` and has many `InvoiceItem`.
+- `Supplier` has many `SupplierItem` with specific pricing.
 
 ---
 
@@ -218,9 +229,12 @@ The project includes support for Docker:
 ## 🔮 Future Improvements
 
 - **CI/CD Integration**: Automated testing and deployment pipelines.
+- **Email Notifications**: Send email alerts for approvals, rejections, and deliveries.
+- **Caching**: Cache statistics endpoints for better performance.
 - **Audit Logs**: Detailed history of every stock movement and status change.
 - **Multi-School Support**: Architecture to handle multiple campuses in one instance.
 - **Barcode/QR Support**: Scanning items for faster fulfillment and inventory counts.
+- **PDF Export**: Generate PDF reports for invoices, purchase orders, and stock reports.
 
 ---
 

@@ -41,8 +41,15 @@ class PurchaseOrder extends Model
         return $this->hasMany(PurchaseOrder::class, 'parent_id');
     }
 
-    public function proposals()
+    public function propositions()
     {
-        return $this->hasMany(PurchaseOrderSupplier::class, 'purchase_order_id');
+        return $this->hasMany(Proposition::class);
+    }
+
+    public function getTotalAmountAttribute(): float
+    {
+        return $this->purchaseOrderItems->sum(function ($item) {
+            return $item->init_quantity * ($item->unit_price ?? 0);
+        });
     }
 }

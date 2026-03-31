@@ -221,6 +221,7 @@
 
             document.addEventListener('DOMContentLoaded', () => {
                 loadPOs();
+                loadSuppliers();
                 if (isStockManager) {
                     loadItemsForPO();
                 }
@@ -318,7 +319,7 @@
                         const childCount = po.children ? po.children.length : 0;
                         const poItems = po.purchase_order_items || [];
                         const firstItemImage = poItems.find(item => item.item?.image_path)?.item?.image_path;
-                        const totalQty = poItems.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
+                        const totalQty = poItems.reduce((sum, item) => sum + parseFloat(item.init_quantity || 0), 0);
                         const totalOfChildren = (po.children || []).reduce((sum, c) => sum + parseFloat(c.total_amount || 0), 0);
                         
                         const parentRow = `
@@ -359,7 +360,7 @@
                         if (isSplit && po.children) {
                             po.children.forEach(child => {
                                 const childItems = child.purchase_order_items || [];
-                                const childTotalQty = childItems.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
+                                const childTotalQty = childItems.reduce((sum, item) => sum + parseFloat(item.init_quantity || 0), 0);
                                 const childFirstImage = childItems.find(item => item.item?.image_path)?.item?.image_path;
                                 childRows += `
             <tr id="child-${po.id}-${child.id}" class="hidden bg-white">
@@ -472,7 +473,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                     .new_item_name;
                             }
 
-                            document.querySelector(`input[name="items[${index}][quantity]"]`).value = item.quantity;
+                            document.querySelector(`input[name="items[${index}][quantity]"]`).value = item.init_quantity;
                         });
 
                         document.getElementById('createModal').classList.remove('hidden');
@@ -739,6 +740,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     })
                     .then(res => res.json())
                     .then(po => {
+                        console.log('PO Data:', po);
+                        console.log('Propositions:', po.propositions);
                         const poItems = po.purchase_order_items || [];
                         const statusColors = {
                             pending_hr: 'bg-yellow-100 text-yellow-800',
@@ -805,7 +808,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                             ${item.item?.designation || item.new_item_name || '{{ __('messages.unknown_item') }}'}
                                             ${item.new_item_name && !item.item ? '<span class="ml-2 text-xs text-gray-500">{{ __('messages.new_item_label') }}</span>' : ''}
                                         </td>
-                                        <td class="px-4 py-2">${parseFloat(item.quantity).toFixed(2)}</td>
+                                        <td class="px-4 py-2">${parseFloat(item.init_quantity).toFixed(2)}</td>
                                     </tr>
                                 `).join('')}
                                                                                                             </tbody>
@@ -813,77 +816,68 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                                                                     `}
                 </div>
 
-                <!-- Proposals Section -->
-                ${po.proposals && po.proposals.length > 0 ? `
-                                                                                                     <div class="mt-6 pt-4 border-t">
-                                                                                                         <h4 class="font-semibold mb-3">{{ __('messages.supplier_proposals') }}</h4>
-                                                                                                         <div class="grid gap-4" id="finalSelectionForm" dusk="proposal-select-modal">
-                                                                                                             ${po.proposals.map((prop, idx) => `
-                                <label class="border p-4 rounded-lg flex justify-between items-center cursor-pointer hover:bg-gray-50 ${prop.is_selected ? 'bg-green-50 border-green-200' : 'bg-white'}">
-                                    <div class="flex items-center gap-4">
-                                        ${isHRManager && po.status === 'pending_final_approval' ? `
-                                                                                                            <input type="radio" name="selected_proposal" value="${prop.id}" class="w-5 h-5 text-blue-600" dusk="select-proposal-radio-${idx}">
-                                                                                                        ` : ''}
-                                        <div>
-                                            <h5 class="font-bold">${prop.supplier_name}</h5>
-                                            <p class="text-sm text-gray-600">{{ __('messages.unit_price') }}: <span class="font-semibold">{{ __('messages.currency') }} ${parseFloat(prop.price).toFixed(2)}</span></p>
-                                            <p class="text-sm text-gray-600">{{ __('messages.quality_rating') }}: ${prop.quality_rating || 'N/A'}/10</p>
-                                            ${prop.notes ? `<p class="text-xs text-gray-500 mt-1">${prop.notes}</p>` : ''}
+                <!-- Proposals Section (New Structure) -->
+                ${po.propositions && po.propositions.length > 0 ? `
+                    <div class="mt-6 pt-4 border-t">
+                        <h4 class="font-semibold mb-3">{{ __('messages.supplier_proposals') }}</h4>
+                        <div class="space-y-4">
+                            ${poItems.map(item => {
+                                const itemProposals = po.propositions.filter(p => p.item_id === item.item_id);
+                                return `
+                                    <div class="border rounded-lg p-4 bg-gray-50">
+                                        <div class="flex items-center gap-3 mb-3 pb-2 border-b">
+                                            ${item.item?.image_path ? `<img src="/storage/${item.item.image_path}" class="w-10 h-10 object-cover rounded">` : '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs">N/A</div>'}
+                                            <div>
+                                                <p class="font-semibold">${item.item?.designation || item.new_item_name || 'Item'}</p>
+                                                <p class="text-xs text-gray-500">{{ __('messages.quantity_needed') }}: ${parseFloat(item.init_quantity).toFixed(2)}</p>
+                                            </div>
                                         </div>
+                                        ${itemProposals.length > 0 ? `
+                                            <div class="space-y-2 pl-4">
+                                                ${itemProposals.map((prop, idx) => `
+                                                    <div class="flex justify-between items-center p-3 rounded bg-white border">
+                                                        <div>
+                                                            <p class="font-medium">${prop.supplier?.name || 'N/A'}</p>
+                                                            <p class="text-sm text-gray-600">{{ __('messages.unit_price') }}: <span class="font-semibold text-green-600">{{ __('messages.currency') }} ${parseFloat(prop.unit_price).toFixed(2)}</span></p>
+                                                            <p class="text-sm text-gray-600">{{ __('messages.quantity') }}: ${parseFloat(prop.quantity).toFixed(2)}</p>
+                                                            ${prop.notes ? `<p class="text-xs text-gray-500 mt-1">${prop.notes}</p>` : ''}
+                                                        </div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        ` : '<p class="text-sm text-gray-400 italic pl-4">{{ __('messages.no_proposals_for_item') }}</p>'}
                                     </div>
-                                    <div>
-                                        ${prop.is_selected ? `<span class="px-3 py-1 bg-green-100 text-green-800 rounded font-semibold text-sm">{{ __('messages.selected_final') }}</span>` : ''}
-                                    </div>
-                                </label>
-                            `).join('')}
-                                                                                                        </div>
-                                                                                                          ${isHRManager && po.status === 'pending_final_approval' ? `
-                                                                                                              <div class="mt-6 pt-4 border-t flex justify-end gap-3">
-                                                                                                                  <button dusk="reject-proposals-btn" onclick="rejectProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject') }}</button>
-                                                                                                                  <button dusk="confirm-final-approval-btn" onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.accept') }}</button>
-                                                                                                              </div>
-                                                                                                          ` : ''}
-                                                                                                    </div>
-                                                                                                ` : ''}
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        ${isHRManager && po.status === 'pending_final_approval' ? `
+                            <div class="mt-6 pt-4 border-t flex justify-end gap-3">
+                                <button onclick="rejectProposals(${po.id})" class="px-6 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700">{{ __('messages.reject') }}</button>
+                                <button onclick="submitFinalSelection(${po.id})" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.approve_all_proposals') }}</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
 
-                <!-- Add Proposals Form for Stock Manager -->
+                <!-- Add Proposals Form for Stock Manager (New Structure) -->
                 ${isStockManager && po.status === 'initial_approved' ? `
-                                                                                                     <div class="mt-6 pt-4 border-t">
-                                                                                                         <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.add_supplier_proposals') }}</h4>
-                                                                                                         <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
-                                                                                                             <div id="proposalsList" class="space-y-4 mb-4">
-                                                                                                                 <!-- First proposal always visible -->
-                                                                                                                 <div class="border p-4 rounded bg-orange-50 proposal-entry" dusk="proposal-entry-0">
-                                                                                                                     <div class="grid grid-cols-2 gap-4">
-                                                                                                                         <div><label class="block text-xs font-semibold">{{ __('messages.supplier_name') }}</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm" dusk="proposal-supplier-0"></div>
-                                                                                                                         <div><label class="block text-xs font-semibold">{{ __('messages.unit_price') }}</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm" dusk="proposal-price-0"></div>
-                                                                                                                        <div>
-                                                                                                                            <label class="block text-xs font-semibold">{{ __('messages.quality_rating') }}</label>
-                                                                                                                            <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
-                                                                                                                                <option value="">{{ __('messages.select_1_10') }}</option>
-                                                                                                                                <option value="1">1</option>
-                                                                                                                                <option value="2">2</option>
-                                                                                                                                <option value="3">3</option>
-                                                                                                                                <option value="4">4</option>
-                                                                                                                                <option value="5">5</option>
-                                                                                                                                <option value="6">6</option>
-                                                                                                                                <option value="7">7</option>
-                                                                                                                                <option value="8">8</option>
-                                                                                                                                <option value="9">9</option>
-                                                                                                                                <option value="10">10</option>
-                                                                                                                            </select>
-                                                                                                                        </div>
-                                                                                                                        <div><label class="block text-xs font-semibold">{{ __('messages.notes') }}</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                             <div class="mt-6 pt-4 border-t flex justify-between items-center">
-                                                                                                                 <button type="button" dusk="add-proposal-btn" onclick="addProposalField()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-semibold text-sm">{{ __('messages.add_supplier') }}</button>
-                                                                                                                 <button type="submit" dusk="submit-proposals-btn" class="z-10 px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700 w-32">{{ __('messages.accept') }}</button>
-                                                                                                             </div>
-                                                                                                        </form>
-                                                                                                    </div>
-                                                                                                ` : ''}
+                    <div class="mt-6 pt-4 border-t">
+                        <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.add_supplier_proposals') }}</h4>
+                        <p class="text-sm text-gray-600 mb-4">{{ __('messages.select_suppliers_for_items') }}</p>
+                        
+                        <form id="addProposalsForm" onsubmit="submitProposals(event, ${po.id})">
+                            <div id="proposalsList" class="space-y-4">
+                                <!-- Dynamic proposal entries will be added here -->
+                            </div>
+                            
+                            <div class="mt-4 flex justify-between items-center">
+                                <button type="button" onclick="addProposalEntry()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 text-sm">+ {{ __('messages.add_proposal') }}</button>
+                                <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded font-bold hover:bg-green-700">{{ __('messages.submit_proposals') }}</button>
+                            </div>
+                        </form>
+                    </div>
+                ` : ''}
 
                 <!-- Action Buttons -->
                 ${isHRManager && po.status === 'pending_initial_approval' ? `
@@ -899,6 +893,20 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                                                                  ` : ''}
             `;
                         document.getElementById('detailsContent').innerHTML = html;
+                        
+                        currentPOItems = po.purchase_order_items || [];
+                        existingProposals = po.propositions || [];
+                        if (allSuppliers.length === 0) {
+                            loadSuppliers();
+                        }
+                        if (po.status === 'initial_approved') {
+                            setTimeout(() => {
+                                const list = document.getElementById('proposalsList');
+                                if (list && list.children.length === 0) {
+                                    addProposalEntry();
+                                }
+                            }, 100);
+                        }
                     })
                     .catch(() => {
                         document.getElementById('detailsContent').innerHTML =
@@ -908,91 +916,335 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
 
             function closeDetailsModal() {
                 document.getElementById('detailsModal').classList.add('hidden');
+                currentPOItems = [];
+                existingProposals = [];
             }
 
-            function addProposalField() {
+            let allSuppliers = [];
+            let supplierItemsMap = {};
+            let currentPOItems = [];
+            let proposalCounter = 0;
+            let existingProposals = [];
+
+            function loadSuppliers() {
+                Promise.all([
+                    fetch('/api/suppliers', { headers }).then(res => res.json()),
+                    fetch('/api/suppliers/all-with-items', { headers }).then(res => res.json())
+                ]).then(([suppliers, suppliersWithItems]) => {
+                    allSuppliers = suppliers;
+                    suppliersWithItems.forEach(supplier => {
+                        supplierItemsMap[supplier.id] = supplier;
+                    });
+                });
+            }
+
+            function getSuppliersForItem(itemId) {
+                const availableSuppliers = [];
+                allSuppliers.forEach(supplier => {
+                    const supplierData = supplierItemsMap[supplier.id];
+                    if (supplierData && supplierData.items) {
+                        const hasItem = supplierData.items.some(si => si.id === itemId);
+                        if (hasItem) {
+                            const item = supplierData.items.find(si => si.id === itemId);
+                            availableSuppliers.push({
+                                id: supplier.id,
+                                name: supplier.name,
+                                unit_price: item ? item.pivot?.unit_price || item.unit_price : null
+                            });
+                        }
+                    }
+                });
+                return availableSuppliers;
+            }
+
+            function getRemainingQty(itemId) {
+                const poItem = currentPOItems.find(pi => pi.item_id === itemId);
+                const totalNeeded = poItem ? parseFloat(poItem.init_quantity) : 0;
+                let alreadyProposed = 0;
+                
+                document.querySelectorAll('.proposal-entry').forEach(entry => {
+                    const entryItemId = entry.querySelector('select[name$="[item_id]"]')?.value;
+                    const entryQty = parseFloat(entry.querySelector('input[name$="[quantity]"]')?.value) || 0;
+                    if (parseInt(entryItemId) === itemId) {
+                        alreadyProposed += entryQty;
+                    }
+                });
+                
+                return Math.max(0, totalNeeded - alreadyProposed);
+            }
+
+            function updateQuantityValidation(counter) {
+                const itemSelect = document.querySelector(`select[name="proposals[${counter}][item_id]"]`);
+                const qtyInput = document.querySelector(`input[name="proposals[${counter}][quantity]"]`);
+                
+                if (!itemSelect || !qtyInput) return;
+                
+                const itemId = parseInt(itemSelect.value);
+                if (!itemId) return;
+                
+                const poItem = currentPOItems.find(pi => pi.item_id === itemId);
+                const totalNeeded = poItem ? parseFloat(poItem.init_quantity) : 0;
+                
+                const infoDiv = document.getElementById(`qty-info-${counter}`);
+                if (infoDiv) {
+                    const remaining = getRemainingQty(itemId);
+                    infoDiv.textContent = `{{ __('messages.total_needed') }}: ${totalNeeded.toFixed(2)}`;
+                }
+            }
+
+            function addProposalEntry(itemId = '', itemName = '', defaultQty = '') {
                 const list = document.getElementById('proposalsList');
-                const html = `
-                    <div class="border p-4 rounded bg-orange-50 mt-4 proposal-entry">
-                        <div class="flex justify-end mb-2"><button type="button" onclick="this.closest('.proposal-entry').remove()" class="text-xs text-red-600">{{ __('messages.remove') }}</button></div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="block text-xs font-semibold">{{ __('messages.supplier_name') }}</label><input type="text" name="supplier_name[]" required class="w-full px-2 py-1 border rounded text-sm"></div>
-                            <div><label class="block text-xs font-semibold">{{ __('messages.unit_price') }}</label><input type="number" name="price[]" step="0.01" required class="w-full px-2 py-1 border rounded text-sm"></div>
+                if (!list) return;
+                
+                const entryHtml = `
+                    <div class="border p-4 rounded bg-orange-50 proposal-entry" id="proposal-entry-${proposalCounter}">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-semibold text-orange-600">{{ __('messages.proposal') }} #${proposalCounter + 1}</span>
+                            <button type="button" onclick="removeProposalEntry(${proposalCounter})" class="text-xs text-red-600 hover:text-red-800">{{ __('messages.remove') }}</button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                             <div>
-                                <label class="block text-xs font-semibold">{{ __('messages.quality_rating') }}</label>
-                                <select name="quality_rating[]" required class="w-full px-2 py-1 border rounded text-sm">
-                                    <option value="">{{ __('messages.select_1_10') }}</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
+                                <label class="block text-xs font-medium mb-1">{{ __('messages.item') }} *</label>
+                                <select name="proposals[${proposalCounter}][item_id]" required class="w-full px-2 py-1 border rounded text-sm item-select" data-proposal-id="${proposalCounter}" onchange="updateProposalItemInfo(${proposalCounter})">
+                                    <option value="">{{ __('messages.select_item') }}</option>
+                                    ${currentPOItems.map(item => {
+                                        const remaining = getRemainingQtyForItem(item.item_id);
+                                        return `<option value="${item.item_id}" data-qty="${item.init_quantity}" ${remaining <= 0 ? 'disabled' : ''}>
+                                            ${item.item?.designation || item.new_item_name || 'Item #' + item.item_id} ${remaining <= 0 ? '({{ __('messages.exhausted') }})' : ''}
+                                        </option>`;
+                                    }).join('')}
                                 </select>
                             </div>
-                            <div><label class="block text-xs font-semibold">{{ __('messages.notes') }}</label><input type="text" name="notes[]" class="w-full px-2 py-1 border rounded text-sm"></div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1">{{ __('messages.supplier') }} *</label>
+                                <select name="proposals[${proposalCounter}][supplier_id]" required class="w-full px-2 py-1 border rounded text-sm supplier-select" data-proposal-id="${proposalCounter}">
+                                    <option value="">{{ __('messages.select_item_first') }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1">{{ __('messages.quantity') }} *</label>
+                                <input type="number" name="proposals[${proposalCounter}][quantity]" required step="0.01" min="0.01" value="${defaultQty || ''}" class="w-full px-2 py-1 border rounded text-sm" oninput="updateQuantityValidation(${proposalCounter})">
+                                <p id="qty-info-${proposalCounter}" class="text-xs text-gray-500 mt-1"></p>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1">{{ __('messages.unit_price') }} *</label>
+                                <input type="number" name="proposals[${proposalCounter}][unit_price]" required step="0.01" min="0" class="w-full px-2 py-1 border rounded text-sm">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="block text-xs font-medium mb-1">{{ __('messages.notes') }}</label>
+                            <input type="text" name="proposals[${proposalCounter}][notes]" class="w-full px-2 py-1 border rounded text-sm">
                         </div>
                     </div>
                 `;
-                list.insertAdjacentHTML('beforeend', html);
+                list.insertAdjacentHTML('beforeend', entryHtml);
+                
+                if (itemId) {
+                    const itemSelect = document.querySelector(`select[name="proposals[${proposalCounter}][item_id]"]`);
+                    if (itemSelect) {
+                        itemSelect.value = itemId;
+                        updateProposalItemInfo(proposalCounter);
+                    }
+                }
+                
+                proposalCounter++;
+            }
+
+            function getRemainingQtyForItem(itemId) {
+                const poItem = currentPOItems.find(pi => pi.item_id === itemId);
+                const totalNeeded = poItem ? parseFloat(poItem.init_quantity) : 0;
+                let alreadyProposed = 0;
+                
+                existingProposals.forEach(prop => {
+                    if (prop.item_id === itemId) {
+                        alreadyProposed += parseFloat(prop.quantity) || 0;
+                    }
+                });
+                
+                document.querySelectorAll('.proposal-entry').forEach(entry => {
+                    const entryItemId = entry.querySelector('select[name$="[item_id]"]')?.value;
+                    const entryQty = parseFloat(entry.querySelector('input[name$="[quantity]"]')?.value) || 0;
+                    if (parseInt(entryItemId) === itemId) {
+                        alreadyProposed += entryQty;
+                    }
+                });
+                
+                return Math.max(0, totalNeeded - alreadyProposed);
+            }
+
+            function removeProposalEntry(id) {
+                const entry = document.getElementById(`proposal-entry-${id}`);
+                if (entry) {
+                    entry.remove();
+                    refreshItemOptions();
+                }
+            }
+
+            function refreshItemOptions() {
+                document.querySelectorAll('.proposal-entry select[name$="[item_id]"]').forEach(select => {
+                    const options = select.querySelectorAll('option');
+                    options.forEach(option => {
+                        const itemId = parseInt(option.value);
+                        if (itemId) {
+                            const remaining = getRemainingQtyForItem(itemId);
+                            if (remaining > 0) {
+                                option.removeAttribute('disabled');
+                                option.textContent = option.textContent.replace(' ({{ __('messages.exhausted') }})', '');
+                            } else {
+                                option.setAttribute('disabled', 'disabled');
+                                if (!option.textContent.includes('({{ __('messages.exhausted') }})')) {
+                                    option.textContent += ' ({{ __('messages.exhausted') }})';
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            function validateProposalsTotal(proposals) {
+                const itemQtys = {};
+                
+                proposals.forEach(p => {
+                    if (!itemQtys[p.item_id]) {
+                        itemQtys[p.item_id] = 0;
+                    }
+                    itemQtys[p.item_id] += p.quantity;
+                });
+                
+                for (const itemId in itemQtys) {
+                    const poItem = currentPOItems.find(pi => pi.item_id === parseInt(itemId));
+                    if (poItem) {
+                        const needed = parseFloat(poItem.init_quantity);
+                        const proposed = itemQtys[itemId];
+                        if (Math.abs(proposed - needed) > 0.01) {
+                            const itemName = poItem.item?.designation || poItem.new_item_name || 'Item';
+                            return {
+                                valid: false,
+                                message: `{{ __('messages.quantity_mismatch') }}: ${itemName}. {{ __('messages.needed') }}: ${needed.toFixed(2)}, {{ __('messages.proposed') }}: ${proposed.toFixed(2)}`
+                            };
+                        }
+                    }
+                }
+                
+                return { valid: true };
+            }
+
+            function updateProposalItemInfo(counter) {
+                const itemSelect = document.querySelector(`select[name="proposals[${counter}][item_id]"]`);
+                const supplierSelect = document.querySelector(`select[name="proposals[${counter}][supplier_id]"]`);
+                const qtyInput = document.querySelector(`input[name="proposals[${counter}][quantity]"]`);
+                const priceInput = document.querySelector(`input[name="proposals[${counter}][unit_price]"]`);
+                
+                if (!itemSelect || !supplierSelect) return;
+                
+                const selectedOption = itemSelect.options[itemSelect.selectedIndex];
+                const itemId = parseInt(itemSelect.value);
+                
+                if (itemId && selectedOption.dataset.qty) {
+                    const remaining = getRemainingQtyForItem(itemId);
+                    if (remaining > 0) {
+                        qtyInput.value = Math.min(parseFloat(selectedOption.dataset.qty), remaining);
+                    } else {
+                        qtyInput.value = parseFloat(selectedOption.dataset.qty);
+                    }
+                }
+                
+                supplierSelect.innerHTML = '<option value="">{{ __('messages.loading') }}</option>';
+                
+                const availableSuppliers = getSuppliersForItem(itemId);
+                
+                if (availableSuppliers.length === 0) {
+                    supplierSelect.innerHTML = `<option value="">${itemId ? '{{ __('messages.no_suppliers_for_item') }}' : '{{ __('messages.select_item_first') }}'}</option>`;
+                    return;
+                }
+                
+                let optionsHtml = '<option value="">{{ __('messages.select_supplier') }}</option>';
+                availableSuppliers.forEach(supplier => {
+                    optionsHtml += `<option value="${supplier.id}" data-price="${supplier.unit_price || ''}">${supplier.name}</option>`;
+                });
+                supplierSelect.innerHTML = optionsHtml;
+                
+                supplierSelect.onchange = function() {
+                    const selectedSupplier = supplierSelect.options[supplierSelect.selectedIndex];
+                    if (selectedSupplier && selectedSupplier.dataset.price) {
+                        priceInput.value = selectedSupplier.dataset.price;
+                    }
+                };
+                
+                updateQuantityValidation(counter);
             }
 
             function submitProposals(e, poId) {
                 e.preventDefault();
                 const form = e.target;
-                const suppliers = form.querySelectorAll('input[name="supplier_name[]"]');
-                const prices = form.querySelectorAll('input[name="price[]"]');
-                const ratings = form.querySelectorAll('select[name="quality_rating[]"]');
-                const notes = form.querySelectorAll('input[name="notes[]"]');
+                const formData = new FormData(form);
+                
+                const proposals = [];
+                const entries = document.querySelectorAll('.proposal-entry');
+                entries.forEach((entry, idx) => {
+                    const itemId = entry.querySelector('select[name$="[item_id]"]')?.value;
+                    const supplierId = entry.querySelector('select[name$="[supplier_id]"]')?.value;
+                    const quantity = entry.querySelector('input[name$="[quantity]"]')?.value;
+                    const unitPrice = entry.querySelector('input[name$="[unit_price]"]')?.value;
+                    const notes = entry.querySelector('input[name$="[notes]"]')?.value;
+                    
+                    if (itemId && supplierId && quantity && unitPrice) {
+                        proposals.push({
+                            item_id: parseInt(itemId),
+                            supplier_id: parseInt(supplierId),
+                            quantity: parseFloat(quantity),
+                            unit_price: parseFloat(unitPrice),
+                            notes: notes || null
+                        });
+                    }
+                });
 
-                let proposals = [];
-                for (let i = 0; i < suppliers.length; i++) {
-                    proposals.push({
-                        supplier_name: suppliers[i].value,
-                        price: prices[i].value,
-                        quality_rating: ratings[i].value,
-                        notes: notes[i].value
-                    });
+                if (proposals.length === 0) {
+                    Notification.error('{{ __('messages.add_at_least_one_proposal') }}');
+                    return;
+                }
+
+                const validation = validateProposalsTotal(proposals);
+                if (!validation.valid) {
+                    Notification.error(validation.message);
+                    return;
                 }
 
                 fetch(`/api/purchase-orders/${poId}/proposals`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
                         },
-                        body: JSON.stringify({
-                            proposals
-                        })
+                        body: JSON.stringify({ proposals })
                     })
-                    .then(res => res.json())
+                    .then(async res => {
+                        if (!res.ok) {
+                            const errorData = await res.json();
+                            throw new Error(errorData.message || 'Error submitting proposals');
+                        }
+                        return res.json();
+                    })
                     .then(data => {
                         closeDetailsModal();
                         loadPOs();
                         Notification.success('{{ __('messages.proposals_added') }}');
                     })
-                    .catch(err => Notification.error('{{ __('messages.error_submitting_proposals') }}'));
+                    .catch(err => {
+                        console.error(err);
+                        Notification.error('{{ __('messages.error_submitting_proposals') }}: ' + err.message);
+                    });
             }
 
             function submitFinalSelection(poId) {
-                const selectedRadio = document.querySelector('input[name="selected_proposal"]:checked');
-                if (!selectedRadio) {
-                    Notification.error('{{ __('messages.select_proposal_first') }}');
-                    return;
-                }
                 fetch(`/api/purchase-orders/${poId}/final-approval`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({
-                            proposal_id: selectedRadio.value
-                        })
+                        body: JSON.stringify({})
                     })
                     .then(res => res.json())
                     .then(data => {

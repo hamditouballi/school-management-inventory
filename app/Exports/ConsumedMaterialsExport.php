@@ -40,7 +40,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
         $data->push([]); // Empty row
 
         // Add table headers
-        $data->push(['DESIGNATION', 'QUANTITÉ CONSOMMÉE', 'PRIX UNITAIRE', 'PRIX TOTAL']);
+        $data->push(['DESIGNATION', 'QUANTITÉ CONSOMMÉE']);
 
         // Get all consumed items from Bon de Sortie within date range
         $bonDeSorties = BonDeSortie::with('item')
@@ -60,15 +60,11 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
 
             // Sum quantities for this item
             $totalQuantity = $sorties->sum('quantity');
-            $unitPrice = $item->price;
-            $totalPrice = $totalQuantity * $unitPrice;
-            $grandTotal += $totalPrice;
+            $grandTotal += $totalQuantity;
 
             $data->push([
                 $item->designation,
                 number_format($totalQuantity, 2),
-                number_format($unitPrice, 2).' DH',
-                number_format($totalPrice, 2).' DH',
             ]);
         }
 
@@ -76,7 +72,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
         $data->push([]);
 
         // Add grand total
-        $data->push(['TOTAL GÉNÉRAL', '', '', number_format($grandTotal, 2).' DH']);
+        $data->push(['TOTAL GÉNÉRAL', number_format($grandTotal, 2)]);
 
         return $data;
     }
@@ -113,17 +109,15 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                 $highestRow = $sheet->getHighestRow();
 
                 // Merge cells for title and date
-                $sheet->mergeCells('A1:D1');
-                $sheet->mergeCells('A2:D2');
+                $sheet->mergeCells('A1:B1');
+                $sheet->mergeCells('A2:B2');
 
                 // Set column widths
                 $sheet->getColumnDimension('A')->setWidth(35);
-                $sheet->getColumnDimension('B')->setWidth(20);
-                $sheet->getColumnDimension('C')->setWidth(18);
-                $sheet->getColumnDimension('D')->setWidth(18);
+                $sheet->getColumnDimension('B')->setWidth(25);
 
                 // Style title
-                $sheet->getStyle('A1:D1')->applyFromArray([
+                $sheet->getStyle('A1:B1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 16,
@@ -140,7 +134,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                 ]);
 
                 // Style date period
-                $sheet->getStyle('A2:D2')->applyFromArray([
+                $sheet->getStyle('A2:B2')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 12,
@@ -156,7 +150,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                 ]);
 
                 // Style table headers (row 4)
-                $sheet->getStyle('A4:D4')->applyFromArray([
+                $sheet->getStyle('A4:B4')->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'color' => ['rgb' => 'FFFFFF'],
@@ -174,7 +168,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                 // Style data rows with alternating colors
                 for ($row = 5; $row < $highestRow - 1; $row++) {
                     if ($row % 2 == 0) {
-                        $sheet->getStyle("A{$row}:D{$row}")->applyFromArray([
+                        $sheet->getStyle("A{$row}:B{$row}")->applyFromArray([
                             'fill' => [
                                 'fillType' => Fill::FILL_SOLID,
                                 'startColor' => ['rgb' => 'F2F2F2'],
@@ -184,7 +178,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                 }
 
                 // Style total row (last row)
-                $sheet->getStyle("A{$highestRow}:D{$highestRow}")->applyFromArray([
+                $sheet->getStyle("A{$highestRow}:B{$highestRow}")->applyFromArray([
                     'font' => [
                         'bold' => true,
                         'size' => 12,
@@ -200,7 +194,7 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                 ]);
 
                 // Apply borders to all cells
-                $sheet->getStyle("A1:D{$highestRow}")->applyFromArray([
+                $sheet->getStyle("A1:B{$highestRow}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -209,8 +203,8 @@ class ConsumedMaterialsExport implements FromCollection, WithEvents, WithHeading
                     ],
                 ]);
 
-                // Center align quantity and price columns
-                $sheet->getStyle("B5:D{$highestRow}")->applyFromArray([
+                // Center align quantity column
+                $sheet->getStyle("B5:B{$highestRow}")->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                     ],

@@ -40,6 +40,9 @@ RTL support is configured in `config/app.php` under `available_locales`. The lay
 | `/requests` | - | Requests management (Blade view) |
 | `/purchase-orders` | - | Purchase orders management (Blade view) |
 | `/invoices` | - | Invoices management (Blade view) |
+| `/bon-sortie` | - | Bon de Sortie management |
+| `/suppliers` | - | Supplier management |
+| `/notifications` | - | Notifications list |
 | `/locale/{locale}` | LocaleController | Language switching |
 
 ### API Routes
@@ -47,23 +50,64 @@ RTL support is configured in `config/app.php` under `available_locales`. The lay
 | Endpoint | Controller | Description |
 |----------|------------|-------------|
 | `GET /api/items` | ItemController | List/create items |
+| `POST /api/items` | ItemController | Create item |
+| `GET /api/items/{item}` | ItemController | Get item |
+| `PUT /api/items/{item}` | ItemController | Update item |
+| `DELETE /api/items/{item}` | ItemController | Delete item |
+| `GET /api/categories` | CategoryController | List categories |
+| `POST /api/categories` | CategoryController | Create category |
+| `GET /api/categories/{category}` | CategoryController | Get category |
+| `PUT /api/categories/{category}` | CategoryController | Update category |
+| `DELETE /api/categories/{category}` | CategoryController | Delete category |
 | `GET /api/requests` | RequestController | List/create requests |
-| `POST /api/requests/{request}/fulfill` | RequestController | Fulfill a request |
-| `PUT /api/requests/{request}/status` | RequestController | Update request status |
+| `POST /api/requests` | RequestController | Create request |
+| `GET /api/requests/unconfirmed` | RequestController | Unconfirmed requests |
+| `GET /api/requests/my-unconfirmed` | RequestController | User's unconfirmed |
+| `GET /api/requests/{request}` | RequestController | Get request |
+| `PUT /api/requests/{request}/status` | RequestController | Update status |
+| `POST /api/requests/{request}/fulfill` | RequestController | Fulfill request |
+| `POST /api/requests/{request}/confirm-receipt` | RequestController | Confirm receipt |
 | `GET /api/purchase-orders` | PurchaseOrderController | List/create POs |
+| `POST /api/purchase-orders` | PurchaseOrderController | Create PO |
+| `GET /api/purchase-orders/{po}` | PurchaseOrderController | Get PO |
+| `PUT /api/purchase-orders/{po}` | PurchaseOrderController | Update PO |
+| `DELETE /api/purchase-orders/{po}` | PurchaseOrderController | Delete PO |
+| `PUT /api/purchase-orders/{po}/status` | PurchaseOrderController | Update status |
 | `POST /api/purchase-orders/{po}/initial-approval` | PurchaseOrderController | Initial approval |
+| `POST /api/purchase-orders/{po}/proposals` | PurchaseOrderController | Submit proposals |
+| `GET /api/purchase-orders/{po}/suppliers-for-items` | PurchaseOrderController | Get eligible suppliers |
 | `POST /api/purchase-orders/{po}/final-approval` | PurchaseOrderController | Final approval |
-| `POST /api/purchase-orders/{po}/proposals` | PurchaseOrderController | Submit supplier proposals |
-| `PUT /api/purchase-orders/{po}/status` | PurchaseOrderController | Update PO status |
+| `POST /api/purchase-orders/{po}/split` | PurchaseOrderController | Split to suppliers |
+| `POST /api/purchase-orders/{po}/mark-delivered` | PurchaseOrderController | Mark as delivered |
+| `GET /api/suppliers` | SupplierController | List suppliers |
+| `POST /api/suppliers` | SupplierController | Create supplier |
+| `GET /api/suppliers/{supplier}` | SupplierController | Get supplier |
+| `PUT /api/suppliers/{supplier}` | SupplierController | Update supplier |
+| `DELETE /api/suppliers/{supplier}` | SupplierController | Delete supplier |
+| `GET /api/suppliers/all-with-items` | SupplierController | Suppliers with items |
+| `GET /api/suppliers/{supplier}/items` | SupplierController | Supplier items |
+| `POST /api/suppliers/{supplier}/items` | SupplierController | Add item |
+| `PUT /api/suppliers/{supplier}/items/{itemId}` | SupplierController | Update price |
+| `DELETE /api/suppliers/{supplier}/items/{itemId}` | SupplierController | Remove item |
+| `GET /api/suppliers/{supplier}/stats` | SupplierController | Supplier stats |
 | `GET /api/invoices` | InvoiceController | List/create invoices |
+| `POST /api/invoices` | InvoiceController | Create invoice |
+| `GET /api/invoices/{invoice}` | InvoiceController | Get invoice |
+| `PUT /api/invoices/{invoice}` | InvoiceController | Update invoice |
+| `DELETE /api/invoices/{invoice}` | InvoiceController | Delete invoice |
+| `GET /api/bon-sortie` | BonDeSortieController | List Bon de Sorties |
+| `POST /api/bon-sortie` | BonDeSortieController | Create |
+| `GET /api/bon-sortie/{id}` | BonDeSortieController | Get |
+| `PUT /api/bon-sortie/{id}` | BonDeSortieController | Update |
+| `DELETE /api/bon-sortie/{id}` | BonDeSortieController | Delete |
 | `GET /api/stats/dashboard` | StatsController | Dashboard stats |
 | `GET /api/stats/consumption` | StatsController | Consumption stats |
-| `GET /api/stats/consumption-by-department` | StatsController | Consumption by department |
+| `GET /api/stats/consumption-by-department` | StatsController | By department |
 | `GET /api/stats/low-stock` | StatsController | Low stock items |
 | `GET /api/stats/spending` | StatsController | Spending stats |
 | `GET /api/stats/top-items` | StatsController | Top items |
-| `GET /api/reports/consumed-materials` | ReportController | Consumed materials report |
-| `GET /api/reports/department-consumption` | ReportController | Department consumption |
+| `GET /api/reports/consumed-materials` | ReportController | Consumed materials |
+| `GET /api/reports/department-consumption` | ReportController | Dept consumption |
 | `POST /api/login` | AuthController | API login |
 | `POST /api/logout` | AuthController | API logout |
 | `GET /api/me` | AuthController | Get current user |
@@ -74,10 +118,12 @@ RTL support is configured in `config/app.php` under `available_locales`. The lay
 
 | Role | Permissions |
 |------|-------------|
-| `director` | View requests |
-| `stock_manager` | Manage items, requests, purchase orders |
-| `hr_manager` | Approve requests, purchase orders |
-| `finance_manager` | Manage invoices, final approval |
+| `director` | View items, create requests, track own requests |
+| `stock_manager` | Manage items, fulfill requests, create POs, manage suppliers |
+| `hr_manager` | Approve requests, initial/final PO approval, system oversight |
+| `finance_manager` | Manage invoices, view financial data |
+| `pm_manager` | Project manager (extended permissions) |
+| `logistics_manager` | Logistics operations |
 
 ---
 

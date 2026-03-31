@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BonDeSortieController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\Api\PurchaseOrderController;
@@ -21,7 +22,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Items
     Route::apiResource('items', ItemController::class);
-    Route::get('/categories', [ItemController::class, 'categories']);
+
+    // Categories
+    Route::apiResource('categories', CategoryController::class);
 
     // Requests
     Route::get('/requests', [RequestController::class, 'index']);
@@ -36,9 +39,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Purchase Orders
     Route::put('/purchase-orders/{purchaseOrder}/status', [PurchaseOrderController::class, 'updateStatus']);
     Route::post('/purchase-orders/{purchaseOrder}/initial-approval', [PurchaseOrderController::class, 'initialApproval']);
-    Route::post('/purchase-orders/{purchaseOrder}/proposals', [PurchaseOrderController::class, 'addProposals']);
+    Route::post('/purchase-orders/{purchaseOrder}/proposals', [PurchaseOrderController::class, 'addPropositions']);
+    Route::get('/purchase-orders/{purchaseOrder}/suppliers-for-items', [PurchaseOrderController::class, 'getSuppliersForPOItems']);
     Route::post('/purchase-orders/{purchaseOrder}/final-approval', [PurchaseOrderController::class, 'finalApproval']);
     Route::post('/purchase-orders/{purchaseOrder}/split', [PurchaseOrderController::class, 'split']);
+    Route::post('/purchase-orders/{purchaseOrder}/mark-delivered', [PurchaseOrderController::class, 'markDelivered']);
     Route::apiResource('purchase-orders', PurchaseOrderController::class);
 
     // Suppliers

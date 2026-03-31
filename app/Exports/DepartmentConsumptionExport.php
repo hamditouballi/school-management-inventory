@@ -47,7 +47,7 @@ class DepartmentConsumptionExport implements FromCollection, WithEvents, WithHea
         $data->push([]); // Empty row
 
         // Table header
-        $data->push(['SERVICE DU DIRECTION', 'TOTAL annuel', 'P,U (DH)', 'CONSOMMATION TOTALE (DH)']);
+        $data->push(['SERVICE / DÉPARTEMENT', 'QUANTITÉ TOTALE CONSOMMÉE']);
 
         // Get all departments
         $this->departments = Department::all();
@@ -81,33 +81,19 @@ class DepartmentConsumptionExport implements FromCollection, WithEvents, WithHea
 
             // Calculate totals
             $totalQuantity = $departmentBonDeSorties->sum('quantity');
-            $totalCost = $departmentBonDeSorties->sum(function ($bon) {
-                return $bon->quantity * ($bon->item ? $bon->item->price : 0);
-            });
-
-            // Calculate weighted average unit price
-            $avgUnitPrice = $totalQuantity > 0 ? $totalCost / $totalQuantity : 0;
 
             $data->push([
                 $department->name,
                 number_format($totalQuantity, 0),
-                number_format($avgUnitPrice, 2),
-                number_format($totalCost, 2),
             ]);
 
             $grandTotalQuantity += $totalQuantity;
-            $grandTotalCost += $totalCost;
         }
-
-        // Calculate overall average unit price
-        $overallAvgPrice = $grandTotalQuantity > 0 ? $grandTotalCost / $grandTotalQuantity : 0;
 
         // Add grand total row
         $data->push([
-            'TOTAL annuel',
+            'TOTAL GÉNÉRAL',
             number_format($grandTotalQuantity, 0),
-            number_format($overallAvgPrice, 2),
-            number_format($grandTotalCost, 2),
         ]);
 
         return $data;
@@ -150,10 +136,8 @@ class DepartmentConsumptionExport implements FromCollection, WithEvents, WithHea
                 $sheet->mergeCells("A2:{$highestColumn}2");
 
                 // Set column widths
-                $sheet->getColumnDimension('A')->setWidth(30); // Department name
-                $sheet->getColumnDimension('B')->setWidth(20); // Total quantity
-                $sheet->getColumnDimension('C')->setWidth(15); // Unit price
-                $sheet->getColumnDimension('D')->setWidth(25); // Total consumption
+                $sheet->getColumnDimension('A')->setWidth(35); // Department name
+                $sheet->getColumnDimension('B')->setWidth(30); // Total quantity
 
                 // Style title
                 $sheet->getStyle("A1:{$highestColumn}1")->applyFromArray([

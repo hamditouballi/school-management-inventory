@@ -3,6 +3,21 @@
 @section('title', __('messages.items_management'))
 
 @section('content')
+    <!-- Category Management Section -->
+    @if (auth()->user()->role === 'stock_manager')
+        <div class="mb-6 bg-white rounded-lg shadow p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">{{ __('messages.categories') }}</h2>
+                <button onclick="showCategoryModal()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                    + {{ __('messages.add_category') }}
+                </button>
+            </div>
+            <div id="categoriesList" class="flex flex-wrap gap-2">
+                <span class="text-gray-500">{{ __('messages.loading') }}...</span>
+            </div>
+        </div>
+    @endif
+
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold text-gray-800">{{ __('messages.items_management') }}</h1>
@@ -29,20 +44,17 @@
                 <select id="statusFilter"
                     class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                     onchange="applyFilters()">
-                    <option value="">{{ __('messages.filter') }}</option>
+                    <option value="">{{ __('messages.all') }}</option>
                     <option value="in_stock">{{ __('messages.in_stock') }}</option>
                     <option value="low_stock">{{ __('messages.low_stock') }}</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium mb-1">{{ __('messages.price') }}</label>
-                <select id="priceFilter"
+                <label class="block text-sm font-medium mb-1">{{ __('messages.category') }}</label>
+                <select id="categoryFilter"
                     class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                     onchange="applyFilters()">
-                    <option value="">{{ __('messages.filter') }}</option>
-                    <option value="0-5">0 - 5 {{ __('messages.currency') }}</option>
-                    <option value="5-10">5 - 10 {{ __('messages.currency') }}</option>
-                    <option value="10+">10+ {{ __('messages.currency') }}</option>
+                    <option value="">{{ __('messages.all_categories') }}</option>
                 </select>
             </div>
             <div>
@@ -50,7 +62,7 @@
                 <select id="quantityFilter"
                     class="w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
                     onchange="applyFilters()">
-                    <option value="">{{ __('messages.filter') }}</option>
+                    <option value="">{{ __('messages.all') }}</option>
                     <option value="0-50">0 - 50</option>
                     <option value="50-200">50 - 200</option>
                     <option value="200+">200+</option>
@@ -69,11 +81,11 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.designation') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                            {{ __('messages.category') }}</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.description') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.quantity') }}</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            {{ __('messages.price') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.unit') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -102,7 +114,31 @@
         </div>
     </div>
 
-    <!-- Add/Edit Modal -->
+    <!-- Category Modal -->
+    <div id="categoryModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold mb-4" id="categoryModalTitle">{{ __('messages.add_category') }}</h3>
+            <form id="categoryForm" onsubmit="saveCategory(event)">
+                <input type="hidden" id="categoryId">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">{{ __('messages.category_name') }}</label>
+                    <input type="text" id="categoryName" required class="w-full px-3 py-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1">{{ __('messages.description') }}</label>
+                    <textarea id="categoryDescription" class="w-full px-3 py-2 border rounded"></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button type="button" onclick="closeCategoryModal()"
+                        class="px-4 py-2 border rounded hover:bg-gray-100">{{ __('messages.cancel') }}</button>
+                    <button type="submit"
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{{ __('messages.save') }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add/Edit Item Modal -->
     <div id="itemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h3 class="text-xl font-bold mb-4" id="modalTitle">{{ __('messages.add_item') }}</h3>
@@ -127,28 +163,22 @@
                         <input type="number" id="quantity" required class="w-full px-3 py-2 border rounded">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">{{ __('messages.unit_price') }}
-                            ({{ __('messages.currency') }})</label>
-                        <input type="number" step="0.01" id="price" required
-                            class="w-full px-3 py-2 border rounded">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
                         <label class="block text-sm font-medium mb-1">{{ __('messages.unit') }}</label>
                         <input type="text" id="unit" required class="w-full px-3 py-2 border rounded">
                     </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label class="block text-sm font-medium mb-1">{{ __('messages.category') }}</label>
                         <select id="category_id" class="w-full px-3 py-2 border rounded">
                             <option value="">-- {{ __('messages.select_category') }} --</option>
                         </select>
                     </div>
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">{{ __('messages.low_stock_threshold') }}</label>
-                    <input type="number" id="low_stock_threshold" value="50"
-                        class="w-full px-3 py-2 border rounded">
+                    <div>
+                        <label class="block text-sm font-medium mb-1">{{ __('messages.low_stock_threshold') }}</label>
+                        <input type="number" id="low_stock_threshold" value="50"
+                            class="w-full px-3 py-2 border rounded">
+                    </div>
                 </div>
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeItemModal()"
@@ -162,13 +192,14 @@
 
     @push('scripts')
         <script>
-                const STORAGE_URL = "{{ asset('storage') }}";
+            const STORAGE_URL = "{{ asset('storage') }}";
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             };
             let allItems = [];
+            let allCategories = [];
             let filteredItems = [];
             let currentPage = 1;
             const itemsPerPage = 10;
@@ -178,6 +209,123 @@
                 loadCategories();
             });
 
+            // ============ CATEGORIES ============
+            function loadCategories() {
+                fetch('/api/categories', {
+                        headers
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        allCategories = data;
+                        renderCategories();
+                        populateCategorySelects();
+                    });
+            }
+
+            function renderCategories() {
+                const container = document.getElementById('categoriesList');
+                if (allCategories.length === 0) {
+                    container.innerHTML = '<span class="text-gray-500 text-sm">{{ __('messages.no_categories') }}</span>';
+                    return;
+                }
+
+                const canEdit = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
+                container.innerHTML = allCategories.map(cat => `
+                    <div class="inline-flex items-center gap-2 bg-gray-100 px-3 py-1 rounded-full">
+                        <span class="text-sm font-medium">${cat.name}</span>
+                        <span class="text-xs text-gray-500">(${cat.items_count || 0})</span>
+                        ${canEdit ? `
+                            <button onclick="editCategory(${cat.id})" class="text-blue-600 hover:text-blue-800 text-xs">✎</button>
+                            <button onclick="deleteCategory(${cat.id}, '${cat.name}', ${cat.items_count || 0})" class="text-red-600 hover:text-red-800 text-xs">×</button>
+                        ` : ''}
+                    </div>
+                `).join('');
+            }
+
+            function populateCategorySelects() {
+                const categorySelect = document.getElementById('category_id');
+                const categoryFilter = document.getElementById('categoryFilter');
+                
+                // Clear existing options except first
+                categorySelect.innerHTML = '<option value="">-- {{ __('messages.select_category') }} --</option>';
+                categoryFilter.innerHTML = '<option value="">{{ __('messages.all_categories') }}</option>';
+
+                allCategories.forEach(cat => {
+                    categorySelect.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                    categoryFilter.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+            }
+
+            function showCategoryModal(id = null) {
+                document.getElementById('categoryModalTitle').textContent = id ? "{{ __('messages.edit_category') }}" : "{{ __('messages.add_category') }}";
+                document.getElementById('categoryForm').reset();
+                document.getElementById('categoryId').value = id || '';
+                
+                if (id) {
+                    const cat = allCategories.find(c => c.id === id);
+                    if (cat) {
+                        document.getElementById('categoryName').value = cat.name;
+                        document.getElementById('categoryDescription').value = cat.description || '';
+                    }
+                }
+                
+                document.getElementById('categoryModal').classList.remove('hidden');
+            }
+
+            function closeCategoryModal() {
+                document.getElementById('categoryModal').classList.add('hidden');
+            }
+
+            function editCategory(id) {
+                showCategoryModal(id);
+            }
+
+            function saveCategory(e) {
+                e.preventDefault();
+                const id = document.getElementById('categoryId').value;
+                const name = document.getElementById('categoryName').value;
+                const description = document.getElementById('categoryDescription').value;
+
+                const url = id ? `/api/categories/${id}` : '/api/categories';
+                const method = id ? 'PUT' : 'POST';
+
+                fetch(url, {
+                        method,
+                        headers,
+                        body: JSON.stringify({ name, description })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        closeCategoryModal();
+                        loadCategories();
+                        Notification.success(id ? "{{ __('messages.category_updated') }}" : "{{ __('messages.category_added') }}");
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        Notification.error("{{ __('messages.error_saving_category') }}");
+                    });
+            }
+
+            function deleteCategory(id, name, itemsCount) {
+                if (itemsCount > 0) {
+                    Notification.error("{{ __('messages.cannot_delete_category_with_items') }}");
+                    return;
+                }
+                if (!confirm(`{{ __('messages.delete_category_confirm') }} "${name}"?`)) return;
+
+                fetch(`/api/categories/${id}`, {
+                        method: 'DELETE',
+                        headers
+                    })
+                    .then(res => res.json())
+                    .then(() => {
+                        loadCategories();
+                        Notification.success("{{ __('messages.category_deleted') }}");
+                    })
+                    .catch(err => Notification.error("{{ __('messages.error_deleting_category') }}"));
+            }
+
+            // ============ ITEMS ============
             function loadItems() {
                 fetch('/api/items', {
                         headers
@@ -194,26 +342,10 @@
                     });
             }
 
-            function loadCategories() {
-                fetch('/api/categories', {
-                        headers
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        const categorySelect = document.getElementById('category_id');
-                        data.forEach(cat => {
-                            const option = document.createElement('option');
-                            option.value = cat.id;
-                            option.textContent = cat.name;
-                            categorySelect.appendChild(option);
-                        });
-                    });
-            }
-
             function applyFilters() {
                 const search = document.getElementById('searchInput').value.toLowerCase();
                 const status = document.getElementById('statusFilter').value;
-                const priceRange = document.getElementById('priceFilter').value;
+                const categoryId = document.getElementById('categoryFilter').value;
                 const quantityRange = document.getElementById('quantityFilter').value;
 
                 filteredItems = allItems.filter(item => {
@@ -227,12 +359,7 @@
                     if (status === 'low_stock' && !item.is_low_stock) match = false;
                     if (status === 'in_stock' && item.is_low_stock) match = false;
 
-                    if (priceRange) {
-                        const price = parseFloat(item.price);
-                        if (priceRange === '0-5' && (price < 0 || price > 5)) match = false;
-                        if (priceRange === '5-10' && (price < 5 || price > 10)) match = false;
-                        if (priceRange === '10+' && price < 10) match = false;
-                    }
+                    if (categoryId && item.category_id != categoryId) match = false;
 
                     if (quantityRange) {
                         const qty = parseFloat(item.quantity);
@@ -269,9 +396,11 @@
     }
 </td>
                 <td class="px-6 py-4 font-medium">${item.designation}</td>
+                <td class="px-6 py-4 text-sm">
+                    ${item.category ? `<span class="bg-gray-100 px-2 py-1 rounded text-xs">${item.category.name}</span>` : '<span class="text-gray-400 text-xs">-</span>'}
+                </td>
                 <td class="px-6 py-4 text-sm text-gray-600">${item.description || '-'}</td>
                 <td class="px-6 py-4"><span class="${item.is_low_stock ? 'text-red-600 font-semibold' : ''}">${item.quantity}</span></td>
-                <td class="px-6 py-4">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</td>
                 <td class="px-6 py-4">${item.unit}</td>
                 <td class="px-6 py-4">
                     ${item.is_low_stock ? 
@@ -348,15 +477,12 @@
                 document.getElementById('designation').value = item.designation;
                 document.getElementById('description').value = item.description || '';
                 document.getElementById('quantity').value = item.quantity;
-                document.getElementById('price').value = item.price;
                 document.getElementById('unit').value = item.unit;
                 document.getElementById('category_id').value = item.category_id || '';
                 document.getElementById('low_stock_threshold').value = item.low_stock_threshold;
 
-                // Clear the file input
                 document.getElementById('image').value = '';
 
-                // Show existing image if available
                 if (item.image_path) {
                     document.getElementById('imagePreview').src = `/storage/${item.image_path}`;
                     document.getElementById('imagePreview').classList.remove('hidden');
@@ -379,7 +505,6 @@
                 formData.append('designation', document.getElementById('designation').value);
                 formData.append('description', document.getElementById('description').value || '');
                 formData.append('quantity', document.getElementById('quantity').value);
-                formData.append('price', document.getElementById('price').value);
                 formData.append('unit', document.getElementById('unit').value);
                 const categoryId = document.getElementById('category_id').value;
                 if (categoryId) {
@@ -393,7 +518,6 @@
                 }
 
                 const url = id ? `/api/items/${id}` : '/api/items';
-                let method = id ? 'POST' : 'POST'; // Use POST for both, with _method for update
 
                 if (id) {
                     formData.append('_method', 'PUT');
@@ -411,6 +535,7 @@
                     .then(() => {
                         closeItemModal();
                         loadItems();
+                        loadCategories();
                         Notification.success(id ? "{{ __('messages.item_updated_success') }}" :
                             "{{ __('messages.item_added_success') }}");
                     })
@@ -429,12 +554,12 @@
                     })
                     .then(() => {
                         loadItems();
+                        loadCategories();
                         Notification.success("{{ __('messages.item_deleted_success') }}");
                     })
                     .catch(err => Notification.error("{{ __('messages.error_deleting_item') }}"));
             }
 
-            // Image preview
             document.getElementById('image')?.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {

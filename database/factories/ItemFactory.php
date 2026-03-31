@@ -15,9 +15,7 @@ class ItemFactory extends Factory
             'designation' => fake()->unique()->words(3, true),
             'description' => fake()->sentence(),
             'quantity' => fake()->numberBetween(10, 500),
-            'price' => fake()->randomFloat(2, 1, 1000),
             'unit' => fake()->randomElement(['pcs', 'kg', 'box', 'unit']),
-            'category' => fake()->randomElement(['Stationery', 'Electronics', 'Furniture', 'Cleaning']),
             'low_stock_threshold' => 20,
             'image_path' => null,
         ];
