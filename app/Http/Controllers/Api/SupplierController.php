@@ -140,49 +140,45 @@ class SupplierController extends Controller
             ? "strftime('%Y-%m', date)"
             : "DATE_FORMAT(date, '%Y-%m')";
 
-        $totalOrders = $supplier->purchaseOrders()->count();
-        $totalSpent = $supplier->purchaseOrders()->sum('total_amount');
+        $poItems = $supplier->purchaseOrderItems()->with('purchaseOrder')->get();
+        $pos = $poItems->pluck('purchaseOrder')->unique('id')->filter();
+
+        $totalOrders = $pos->count();
+        $totalSpent = $pos->sum('total_amount');
         $itemsCount = $supplier->supplierItems()->count();
         $avgOrderValue = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
-        $monthlySpending = DB::table('purchase_orders as po')
-            ->join('purchase_order_items as poi', 'po.id', '=', 'poi.purchase_order_id')
+        $monthlySpending = DB::table('purchase_order_items as poi')
+            ->join('propositions as p', 'p.id', '=', 'poi.proposition_id')
+            ->join('purchase_orders as po', 'po.id', '=', 'poi.purchase_order_id')
             ->select(DB::raw("$dateField as month"), DB::raw('SUM(poi.final_quantity * poi.unit_price) as total'))
-            ->where('po.supplier_id', $supplier->id)
+            ->where('p.supplier_id', $supplier->id)
             ->where('po.date', '>=', now()->subMonths(12))
             ->groupBy('month')
             ->orderBy('month')
             ->get();
 
-        $statusBreakdown = $supplier->purchaseOrders()
-            ->select('status', DB::raw('COUNT(*) as count'))
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
+        $statusBreakdown = $pos->groupBy('status')
+            ->map(fn ($group) => $group->count())
             ->toArray();
 
-        $recentOrders = $supplier->purchaseOrders()
-            ->with(['purchaseOrderItems.item'])
-            ->orderBy('date', 'desc')
-            ->limit(5)
-            ->get()
-            ->map(function ($order) {
-                return [
-                    'id' => $order->id,
-                    'status' => $order->status,
-                    'date' => $order->date,
-                    'total_amount' => $order->total_amount,
-                    'items' => $order->purchaseOrderItems->map(function ($poItem) {
-                        return [
-                            'item_id' => $poItem->item_id,
-                            'item_name' => $poItem->item?->designation,
-                            'item_image' => $poItem->item?->image_path,
-                            'quantity' => $poItem->final_quantity,
-                            'unit_price' => $poItem->unit_price,
-                        ];
-                    }),
-                ];
-            });
+        $recentOrders = collect($pos->take(5)->values())->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'status' => $order->status,
+                'date' => $order->date,
+                'total_amount' => $order->total_amount,
+                'items' => $order->purchaseOrderItems()->with('item')->get()->map(function ($poItem) {
+                    return [
+                        'item_id' => $poItem->item_id,
+                        'item_name' => $poItem->item?->designation,
+                        'item_image' => $poItem->item?->image_path,
+                        'quantity' => $poItem->final_quantity,
+                        'unit_price' => $poItem->unit_price,
+                    ];
+                }),
+            ];
+        });
 
         $supplierItemIds = $supplier->supplierItems()->pluck('item_id');
 

@@ -32,4 +32,26 @@ class Supplier extends Model
     {
         return $this->hasMany(Proposition::class);
     }
+
+    public function purchaseOrderItems()
+    {
+        return $this->hasManyThrough(
+            PurchaseOrderItem::class,
+            Proposition::class,
+            'supplier_id',
+            'proposition_id',
+            'id',
+            'id'
+        );
+    }
+
+    public function getAllPurchaseOrdersAttribute()
+    {
+        $poIds = $this->purchaseOrderItems()
+            ->pluck('purchase_order_id')
+            ->unique()
+            ->values();
+
+        return PurchaseOrder::whereIn('id', $poIds)->get();
+    }
 }
