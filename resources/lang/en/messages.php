@@ -465,6 +465,30 @@ return [
     // Mark as Ordered
     'mark_ordered' => 'Mark as Ordered',
 
+    // Bon de Livraison
+    'bon_de_livraison' => 'Delivery Note',
+    'upload_bon_de_livraison' => 'Upload Delivery Note',
+    'delivery_notes' => 'Delivery Notes',
+    'delivered' => 'Delivered',
+    'remaining' => 'Remaining',
+    'max' => 'Max',
+    'fill_max' => 'Fill max',
+    'pending_confirmation' => 'Pending Confirmation',
+    'confirmed' => 'Confirmed',
+    'confirm_delivery' => 'Confirm Delivery',
+    'upload_file' => 'Upload File',
+    'delivery_date' => 'Delivery Date',
+    'no_delivery_notes' => 'No delivery notes yet',
+    'delivered_qty' => 'Delivered Qty',
+    'remaining_qty' => 'Remaining',
+    'all_delivered' => 'All delivered',
+    'view_delivery_notes' => 'View Delivery Notes',
+    'mark_delivered' => 'Mark as Delivered',
+    'po_marked_delivered' => 'Purchase order marked as delivered',
+    'confirm_mark_delivered' => 'Are you sure you want to mark this purchase order as delivered?',
+    'partially_delivered' => 'Partially Delivered',
+    'view_file' => 'View File',
+
     // Supplier Stats
     'supplier_stats' => 'Supplier Statistics',
     'view_stats' => 'View Stats',

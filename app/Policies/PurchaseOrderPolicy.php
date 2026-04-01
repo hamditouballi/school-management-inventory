@@ -32,12 +32,12 @@ class PurchaseOrderPolicy
 
     public function updateStatus(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        // HR handles initial/final reviews. Stock manager marks final orders as ordered.
+        // HR handles initial/final reviews. Stock manager marks final orders as partially_delivered.
         if ($user->role === 'hr_manager') {
             return in_array($purchaseOrder->status, ['pending_initial_approval', 'pending_final_approval']);
         }
         if ($user->role === 'stock_manager') {
-            return in_array($purchaseOrder->status, ['final_approved', 'ordered']);
+            return in_array($purchaseOrder->status, ['final_approved', 'partially_delivered', 'delivered']);
         }
 
         return false;

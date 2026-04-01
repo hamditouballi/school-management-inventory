@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BonDeLivraisonController;
 use App\Http\Controllers\Api\BonDeSortieController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\InvoiceController;
@@ -46,6 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/purchase-orders/{purchaseOrder}/split', [PurchaseOrderController::class, 'split']);
     Route::post('/purchase-orders/{purchaseOrder}/mark-delivered', [PurchaseOrderController::class, 'markDelivered']);
     Route::apiResource('purchase-orders', PurchaseOrderController::class);
+
+    // Bon de Livraison
+    Route::get('/purchase-orders/{purchaseOrder}/bon-de-livraison', [BonDeLivraisonController::class, 'index']);
+    Route::post('/purchase-orders/{purchaseOrder}/bon-de-livraison', [BonDeLivraisonController::class, 'store']);
+    Route::get('/bon-de-livraison/{bonDeLivraison}', [BonDeLivraisonController::class, 'show']);
+    Route::post('/bon-de-livraison/{bonDeLivraison}/confirm', [BonDeLivraisonController::class, 'confirm']);
 
     // Suppliers
     Route::get('/suppliers/all-with-items', [SupplierController::class, 'allWithItems']);

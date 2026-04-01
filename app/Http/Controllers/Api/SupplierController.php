@@ -56,7 +56,7 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier): JsonResponse
     {
         $hasActivePOs = $supplier->purchaseOrders()
-            ->whereIn('status', ['pending_initial_approval', 'initial_approved', 'pending_final_approval', 'final_approved', 'ordered'])
+            ->whereIn('status', ['pending_initial_approval', 'initial_approved', 'pending_final_approval', 'final_approved', 'partially_delivered', 'delivered'])
             ->exists();
 
         if ($hasActivePOs) {

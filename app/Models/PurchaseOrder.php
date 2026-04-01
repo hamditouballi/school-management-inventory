@@ -51,6 +51,11 @@ class PurchaseOrder extends Model
         return $this->hasMany(PropositionGroup::class)->with('propositions.supplier', 'item')->orderBy('proposition_order');
     }
 
+    public function bonDeLivraisons()
+    {
+        return $this->hasMany(BonDeLivraison::class);
+    }
+
     public function getTotalAmountAttribute(): float
     {
         return $this->purchaseOrderItems->sum(function ($item) {

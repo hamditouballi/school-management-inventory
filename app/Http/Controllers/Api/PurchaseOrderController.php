@@ -34,6 +34,7 @@ class PurchaseOrderController extends Controller
             'propositions.item',
             'propositionGroups.propositions.supplier',
             'propositionGroups.item',
+            'bonDeLivraisons',
         ])->orderBy('date', 'desc')->get());
     }
 
@@ -206,7 +207,7 @@ class PurchaseOrderController extends Controller
     public function updateStatus(Request $request, PurchaseOrder $purchaseOrder)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending_initial_approval,initial_approved,pending_final_approval,final_approved,rejected,ordered',
+            'status' => 'required|in:pending_initial_approval,initial_approved,pending_final_approval,final_approved,rejected,partially_delivered,delivered',
         ]);
 
         $purchaseOrder->update(['status' => $validated['status']]);
@@ -588,7 +589,7 @@ class PurchaseOrderController extends Controller
 
     public function markDelivered(Request $request, PurchaseOrder $purchaseOrder)
     {
-        if ($purchaseOrder->status !== 'final_approved' && $purchaseOrder->status !== 'ordered') {
+        if ($purchaseOrder->status !== 'final_approved' && $purchaseOrder->status !== 'partially_delivered') {
             return response()->json(['error' => 'Order must be approved before marking as delivered'], 400);
         }
 
