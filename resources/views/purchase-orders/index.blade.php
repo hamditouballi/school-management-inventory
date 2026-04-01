@@ -261,8 +261,18 @@
                 filteredPOs = allPOs.filter(po => {
                     let match = true;
 
-                    if (search && !po.supplier.toLowerCase().includes(search)) {
-                        match = false;
+                    if (search) {
+                        let supplierText = '';
+                        if (po.status === 'split' && po.children) {
+                            supplierText = po.children.map(c => c.supplier?.name).filter(Boolean).join(' ');
+                        } else if (po.proposition_groups && po.proposition_groups.length > 0) {
+                            supplierText = [...new Set(po.proposition_groups.flatMap(g => g.propositions?.map(p => p.supplier?.name)).flat().filter(Boolean))].join(' ');
+                        } else {
+                            supplierText = po.supplier?.name || po.supplier || '';
+                        }
+                        if (!supplierText.toLowerCase().includes(search)) {
+                            match = false;
+                        }
                     }
 
                     if (status && po.status !== status) {
@@ -333,7 +343,23 @@
                     </div>`}
                 </td>
                 <td class="px-6 py-4 font-semibold">${isSplit ? '-' : '#' + po.id}</td>
-                <td class="px-6 py-4">${isSplit ? `<span class="text-blue-600 font-semibold whitespace-nowrap">${childCount} {{ __('messages.sub_orders') }}</span>` : (po.supplier || '-')}</td>
+                <td class="px-6 py-4">${isSplit ? `<span class="text-blue-600 font-semibold whitespace-nowrap">${childCount} {{ __('messages.sub_orders') }}</span>` : (() => {
+    if (po.status === 'split' && po.children) {
+        const supplierNames = po.children.map(c => c.supplier?.name).filter(Boolean);
+        if (supplierNames.length <= 2) {
+            return supplierNames.join(', ') || '-';
+        }
+        return supplierNames.slice(0, 2).join(', ') + ` +${supplierNames.length - 2}`;
+    }
+    if (po.proposition_groups && po.proposition_groups.length > 0) {
+        const suppliers = [...new Set(po.proposition_groups.flatMap(g => g.propositions?.map(p => p.supplier?.name)).flat().filter(Boolean))];
+        if (suppliers.length <= 2) {
+            return suppliers.length ? suppliers.join(', ') : (po.supplier?.name || po.supplier || '-');
+        }
+        return suppliers.slice(0, 2).join(', ') + ` +${suppliers.length - 2}`;
+    }
+    return po.supplier?.name || po.supplier || '-';
+})()}</td>
                 <td class="px-6 py-4"><button onclick="viewPODetails(${po.id})" class="text-green-600 hover:underline">${isSplit ? '-' : poItems.length + ' {{ __('messages.items') }} (' + totalQty.toFixed(2) + ' {{ __('messages.unit') }})'}</button></td>
                 <td class="px-6 py-4 font-semibold text-lg">{{ __('messages.currency') }} ${isSplit ? totalOfChildren.toFixed(2) : parseFloat(po.total_amount).toFixed(2)}</td>
                 <td class="px-6 py-4"><span class="px-2 py-1 text-xs rounded ${statusColors[po.status]} whitespace-nowrap">${isSplit ? childCount + ' {{ __('messages.sub_orders') }}' : (statusTranslations[po.status] || po.status)}</span></td>
@@ -783,8 +809,18 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             <span class="px-2 py-1 text-xs rounded ${statusColors[po.status]}">${statusTranslations[po.status] || po.status}</span>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">{{ __('messages.supplier') }}</p>
-                            <p class="font-semibold">${po.supplier || '{{ __('messages.pending_selection') }}'}</p>
+                            <p class="text-sm text-gray-500">{{ __('messages.suppliers') }}</p>
+                            <p class="font-semibold">${(() => {
+                                if (po.status === 'split' && po.children) {
+                                    const supplierNames = po.children.map(c => c.supplier?.name).filter(Boolean);
+                                    return supplierNames.length ? supplierNames.join(', ') : '{{ __('messages.pending_selection') }}';
+                                }
+                                if (po.proposition_groups && po.proposition_groups.length > 0) {
+                                    const suppliers = [...new Set(po.proposition_groups.flatMap(g => g.propositions?.map(p => p.supplier?.name)).flat().filter(Boolean))];
+                                    return suppliers.length ? suppliers.join(', ') : (po.supplier?.name || po.supplier || '{{ __('messages.pending_selection') }}');
+                                }
+                                return po.supplier?.name || po.supplier || '{{ __('messages.pending_selection') }}';
+                            })()}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.date') }}</p>

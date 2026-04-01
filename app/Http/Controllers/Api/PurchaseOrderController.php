@@ -397,6 +397,9 @@ class PurchaseOrderController extends Controller
         try {
             $purchaseOrder->purchaseOrderItems()->delete();
 
+            $totalAmount = 0;
+            $firstSupplierId = null;
+
             foreach ($allPropositions as $proposition) {
                 PurchaseOrderItem::create([
                     'purchase_order_id' => $purchaseOrder->id,
@@ -408,9 +411,19 @@ class PurchaseOrderController extends Controller
                     'approved_by' => $request->user()->id,
                     'proposition_id' => $proposition->id,
                 ]);
+
+                $totalAmount += $proposition->quantity * $proposition->unit_price;
+
+                if (! $firstSupplierId) {
+                    $firstSupplierId = $proposition->supplier_id;
+                }
             }
 
-            $purchaseOrder->update(['status' => 'final_approved']);
+            $purchaseOrder->update([
+                'status' => 'final_approved',
+                'supplier_id' => $firstSupplierId,
+                'total_amount' => $totalAmount,
+            ]);
 
             DB::commit();
 

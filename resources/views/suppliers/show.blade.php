@@ -79,7 +79,7 @@
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">ID</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.items') }}</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.amount') }}</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">{{ __('messages.total') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.status') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.date') }}</th>
                     </tr>
@@ -253,19 +253,43 @@
                 return;
             }
 
-            tbody.innerHTML = orders.map(order => `
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-2">#${order.id}</td>
-                    <td class="px-4 py-2">${order.purchase_order_items?.length || 0}</td>
-                    <td class="px-4 py-2 font-semibold">{{ __('messages.currency') }} ${parseFloat(order.total_amount || 0).toFixed(2)}</td>
-                    <td class="px-4 py-2">
-                        <span class="px-2 py-1 text-xs rounded ${statusColors[order.status] || 'bg-gray-100'} text-white">
-                            ${statusTranslations[order.status] || order.status}
-                        </span>
-                    </td>
-                    <td class="px-4 py-2">${new Date(order.date).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = orders.map(order => {
+                const itemsHtml = (order.items || []).map(item => `
+                    <div class="flex items-center gap-3 py-2 ${item !== order.items[0] ? 'border-t' : ''}">
+                        ${item.item_image 
+                            ? `<img src="/storage/${item.item_image}" class="w-10 h-10 object-cover rounded">` 
+                            : `<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs text-gray-400">N/A</div>`
+                        }
+                        <div class="flex-1">
+                            <div class="font-medium text-sm">${escapeHtml(item.item_name || 'Unknown')}</div>
+                            <div class="text-xs text-gray-500">
+                                {{ __('messages.qty') }}: ${parseFloat(item.quantity || 0).toFixed(2)} × 
+                                <span class="text-green-600 font-semibold">${formatCurrency(parseFloat(item.unit_price || 0))}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-3 align-top">#${order.id}</td>
+                        <td class="px-4 py-3 align-top">
+                            <div class="max-w-xs">${itemsHtml}</div>
+                        </td>
+                        <td class="px-4 py-3 align-top text-right font-semibold">{{ __('messages.currency') }} ${parseFloat(order.total_amount || 0).toFixed(2)}</td>
+                        <td class="px-4 py-3 align-top">
+                            <span class="px-2 py-1 text-xs rounded text-white" style="background-color: ${statusColors[order.status] || '#6b7280'}">
+                                ${statusTranslations[order.status] || order.status}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 align-top text-sm text-gray-600">${new Date(order.date).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function formatCurrency(amount) {
+            return '{{ __('messages.currency') }} ' + amount.toFixed(2);
         }
 
         function escapeHtml(text) {

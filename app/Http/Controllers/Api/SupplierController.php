@@ -145,9 +145,11 @@ class SupplierController extends Controller
         $itemsCount = $supplier->supplierItems()->count();
         $avgOrderValue = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
-        $monthlySpending = $supplier->purchaseOrders()
-            ->select(DB::raw("$dateField as month"), DB::raw('SUM(total_amount) as total'))
-            ->where('date', '>=', now()->subMonths(12))
+        $monthlySpending = DB::table('purchase_orders as po')
+            ->join('purchase_order_items as poi', 'po.id', '=', 'poi.purchase_order_id')
+            ->select(DB::raw("$dateField as month"), DB::raw('SUM(poi.final_quantity * poi.unit_price) as total'))
+            ->where('po.supplier_id', $supplier->id)
+            ->where('po.date', '>=', now()->subMonths(12))
             ->groupBy('month')
             ->orderBy('month')
             ->get();
@@ -163,7 +165,24 @@ class SupplierController extends Controller
             ->with(['purchaseOrderItems.item'])
             ->orderBy('date', 'desc')
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function ($order) {
+                return [
+                    'id' => $order->id,
+                    'status' => $order->status,
+                    'date' => $order->date,
+                    'total_amount' => $order->total_amount,
+                    'items' => $order->purchaseOrderItems->map(function ($poItem) {
+                        return [
+                            'item_id' => $poItem->item_id,
+                            'item_name' => $poItem->item?->designation,
+                            'item_image' => $poItem->item?->image_path,
+                            'quantity' => $poItem->final_quantity,
+                            'unit_price' => $poItem->unit_price,
+                        ];
+                    }),
+                ];
+            });
 
         $supplierItemIds = $supplier->supplierItems()->pluck('item_id');
 
