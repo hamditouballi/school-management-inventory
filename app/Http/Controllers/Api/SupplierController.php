@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Supplier;
-use App\Models\SupplierItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -136,27 +135,44 @@ class SupplierController extends Controller
 
     public function stats(Supplier $supplier): JsonResponse
     {
-        $dateField = DB::getDriverName() === 'sqlite'
-            ? "strftime('%Y-%m', date)"
-            : "DATE_FORMAT(date, '%Y-%m')";
+        $poItems = $supplier->purchaseOrderItems()
+            ->with(['purchaseOrder', 'purchaseOrder.purchaseOrderItems'])
+            ->get();
 
-        $poItems = $supplier->purchaseOrderItems()->with('purchaseOrder')->get();
-        $pos = $poItems->pluck('purchaseOrder')->unique('id')->filter();
+        $pos = $poItems->pluck('purchaseOrder')->filter()->unique('id')->values();
+
+        $totalOrdered = $poItems->sum(fn ($item) => floatval($item->init_quantity) * floatval($item->unit_price));
+
+        $supplierItemIds = $poItems->pluck('id');
+
+        $totalDelivered = \App\Models\BonDeLivraisonItem::whereIn('purchase_order_item_id', $supplierItemIds)
+            ->whereHas('bonDeLivraison', fn ($q) => $q->where('status', 'confirmed'))
+            ->get()
+            ->sum(fn ($item) => floatval($item->quantity) * floatval($item->purchaseOrderItem->unit_price ?? 0));
+
+        $pending = $totalOrdered - $totalDelivered;
+
+        $deliveriesCount = \App\Models\BonDeLivraison::whereIn('id', function ($query) use ($supplierItemIds) {
+            $query->select('bon_de_livraison_id')
+                ->from('bon_de_livraison_items')
+                ->whereIn('purchase_order_item_id', $supplierItemIds);
+        })
+            ->where('status', 'confirmed')
+            ->count();
 
         $totalOrders = $pos->count();
+        $itemsCount = $poItems->count();
+        $avgOrderValue = $totalOrders > 0 ? $pos->avg('total_amount') : 0;
 
-        // Calculate actual spent for this supplier (sum of their items only)
-        $totalSpent = $poItems->sum(fn ($item) => floatval($item->final_quantity) * floatval($item->unit_price));
-
-        $itemsCount = $supplier->supplierItems()->count();
-        $avgOrderValue = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
-
-        // Monthly spending - sum of this supplier's items only
-        $monthlySpending = DB::table('purchase_order_items as poi')
+        // Monthly spending - use delivered amounts
+        $monthlySpending = DB::table('bon_de_livraison_items as bli')
+            ->join('bon_de_livraisons as bl', 'bl.id', '=', 'bli.bon_de_livraison_id')
+            ->join('purchase_order_items as poi', 'poi.id', '=', 'bli.purchase_order_item_id')
             ->join('propositions as p', 'p.id', '=', 'poi.proposition_id')
             ->join('purchase_orders as po', 'po.id', '=', 'poi.purchase_order_id')
-            ->select(DB::raw("$dateField as month"), DB::raw('SUM(poi.final_quantity * poi.unit_price) as total'))
+            ->select(DB::raw("DATE_FORMAT(po.date, '%Y-%m') as month"), DB::raw('SUM(bli.quantity * poi.unit_price) as total'))
             ->where('p.supplier_id', $supplier->id)
+            ->where('bl.status', 'confirmed')
             ->where('po.date', '>=', now()->subMonths(12))
             ->groupBy('month')
             ->orderBy('month')
@@ -168,37 +184,45 @@ class SupplierController extends Controller
 
         // Recent orders with supplier-specific amounts
         $recentOrders = collect($pos->take(5)->values())->map(function ($order) use ($supplier) {
-            // Calculate amount for this supplier only
-            $supplierAmount = $order->purchaseOrderItems()
+            // Get supplier's items from this PO
+            $supplierItems = $order->purchaseOrderItems()
                 ->whereHas('proposition', fn ($q) => $q->where('supplier_id', $supplier->id))
+                ->get();
+
+            // Calculate ordered amount
+            $orderedAmount = $supplierItems->sum(fn ($item) => floatval($item->init_quantity) * floatval($item->unit_price));
+
+            // Calculate delivered amount from confirmed bon de livraisons
+            $supplierItemIds = $supplierItems->pluck('id');
+            $deliveredAmount = \App\Models\BonDeLivraisonItem::whereIn('purchase_order_item_id', $supplierItemIds)
+                ->whereHas('bonDeLivraison', fn ($q) => $q->where('status', 'confirmed'))
                 ->get()
-                ->sum(fn ($item) => floatval($item->final_quantity) * floatval($item->unit_price));
+                ->sum(fn ($item) => floatval($item->quantity) * floatval($item->purchaseOrderItem->unit_price ?? 0));
 
             return [
                 'id' => $order->id,
                 'status' => $order->status,
                 'date' => $order->date,
                 'total_amount' => $order->total_amount,
-                'supplier_amount' => $supplierAmount,
-                'items' => $order->purchaseOrderItems()
-                    ->whereHas('proposition', fn ($q) => $q->where('supplier_id', $supplier->id))
-                    ->with('item')
-                    ->get()
-                    ->map(function ($poItem) {
-                        return [
-                            'item_id' => $poItem->item_id,
-                            'item_name' => $poItem->item?->designation,
-                            'item_image' => $poItem->item?->image_path,
-                            'quantity' => $poItem->final_quantity,
-                            'unit_price' => $poItem->unit_price,
-                        ];
-                    }),
+                'supplier_ordered' => $orderedAmount,
+                'supplier_delivered' => $deliveredAmount,
+                'supplier_pending' => $orderedAmount - $deliveredAmount,
+                'items' => $supplierItems->map(function ($poItem) {
+                    return [
+                        'item_id' => $poItem->item_id,
+                        'item_name' => $poItem->item?->designation,
+                        'item_image' => $poItem->item?->image_path,
+                        'init_quantity' => $poItem->init_quantity,
+                        'final_quantity' => $poItem->final_quantity,
+                        'unit_price' => $poItem->unit_price,
+                    ];
+                }),
             ];
         });
 
         $supplierItemIds = $supplier->supplierItems()->pluck('item_id');
 
-        $priceComparison = SupplierItem::whereIn('item_id', $supplierItemIds)
+        $priceComparison = \App\Models\SupplierItem::whereIn('item_id', $supplierItemIds)
             ->where('supplier_id', '!=', $supplier->id)
             ->with(['item', 'supplier'])
             ->get()
@@ -227,7 +251,10 @@ class SupplierController extends Controller
         return response()->json([
             'supplier' => $supplier,
             'total_orders' => $totalOrders,
-            'total_spent' => $totalSpent,
+            'total_ordered' => $totalOrdered,
+            'total_delivered' => $totalDelivered,
+            'total_pending' => $pending,
+            'deliveries_count' => $deliveriesCount,
             'items_count' => $itemsCount,
             'avg_order_value' => $avgOrderValue,
             'monthly_spending' => $monthlySpending,

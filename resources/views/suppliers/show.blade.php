@@ -21,22 +21,30 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+            <div class="text-sm text-gray-500">{{ __('messages.total_ordered') }}</div>
+            <div class="text-2xl font-bold text-blue-600" id="totalOrdered">-</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
+            <div class="text-sm text-gray-500">{{ __('messages.total_delivered') }}</div>
+            <div class="text-2xl font-bold text-green-600" id="totalDelivered">-</div>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500">
+            <div class="text-sm text-gray-500">{{ __('messages.total_pending') }}</div>
+            <div class="text-2xl font-bold text-yellow-600" id="totalPending">-</div>
+        </div>
         <div class="bg-white rounded-lg shadow p-4">
             <div class="text-sm text-gray-500">{{ __('messages.total_orders') }}</div>
             <div class="text-2xl font-bold text-gray-800" id="totalOrders">-</div>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">{{ __('messages.total_spent') }}</div>
-            <div class="text-2xl font-bold text-green-600" id="totalSpent">-</div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+            <div class="text-sm text-gray-500">{{ __('messages.deliveries_count') }}</div>
+            <div class="text-2xl font-bold text-purple-600" id="deliveriesCount">-</div>
         </div>
         <div class="bg-white rounded-lg shadow p-4">
             <div class="text-sm text-gray-500">{{ __('messages.items_available') }}</div>
-            <div class="text-2xl font-bold text-blue-600" id="itemsCount">-</div>
-        </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <div class="text-sm text-gray-500">{{ __('messages.avg_order_value') }}</div>
-            <div class="text-2xl font-bold text-purple-600" id="avgOrderValue">-</div>
+            <div class="text-2xl font-bold text-indigo-600" id="itemsCount">-</div>
         </div>
     </div>
 
@@ -79,7 +87,9 @@
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">ID</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.items') }}</th>
-                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">{{ __('messages.total') }}</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">{{ __('messages.total_ordered') }}</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">{{ __('messages.total_delivered') }}</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500">{{ __('messages.total_pending') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.status') }}</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.date') }}</th>
                     </tr>
@@ -108,7 +118,8 @@
             pending_final_approval: '#f97316',
             final_approved: '#22c55e',
             rejected: '#ef4444',
-            ordered: '#a855f7'
+            partially_delivered: '#a855f7',
+            delivered: '#14b8a6'
         };
 
         const statusTranslations = {
@@ -117,7 +128,8 @@
             pending_final_approval: '{{ __('messages.pending_final_approval') }}',
             final_approved: '{{ __('messages.final_approved') }}',
             rejected: '{{ __('messages.rejected') }}',
-            ordered: '{{ __('messages.ordered') }}'
+            partially_delivered: '{{ __('messages.partially_delivered') }}',
+            delivered: '{{ __('messages.delivered') }}'
         };
 
         document.addEventListener('DOMContentLoaded', loadStats);
@@ -137,9 +149,11 @@
         function renderStats(data) {
             document.getElementById('supplierName').textContent = data.supplier.name;
             document.getElementById('totalOrders').textContent = data.total_orders;
-            document.getElementById('totalSpent').textContent = '{{ __('messages.currency') }} ' + parseFloat(data.total_spent || 0).toFixed(2);
+            document.getElementById('totalOrdered').textContent = '{{ __('messages.currency') }} ' + parseFloat(data.total_ordered || 0).toFixed(2);
+            document.getElementById('totalDelivered').textContent = '{{ __('messages.currency') }} ' + parseFloat(data.total_delivered || 0).toFixed(2);
+            document.getElementById('totalPending').textContent = '{{ __('messages.currency') }} ' + parseFloat(data.total_pending || 0).toFixed(2);
+            document.getElementById('deliveriesCount').textContent = data.deliveries_count || 0;
             document.getElementById('itemsCount').textContent = data.items_count;
-            document.getElementById('avgOrderValue').textContent = '{{ __('messages.currency') }} ' + parseFloat(data.avg_order_value || 0).toFixed(2);
 
             renderMonthlyChart(data.monthly_spending);
             renderStatusChart(data.status_breakdown);
@@ -159,7 +173,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '{{ __('messages.total_spent') }}',
+                        label: '{{ __('messages.total_delivered') }}',
                         data: values,
                         backgroundColor: '#22c55e',
                         borderRadius: 4
@@ -225,31 +239,36 @@
                 return;
             }
 
-            container.innerHTML = notCheapest.map(item => `
-                <div class="border-b py-3">
-                    <div class="font-medium">${escapeHtml(item.item)}</div>
-                    <div class="flex justify-between text-sm mt-1">
-                        <span class="text-gray-500">{{ __('messages.your_price') }}:</span>
-                        <span class="font-semibold">{{ __('messages.currency') }} ${parseFloat(item.your_price || 0).toFixed(2)}</span>
-                    </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-500">{{ __('messages.best_price') }}:</span>
-                        <span class="text-green-600 font-semibold">{{ __('messages.currency') }} ${parseFloat(item.best_price || 0).toFixed(2)}</span>
+            container.innerHTML = '<div class="grid gap-3">' + notCheapest.map(item => `
+                <div class="border rounded-lg p-3 bg-gray-50">
+                    <div class="font-semibold text-gray-800 mb-2">${escapeHtml(item.item)}</div>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                            <span class="text-gray-500 text-xs">{{ __('messages.your_price') }}</span>
+                            <div class="font-medium">{{ __('messages.currency') }} ${parseFloat(item.your_price || 0).toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <span class="text-gray-500 text-xs">{{ __('messages.best_price') }}</span>
+                            <div class="font-medium text-green-600">{{ __('messages.currency') }} ${parseFloat(item.best_price || 0).toFixed(2)}</div>
+                        </div>
                     </div>
                     ${item.other_prices.length > 0 ? `
-                        <div class="mt-2 text-xs text-gray-500">
-                            ${item.other_prices.map(op => `${escapeHtml(op.supplier)}: {{ __('messages.currency') }} ${parseFloat(op.price || 0).toFixed(2)}`).join(', ')}
+                        <div class="mt-2 pt-2 border-t text-xs text-gray-500">
+                            <span class="font-medium">Other suppliers:</span>
+                            <div class="flex flex-wrap gap-2 mt-1">
+                                ${item.other_prices.map(op => `<span class="bg-white px-2 py-1 rounded border">${escapeHtml(op.supplier)}: {{ __('messages.currency') }} ${parseFloat(op.price || 0).toFixed(2)}</span>`).join('')}
+                            </div>
                         </div>
                     ` : ''}
                 </div>
-            `).join('');
+            `).join('') + '</div>';
         }
 
         function renderRecentOrders(orders) {
             const tbody = document.getElementById('recentOrdersBody');
             
             if (!orders || orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-4 text-center text-gray-500">{{ __('messages.no_orders_yet') }}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-4 text-center text-gray-500">{{ __('messages.no_orders_yet') }}</td></tr>`;
                 return;
             }
 
@@ -263,7 +282,7 @@
                         <div class="flex-1">
                             <div class="font-medium text-sm">${escapeHtml(item.item_name || 'Unknown')}</div>
                             <div class="text-xs text-gray-500">
-                                {{ __('messages.qty') }}: ${parseFloat(item.quantity || 0).toFixed(2)} × 
+                                {{ __('messages.qty') }}: ${parseFloat(item.init_quantity || 0).toFixed(2)} → ${parseFloat(item.final_quantity || 0).toFixed(2)} × 
                                 <span class="text-green-600 font-semibold">${formatCurrency(parseFloat(item.unit_price || 0))}</span>
                             </div>
                         </div>
@@ -276,7 +295,9 @@
                         <td class="px-4 py-3 align-top">
                             <div class="max-w-xs">${itemsHtml}</div>
                         </td>
-                        <td class="px-4 py-3 align-top text-right font-semibold">{{ __('messages.currency') }} ${parseFloat(order.total_amount || 0).toFixed(2)}</td>
+                        <td class="px-4 py-3 align-top text-right font-semibold text-blue-600">{{ __('messages.currency') }} ${parseFloat(order.supplier_ordered || 0).toFixed(2)}</td>
+                        <td class="px-4 py-3 align-top text-right font-semibold text-green-600">{{ __('messages.currency') }} ${parseFloat(order.supplier_delivered || 0).toFixed(2)}</td>
+                        <td class="px-4 py-3 align-top text-right font-semibold text-yellow-600">{{ __('messages.currency') }} ${parseFloat(order.supplier_pending || 0).toFixed(2)}</td>
                         <td class="px-4 py-3 align-top">
                             <span class="px-2 py-1 text-xs rounded text-white" style="background-color: ${statusColors[order.status] || '#6b7280'}">
                                 ${statusTranslations[order.status] || order.status}
