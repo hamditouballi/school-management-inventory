@@ -194,16 +194,24 @@
             const supplier = allSuppliers.find(s => s.id === id);
             if (!supplier) return;
 
-            document.getElementById('supplierModalTitle').textContent = '{{ __('messages.edit') }}';
-            document.getElementById('supplierId').value = supplier.id;
-            document.getElementById('supplierName').value = supplier.name;
-            document.getElementById('supplierContact').value = supplier.contact_info || '';
-            document.getElementById('supplierNotes').value = supplier.notes || '';
-            document.getElementById('supplierModal').classList.remove('hidden');
+            const modal = document.getElementById('supplierModal');
+            const title = document.getElementById('supplierModalTitle');
+            const idInput = document.getElementById('supplierId');
+            const nameInput = document.getElementById('supplierName');
+            const contactInput = document.getElementById('supplierContact');
+            const notesInput = document.getElementById('supplierNotes');
+
+            if (title) title.textContent = '{{ __('messages.edit') }}';
+            if (idInput) idInput.value = supplier.id;
+            if (nameInput) nameInput.value = supplier.name;
+            if (contactInput) contactInput.value = supplier.contact_info || '';
+            if (notesInput) notesInput.value = supplier.notes || '';
+            if (modal) modal.classList.remove('hidden');
         }
 
         function closeSupplierModal() {
-            document.getElementById('supplierModal').classList.add('hidden');
+            const modal = document.getElementById('supplierModal');
+            if (modal) modal.classList.add('hidden');
         }
 
         async function saveSupplier(event) {
@@ -266,18 +274,29 @@
         function viewSupplierItems(id) {
             currentSupplierId = id;
             const supplier = allSuppliers.find(s => s.id === id);
-            if (!supplier) return;
+            if (!supplier) {
+                console.error('Supplier not found:', id);
+                return;
+            }
 
-            document.getElementById('supplierItemsName').textContent = supplier.name;
+            const nameEl = document.getElementById('supplierItemsName');
+            if (nameEl) {
+                nameEl.textContent = supplier.name;
+            }
             
             const items = supplier.supplierItems || supplier.supplier_items || [];
             renderSupplierItems(items);
             
             const itemSelect = document.getElementById('newSupplierItem');
-            itemSelect.innerHTML = '<option value="">{{ __('messages.select_item') }}...</option>' + 
-                allItems.map(item => `<option value="${item.id}">${escapeHtml(item.designation)}</option>`).join('');
+            if (itemSelect) {
+                itemSelect.innerHTML = '<option value="">{{ __('messages.select_item') }}...</option>' + 
+                    allItems.map(item => `<option value="${item.id}">${escapeHtml(item.designation)}</option>`).join('');
+            }
             
-            document.getElementById('supplierItemsModal').classList.remove('hidden');
+            const modal = document.getElementById('supplierItemsModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
         }
 
         function renderSupplierItems(items) {
