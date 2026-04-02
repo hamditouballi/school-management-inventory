@@ -144,10 +144,14 @@ class SupplierController extends Controller
         $pos = $poItems->pluck('purchaseOrder')->unique('id')->filter();
 
         $totalOrders = $pos->count();
-        $totalSpent = $pos->sum('total_amount');
+
+        // Calculate actual spent for this supplier (sum of their items only)
+        $totalSpent = $poItems->sum(fn ($item) => floatval($item->final_quantity) * floatval($item->unit_price));
+
         $itemsCount = $supplier->supplierItems()->count();
         $avgOrderValue = $totalOrders > 0 ? $totalSpent / $totalOrders : 0;
 
+        // Monthly spending - sum of this supplier's items only
         $monthlySpending = DB::table('purchase_order_items as poi')
             ->join('propositions as p', 'p.id', '=', 'poi.proposition_id')
             ->join('purchase_orders as po', 'po.id', '=', 'poi.purchase_order_id')
@@ -162,21 +166,33 @@ class SupplierController extends Controller
             ->map(fn ($group) => $group->count())
             ->toArray();
 
-        $recentOrders = collect($pos->take(5)->values())->map(function ($order) {
+        // Recent orders with supplier-specific amounts
+        $recentOrders = collect($pos->take(5)->values())->map(function ($order) use ($supplier) {
+            // Calculate amount for this supplier only
+            $supplierAmount = $order->purchaseOrderItems()
+                ->whereHas('proposition', fn ($q) => $q->where('supplier_id', $supplier->id))
+                ->get()
+                ->sum(fn ($item) => floatval($item->final_quantity) * floatval($item->unit_price));
+
             return [
                 'id' => $order->id,
                 'status' => $order->status,
                 'date' => $order->date,
                 'total_amount' => $order->total_amount,
-                'items' => $order->purchaseOrderItems()->with('item')->get()->map(function ($poItem) {
-                    return [
-                        'item_id' => $poItem->item_id,
-                        'item_name' => $poItem->item?->designation,
-                        'item_image' => $poItem->item?->image_path,
-                        'quantity' => $poItem->final_quantity,
-                        'unit_price' => $poItem->unit_price,
-                    ];
-                }),
+                'supplier_amount' => $supplierAmount,
+                'items' => $order->purchaseOrderItems()
+                    ->whereHas('proposition', fn ($q) => $q->where('supplier_id', $supplier->id))
+                    ->with('item')
+                    ->get()
+                    ->map(function ($poItem) {
+                        return [
+                            'item_id' => $poItem->item_id,
+                            'item_name' => $poItem->item?->designation,
+                            'item_image' => $poItem->item?->image_path,
+                            'quantity' => $poItem->final_quantity,
+                            'unit_price' => $poItem->unit_price,
+                        ];
+                    }),
             ];
         });
 

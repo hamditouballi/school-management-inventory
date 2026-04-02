@@ -399,7 +399,6 @@ class PurchaseOrderController extends Controller
             $purchaseOrder->purchaseOrderItems()->delete();
 
             $totalAmount = 0;
-            $firstSupplierId = null;
 
             foreach ($allPropositions as $proposition) {
                 PurchaseOrderItem::create([
@@ -414,15 +413,10 @@ class PurchaseOrderController extends Controller
                 ]);
 
                 $totalAmount += $proposition->quantity * $proposition->unit_price;
-
-                if (! $firstSupplierId) {
-                    $firstSupplierId = $proposition->supplier_id;
-                }
             }
 
             $purchaseOrder->update([
                 'status' => 'final_approved',
-                'supplier_id' => $firstSupplierId,
                 'total_amount' => $totalAmount,
             ]);
 
@@ -546,7 +540,6 @@ class PurchaseOrderController extends Controller
                     'id_responsible_stock' => $purchaseOrder->id_responsible_stock,
                     'status' => 'pending_initial_approval',
                     'parent_id' => $purchaseOrder->id,
-                    'supplier_id' => $supplier->id,
                     'supplier' => $supplier->name,
                 ]);
 
