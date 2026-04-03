@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BonDeLivraison;
 use App\Models\BonDeLivraisonItem;
 use App\Models\PurchaseOrder;
+use App\Models\PurchaseOrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -51,15 +52,29 @@ class BonDeLivraisonController extends Controller
                 'file_path' => $filePath,
                 'notes' => $validated['notes'] ?? null,
                 'id_responsible_stock' => $request->user()->id,
-                'status' => 'pending',
+                'status' => 'confirmed',
             ]);
 
             foreach ($validated['items'] as $itemData) {
+                $poItem = PurchaseOrderItem::find($itemData['purchase_order_item_id']);
+
                 BonDeLivraisonItem::create([
                     'bon_de_livraison_id' => $bonDeLivraison->id,
                     'purchase_order_item_id' => $itemData['purchase_order_item_id'],
                     'quantity' => $itemData['quantity'],
                 ]);
+
+                $currentFinal = floatval($poItem->final_quantity ?? 0);
+                $newFinal = $currentFinal + floatval($itemData['quantity']);
+                $poItem->update(['final_quantity' => $newFinal]);
+
+                if ($poItem->item) {
+                    $poItem->item->increment('quantity', floatval($itemData['quantity']));
+                }
+            }
+
+            if ($purchaseOrder->status === 'final_approved') {
+                $purchaseOrder->update(['status' => 'partially_delivered']);
             }
 
             DB::commit();

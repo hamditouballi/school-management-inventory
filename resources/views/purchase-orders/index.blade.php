@@ -24,34 +24,14 @@
     padding: 8px 12px;
 }
 .ts-dropdown .ts-option img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
+    width: 24px;
+    height: 24px;
     border-radius: 4px;
-    border: 1px solid #e5e7eb;
-    flex-shrink: 0;
+    margin-right: 8px;
 }
-.ts-dropdown .ts-option .item-info {
-    flex: 1;
-    min-width: 0;
-}
-.ts-dropdown .ts-option .item-name {
-    font-weight: 500;
-    color: #1f2937;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.ts-dropdown .ts-option .item-meta {
-    font-size: 11px;
-    color: #6b7280;
-    display: flex;
-    gap: 8px;
-}
-.ts-dropdown .ts-option .item-price {
-    font-weight: 600;
-    color: #059669;
-    flex-shrink: 0;
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 </style>
 @endpush
@@ -218,8 +198,8 @@
             </div>
 
             <div id="uploadDeliverySection" class="border-t pt-4">
-                <h4 class="font-semibold mb-3">{{ __('messages.upload_bon_de_livraison') }}</h4>
-                <form id="uploadDeliveryNoteForm" onsubmit="uploadDeliveryNote(event)">
+                <h4 class="font-semibold mb-3">{{ __('messages.add_bon_de_livraison') }}</h4>
+                <form id="uploadDeliveryNoteForm" onsubmit="saveDeliveryNoteDraft(event)">
                     <input type="hidden" id="deliveryPoId" value="">
                     <div class="space-y-4">
                         <div>
@@ -228,7 +208,8 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.upload_file') }}</label>
-                            <input type="file" id="deliveryFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded">
+                            <input type="file" id="deliveryFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleFileSelect(this)">
+                            <p id="filePreviewName" class="text-sm text-gray-500 mt-1"></p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.notes') }}</label>
@@ -242,7 +223,7 @@
                     <div class="flex justify-end gap-2 mt-4">
                         <button type="button" onclick="closeDeliveryNotesModal()"
                             class="px-4 py-2 border rounded hover:bg-gray-100">{{ __('messages.cancel') }}</button>
-                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">{{ __('messages.save') }}</button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">{{ __('messages.save_draft') }}</button>
                     </div>
                 </form>
             </div>
@@ -426,13 +407,13 @@
                               <button dusk="initial-approve-btn-${po.id}" onclick="approveInitial(${po.id})" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.approve_initial') }}</button>
                               <button dusk="initial-reject-btn-${po.id}" onclick="rejectInitial(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.reject') }}</button>
                           ` : isHRManager && po.status === 'pending_final_approval' ? `
-                              <button dusk="select-supplier-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.select_final') }}</button>
+                              <button dusk="select-supplier-btn-${po.id}" onclick="viewPODetails(${po.id}, 'selection')" class="text-blue-600 hover:text-blue-800">{{ __('messages.select_final') }}</button>
                            ` : isStockManager && po.status === 'pending_initial_approval' ? `
                               <button onclick="editPO(${po.id})" class="text-blue-600 hover:text-blue-800 mr-2">{{ __('messages.edit') }}</button>
                               <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                           ` : isStockManager && po.status === 'initial_approved' ? `
-                              <button dusk="add-proposals-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800 mr-2">{{ __('messages.add_proposals') }}</button>
+                              <button dusk="add-proposals-btn-${po.id}" onclick="viewPODetails(${po.id}, 'proposals')" class="text-orange-600 hover:text-orange-800 mr-2">{{ __('messages.add_proposals') }}</button>
                               <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                            ` : isStockManager && po.status === 'pending_final_approval' ? `
@@ -441,14 +422,14 @@
                            ` : isStockManager && po.status === 'rejected' ? `
                               <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
-                           ` : isStockManager && po.status === 'final_approved' ? `
-                               <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.bon_de_livraison') }}</button>
+                            ` : isStockManager && po.status === 'final_approved' ? `
+                               <button onclick="viewPODetails(${po.id}, 'delivery')" class="text-purple-600 hover:text-purple-800">{{ __('messages.bon_de_livraison') }}</button>
                              ` : isStockManager && po.status === 'partially_delivered' ? `
-                               <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800 mr-2">{{ __('messages.view_delivery_notes') }}</button>
+                               <button onclick="viewPODetails(${po.id}, 'delivery')" class="text-purple-600 hover:text-purple-800 mr-2">{{ __('messages.view_delivery_notes') }}</button>
                                <button onclick="markDelivered(${po.id})" class="text-green-600 hover:text-green-800">{{ __('messages.mark_delivered') }}</button>
                              ` : isStockManager && po.status === 'delivered' ? `
-                               <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.view_delivery_notes') }}</button>
-                           ` : isStockManager && isSplit ? `
+                               <button onclick="viewPODetails(${po.id}, 'delivery')" class="text-purple-600 hover:text-purple-800">{{ __('messages.view_delivery_notes') }}</button>
+                            ` : isStockManager && isSplit ? `
                               <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.view') }}</button>
                           ` : `
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
@@ -832,7 +813,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     });
             }
 
-            function viewPODetails(id) {
+            function viewPODetails(id, defaultTab = 'details') {
                 document.getElementById('detailsModal').classList.remove('hidden');
                 document.getElementById('detailsContent').innerHTML = '<p class="text-gray-500 p-4">{{ __('messages.loading') }}</p>';
 
@@ -1046,7 +1027,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             </div>
                         </div>
                     </div>
-                ` : po.status === 'final_approved' ? `
+                ` : (po.status === 'final_approved' || po.status === 'delivered') ? `
                     <div class="pt-4">
                         <div class="flex items-center justify-between mb-4">
                             <h4 class="font-semibold text-green-600">{{ __('messages.selected_proposals') }}</h4>
@@ -1083,6 +1064,13 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             </table>
                         </div>
                     </div>
+                ` : isStockManager && po.status === 'initial_approved' ? `
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        <p>{{ __('messages.submit_proposals_first') }}</p>
+                    </div>
                 ` : `
                     <div class="text-center py-8 text-gray-500">
                         <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1096,7 +1084,12 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 <!-- Tab: Delivery Notes -->
                 <div id="po-tab-delivery" class="po-tab-content hidden">
                     <p class="text-sm text-gray-500 mb-4">{{ __('messages.delivery_notes') }}</p>
-                    <p class="text-xs text-gray-400">{{ __('messages.loading') }}...</p>
+                    <div id="deliveryNotesListInTab"></div>
+                    <div id="uploadDeliverySectionInTab" class="border-t pt-4 mt-4">
+                        <button onclick="openDeliveryNotesModal()" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 text-sm">
+                            + {{ __('messages.upload_bon_de_livraison') }}
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Action Buttons (always visible at bottom) -->
@@ -1114,6 +1107,11 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             `;
                         document.getElementById('detailsContent').innerHTML = html;
                         window.currentPOPoId = po.id;
+                        
+                        // Switch to default tab if not 'details'
+                        if (defaultTab !== 'details') {
+                            switchPOTab(defaultTab);
+                        }
                         
                         currentPOItems = po.purchase_order_items || [];
                         existingProposals = po.propositions || [];
@@ -1166,13 +1164,22 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 }
                 if (tabName === 'delivery' && window.currentPOPoId) {
                     loadPODeliveryNotes(window.currentPOPoId);
+                    const po = allPOs.find(p => p.id === window.currentPOPoId);
+                    const uploadSection = document.getElementById('uploadDeliverySectionInTab');
+                    if (uploadSection) {
+                        if (po && po.status === 'delivered') {
+                            uploadSection.classList.add('hidden');
+                        } else {
+                            uploadSection.classList.remove('hidden');
+                        }
+                    }
                 }
             }
 
             window.currentPOPoId = null;
 
             function loadPODeliveryNotes(poId) {
-                const container = document.getElementById('po-tab-delivery');
+                const container = document.getElementById('deliveryNotesListInTab');
                 if (!container) return;
                 
                 container.innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}...</p>';
@@ -1197,18 +1204,13 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                         <div class="flex justify-between items-start mb-2">
                                             <div>
                                                 <p class="font-semibold">{{ __('messages.delivery_date') }}: ${new Date(note.date).toLocaleDateString()}</p>
-                                                <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="${note.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'}">${note.status === 'confirmed' ? '{{ __('messages.confirmed') }}' : '{{ __('messages.pending_confirmation') }}'}</span></p>
+                                                <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
                                             </div>
                                             ${note.file_path ? (isImage ? `
                                                 <img src="/storage/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${note.file_path}')">
                                             ` : `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
                                         </div>
                                         <div class="mt-2">${itemsHtml}</div>
-                                        ${note.status === 'pending' && note.id_responsible_stock === {{ auth()->id() }} ? `
-                                            <div class="mt-3 flex gap-2">
-                                                <button onclick="confirmDeliveryNote(${note.id}); loadPODeliveryNotes(${poId});" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm_delivery') }}</button>
-                                            </div>
-                                        ` : ''}
                                     </div>
                                 `;
                             }).join('');
@@ -1217,6 +1219,16 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     .catch(err => {
                         container.innerHTML = '<p class="text-red-500">{{ __('messages.error_loading') }}</p>';
                     });
+            }
+
+            function openDeliveryNotesModal() {
+                const poId = window.currentPOPoId;
+                if (!poId) return;
+                
+                document.getElementById('deliveryNotesModal').classList.remove('hidden');
+                document.getElementById('deliveryPoId').value = poId;
+                loadDeliveryNotes(poId);
+                loadPOItemsForDelivery(poId);
             }
 
             function closeDetailsModal() {
@@ -1980,20 +1992,123 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             }
 
             function closeDeliveryNotesModal() {
+                const poId = document.getElementById('deliveryPoId').value;
+                const drafts = getDraftNotes(poId);
+                
+                if (drafts.length > 0) {
+                    const count = drafts.length;
+                    const message = count === 1 
+                        ? '{{ __('messages.one_draft_pending') }}'
+                        : '{{ __('messages.multiple_drafts_pending') }}'.replace(':count', count);
+                    Notification.warning(message);
+                    return;
+                }
+                
                 document.getElementById('deliveryNotesModal').classList.add('hidden');
                 document.getElementById('deliveryNotesList').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}</p>';
                 document.getElementById('deliveryItemsList').innerHTML = '';
+                document.getElementById('uploadDeliveryNoteForm').reset();
+                document.getElementById('filePreviewName').textContent = '';
+                selectedFileData = null;
             }
 
-            function loadDeliveryNotes(poId) {
-                fetch(`/api/purchase-orders/${poId}/bon-de-livraison`, { headers })
+            // LocalStorage helpers for draft delivery notes
+            function getDraftNotesKey(poId) {
+                return `bon_de_livraison_drafts_${poId}`;
+            }
+
+            function getDraftNotes(poId) {
+                const data = localStorage.getItem(getDraftNotesKey(poId));
+                return data ? JSON.parse(data) : [];
+            }
+
+            function saveDraftNotes(poId, notes) {
+                localStorage.setItem(getDraftNotesKey(poId), JSON.stringify(notes));
+            }
+
+            function getDraftNote(poId, localId) {
+                const drafts = getDraftNotes(poId);
+                return drafts.find(d => d.localId === localId);
+            }
+
+            function addDraftNote(poId, note) {
+                const notes = getDraftNotes(poId);
+                note.localId = 'local_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                notes.push(note);
+                saveDraftNotes(poId, notes);
+                renderDeliveryNotes(poId);
+            }
+
+            function updateDraftNote(poId, localId, updates) {
+                const notes = getDraftNotes(poId);
+                const index = notes.findIndex(d => d.localId === localId);
+                if (index !== -1) {
+                    notes[index] = { ...notes[index], ...updates };
+                    saveDraftNotes(poId, notes);
+                }
+            }
+
+            function deleteDraftNote(poId, localId) {
+                const notes = getDraftNotes(poId).filter(d => d.localId !== localId);
+                saveDraftNotes(poId, notes);
+                renderDeliveryNotes(poId);
+            }
+
+            function dataURItoBlob(dataURI) {
+                const byteString = atob(dataURI.split(',')[1]);
+                const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new Blob([ab], { type: mimeString });
+            }
+
+            function renderDeliveryNotes(poId) {
+                const list = document.getElementById('deliveryNotesList');
+                const drafts = getDraftNotes(poId);
+                
+                console.log('[renderDeliveryNotes] Starting render. Drafts:', drafts.length, 'confirmingDraftId:', window.confirmingDraftId);
+                
+                // Sync state: if confirmingDraftId exists but draft was deleted, clear it
+                if (window.confirmingDraftId && !drafts.find(d => d.localId === window.confirmingDraftId)) {
+                    console.log('[renderDeliveryNotes] Clearing confirmingDraftId - draft not found');
+                    window.confirmingDraftId = null;
+                }
+                
+                // First fetch PO details to get item names
+                fetch(`/api/purchase-orders/${poId}`, { headers })
+                    .then(res => {
+                        if (!res.ok) throw new Error('Failed to fetch PO');
+                        return res.json();
+                    })
+                    .then(po => {
+                        const itemsMap = {};
+                        (po.purchase_order_items || []).forEach(item => {
+                            itemsMap[item.id] = {
+                                name: item.item?.designation || item.new_item_name || 'Item',
+                                unit: item.item?.unit || ''
+                            };
+                        });
+                        window.itemsMapForDelivery = itemsMap;
+                        
+                        // Now fetch confirmed notes
+                        return fetch(`/api/purchase-orders/${poId}/bon-de-livraison`, { headers });
+                    })
                     .then(res => res.json())
-                    .then(notes => {
-                        const list = document.getElementById('deliveryNotesList');
-                        if (!notes || notes.length === 0) {
+                    .then(confirmedNotes => {
+                        // Render confirmed notes (final - no edit/delete)
+                        let html = '';
+                        
+                        if ((!confirmedNotes || confirmedNotes.length === 0) && drafts.length === 0) {
                             list.innerHTML = '<p class="text-gray-500">{{ __('messages.no_delivery_notes') }}</p>';
-                        } else {
-                            list.innerHTML = notes.map(note => {
+                            return;
+                        }
+                        
+                        // Render confirmed notes
+                        if (confirmedNotes && confirmedNotes.length > 0) {
+                            html += confirmedNotes.map(note => {
                                 const items = note.items || [];
                                 const itemsHtml = items.map(item => `
                                     <div class="flex justify-between text-sm">
@@ -2003,27 +2118,240 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                 `).join('');
                                 const isImage = note.file_path && (note.file_path.endsWith('.jpg') || note.file_path.endsWith('.jpeg') || note.file_path.endsWith('.png') || note.file_path.endsWith('.gif') || note.file_path.endsWith('.webp'));
                                 return `
-                                    <div class="border rounded p-4">
+                                    <div class="border rounded p-4 mb-3">
                                         <div class="flex justify-between items-start mb-2">
                                             <div>
                                                 <p class="font-semibold">{{ __('messages.delivery_date') }}: ${new Date(note.date).toLocaleDateString()}</p>
-                                                <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="${note.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'}">${note.status === 'confirmed' ? '{{ __('messages.confirmed') }}' : '{{ __('messages.pending_confirmation') }}'}</span></p>
+                                                <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
                                             </div>
                                             ${note.file_path ? (isImage ? `
                                                 <img src="/storage/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${note.file_path}')">
                                             ` : `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
                                         </div>
                                         <div class="mt-2">${itemsHtml}</div>
-                                        ${note.status === 'pending' && note.id_responsible_stock === {{ auth()->id() }} ? `
-                                            <div class="mt-3 flex gap-2">
-                                                <button onclick="confirmDeliveryNote(${note.id})" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm_delivery') }}</button>
-                                            </div>
-                                        ` : ''}
                                     </div>
                                 `;
                             }).join('');
                         }
+                        
+                        // Render drafts with item names
+                        if (drafts.length > 0) {
+                            html += drafts.map(draft => renderDraftNote(draft, poId)).join('');
+                        }
+                        
+                        list.innerHTML = html;
+                    })
+                    .catch(err => {
+                        console.error('Error loading delivery notes:', err);
+                        list.innerHTML = '<p class="text-red-500">{{ __('messages.error_loading') }}</p>';
                     });
+            }
+
+            function renderDraftNote(draft, poId) {
+                const itemsMap = window.itemsMapForDelivery || {};
+                const itemsHtml = (draft.items || []).map(item => {
+                    const itemInfo = itemsMap[item.purchase_order_item_id] || {};
+                    return `
+                        <div class="flex justify-between text-sm">
+                            <span>${itemInfo.name || 'Item #' + item.purchase_order_item_id}</span>
+                            <span>${parseFloat(item.quantity || 0).toFixed(2)} ${itemInfo.unit || ''}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                let filePreview = '';
+                if (draft.fileData) {
+                    const isImage = draft.fileData.startsWith('data:image');
+                    if (isImage) {
+                        filePreview = `<img src="${draft.fileData}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${draft.fileData}')">`;
+                    } else {
+                        filePreview = `<span class="text-blue-600 text-sm">File attached</span>`;
+                    }
+                }
+                
+                return `
+                    <div class="border-2 border-yellow-400 rounded p-4 mb-3 bg-yellow-50" id="draft-${draft.localId}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="font-semibold">{{ __('messages.delivery_date') }}: <span id="draft-date-${draft.localId}">${new Date(draft.date).toLocaleDateString()}</span></p>
+                                <p class="text-sm text-yellow-700 font-medium">{{ __('messages.draft') }}</p>
+                            </div>
+                            ${filePreview}
+                        </div>
+                        <div class="mt-2" id="draft-items-${draft.localId}">${itemsHtml}</div>
+                        <div class="mt-3 flex gap-2" id="draft-actions-${draft.localId}">
+                            ${window.confirmingDraftId === draft.localId ? `
+                                <button disabled class="px-3 py-1 bg-blue-300 text-white rounded text-sm cursor-not-allowed">{{ __('messages.edit') }}</button>
+                                <button disabled class="px-3 py-1 bg-green-300 text-white rounded text-sm cursor-not-allowed flex items-center gap-2">
+                                    <svg class="h-4 w-4 text-white" style="animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>{{ __('messages.confirming') }}...</span>
+                                </button>
+                                <button disabled class="px-3 py-1 bg-red-300 text-white rounded text-sm cursor-not-allowed">{{ __('messages.delete') }}</button>
+                            ` : `
+                                <button onclick="editDraftDeliveryNote('${draft.localId}', '${poId}')" class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">{{ __('messages.edit') }}</button>
+                                <button onclick="confirmDraftDeliveryNote('${draft.localId}')" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm_delivery') }}</button>
+                                <button onclick="deleteDraftDeliveryNote('${draft.localId}', '${poId}')" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">{{ __('messages.delete') }}</button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }
+
+            function editDraftDeliveryNote(localId, poId) {
+                const draft = getDraftNote(poId, localId);
+                if (!draft) return;
+                
+                const card = document.getElementById(`draft-${localId}`);
+                if (!card) return;
+                
+                // Load item names
+                fetch(`/api/purchase-orders/${poId}`, { headers })
+                    .then(res => res.json())
+                    .then(po => {
+                        const itemsMap = {};
+                        (po.purchase_order_items || []).forEach(item => {
+                            itemsMap[item.id] = item.item?.designation || item.new_item_name || 'Item';
+                        });
+                        
+                        card.innerHTML = `
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">{{ __('messages.delivery_date') }}</label>
+                                    <input type="date" id="edit-date-${localId}" value="${draft.date}" class="w-full px-3 py-2 border rounded">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">{{ __('messages.notes') }}</label>
+                                    <textarea id="edit-notes-${localId}" class="w-full px-3 py-2 border rounded">${draft.notes || ''}</textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">{{ __('messages.items') }}</label>
+                                    <div id="edit-items-${localId}" class="space-y-2">
+                                        ${(draft.items || []).map((item, idx) => `
+                                            <div class="flex items-center gap-2">
+                                                <input type="number" value="${item.quantity}" min="0.01" step="0.01" 
+                                                    class="w-24 px-2 py-1 border rounded edit-qty" data-item-idx="${idx}">
+                                                <span class="text-sm text-gray-600">${itemsMap[item.purchase_order_item_id] || 'Item'}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="saveDraftDeliveryNote('${localId}', '${poId}')" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.save') }}</button>
+                                    <button onclick="renderDeliveryNotes('${poId}')" class="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700">{{ __('messages.cancel') }}</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+            }
+
+            function saveDraftDeliveryNote(localId, poId) {
+                const date = document.getElementById(`edit-date-${localId}`).value;
+                const notes = document.getElementById(`edit-notes-${localId}`).value;
+                const qtyInputs = document.querySelectorAll(`#edit-items-${localId} .edit-qty`);
+                
+                const draft = getDraftNote(poId, localId);
+                if (!draft) return;
+                
+                const items = [];
+                qtyInputs.forEach((input, idx) => {
+                    items.push({
+                        ...draft.items[idx],
+                        quantity: parseFloat(input.value)
+                    });
+                });
+                
+                updateDraftNote(poId, localId, { date, notes, items });
+                renderDeliveryNotes(poId);
+                Notification.success('Draft updated');
+            }
+
+            function deleteDraftDeliveryNote(localId, poId) {
+                if (!confirm('{{ __('messages.confirm_delete_delivery_note') }}')) {
+                    return;
+                }
+                deleteDraftNote(poId, localId);
+                renderDeliveryNotes(poId);
+                loadPOItemsForDelivery(poId);
+                Notification.success('Draft deleted');
+            }
+
+            function confirmDraftDeliveryNote(localId) {
+                const poId = document.getElementById('deliveryPoId').value;
+                const draft = getDraftNote(poId, localId);
+                if (!draft) {
+                    Notification.error('Draft not found');
+                    return;
+                }
+                
+                if (!token) {
+                    Notification.error('Authentication required');
+                    return;
+                }
+                
+                // Set loading state
+                console.log('[confirmDraftDeliveryNote] Starting confirm for draft:', localId);
+                window.confirmingDraftId = localId;
+                renderDeliveryNotes(poId);
+                
+                const formData = new FormData();
+                formData.append('date', draft.date);
+                formData.append('notes', draft.notes || '');
+                formData.append('items', JSON.stringify(draft.items));
+                
+                if (draft.fileData) {
+                    const blob = dataURItoBlob(draft.fileData);
+                    const ext = draft.fileData.includes('png') ? '.png' : draft.fileData.includes('jpg') || draft.fileData.includes('jpeg') ? '.jpg' : '.pdf';
+                    formData.append('file', blob, 'delivery_note' + ext);
+                }
+                
+                const url = `/api/purchase-orders/${poId}/bon-de-livraison`;
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async res => {
+                    const contentType = res.headers.get('content-type');
+                    let data;
+                    if (contentType && contentType.includes('application/json')) {
+                        data = await res.json();
+                    } else {
+                        const text = await res.text();
+                        throw new Error(`Server error (${res.status}): ${text.substring(0, 100)}`);
+                    }
+                    if (!res.ok) {
+                        throw new Error(data.error || `HTTP ${res.status}`);
+                    }
+                    return data;
+                })
+                .then(() => {
+                    console.log('[confirmDraftDeliveryNote] Success! Clearing state');
+                    window.confirmingDraftId = null;
+                    deleteDraftNote(poId, localId);
+                    renderDeliveryNotes(poId);
+                    loadPOItemsForDelivery(poId);
+                    loadPODeliveryNotes(poId);
+                    loadPOs();
+                    Notification.success('{{ __('messages.delivery_note_confirmed') }}');
+                })
+                .catch(err => {
+                    console.log('[confirmDraftDeliveryNote] Error! Clearing state');
+                    window.confirmingDraftId = null;
+                    renderDeliveryNotes(poId);
+                    console.error('Confirm error:', err);
+                    Notification.error('{{ __('messages.error_confirming_delivery') }}: ' + err.message);
+                });
+            }
+
+            function loadDeliveryNotes(poId) {
+                renderDeliveryNotes(poId);
             }
 
             function loadPOItemsForDelivery(poId) {
@@ -2129,8 +2457,6 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     }
                 });
                 
-                console.log('Items to submit:', items);
-                
                 if (items.length === 0) {
                     Notification.error('Please add at least one item quantity');
                     return;
@@ -2139,7 +2465,6 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 formData.append('items', JSON.stringify(items));
 
                 const url = `/api/purchase-orders/${poId}/bon-de-livraison`;
-                console.log('Fetching:', url, 'with token:', token.substring(0, 20) + '...');
                 
                 fetch(url, {
                     method: 'POST',
@@ -2150,7 +2475,6 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     body: formData
                 })
                 .then(res => {
-                    console.log('Response:', res.status, res.headers.get('content-type'));
                     if (res.status === 401) {
                         Notification.error('Authentication failed - please login again');
                         window.location.href = '/login';
@@ -2158,41 +2482,91 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     }
                     if (!res.ok) {
                         return res.text().then(text => {
-                            console.error('Server error:', text);
                             throw new Error('Server error: ' + res.status);
                         });
                     }
                     return res.json();
                 })
                 .then(data => {
-                    console.log('Success:', data);
                     document.getElementById('uploadDeliveryNoteForm').reset();
-                    loadDeliveryNotes(poId);
+                    document.getElementById('filePreviewName').textContent = '';
+                    renderDeliveryNotes(poId);
                     loadPOItemsForDelivery(poId);
+                    loadPODeliveryNotes(poId);
                     Notification.success('{{ __('messages.delivery_note_uploaded') }}');
                 })
                 .catch(err => {
-                    console.error('Upload error:', err);
                     Notification.error('{{ __('messages.error_uploading_delivery_note') }}: ' + err.message);
                 });
             }
 
-            function confirmDeliveryNote(noteId) {
-                fetch(`/api/bon-de-livraison/${noteId}/confirm`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
+            let selectedFileData = null;
+
+            function handleFileSelect(input) {
+                const file = input.files[0];
+                if (!file) {
+                    selectedFileData = null;
+                    document.getElementById('filePreviewName').textContent = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedFileData = e.target.result;
+                    document.getElementById('filePreviewName').textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function saveDeliveryNoteDraft(e) {
+                e.preventDefault();
+                
+                const poId = document.getElementById('deliveryPoId').value;
+                
+                if (!poId) {
+                    Notification.error('Missing PO ID');
+                    return;
+                }
+                
+                const date = document.getElementById('deliveryDate').value;
+                const notes = document.getElementById('deliveryNotes').value;
+
+                const items = [];
+                document.querySelectorAll('#deliveryItemsList .border').forEach(row => {
+                    const itemIdInput = row.querySelector('input[name="delivery_item_id"]');
+                    const qtyInput = row.querySelector('input[name="delivery_qty"]');
+                    if (itemIdInput && qtyInput) {
+                        const itemId = itemIdInput.value;
+                        const qty = qtyInput.value;
+                        if (itemId && qty && parseFloat(qty) > 0) {
+                            items.push({
+                                purchase_order_item_id: parseInt(itemId),
+                                quantity: parseFloat(qty)
+                            });
+                        }
                     }
-                })
-                .then(res => res.json())
-                .then(() => {
-                    loadPOs();
-                    const poId = document.getElementById('deliveryPoId').value;
-                    loadDeliveryNotes(poId);
-                    Notification.success('{{ __('messages.delivery_confirmed') }}');
-                })
-                .catch(err => Notification.error('{{ __('messages.error_confirming_delivery') }}: ' + err.message));
+                });
+                
+                if (items.length === 0) {
+                    Notification.error('Please add at least one item quantity');
+                    return;
+                }
+                
+                const draft = {
+                    date: date,
+                    notes: notes,
+                    items: items,
+                    fileData: selectedFileData
+                };
+                
+                addDraftNote(poId, draft);
+                
+                // Reset form
+                document.getElementById('uploadDeliveryNoteForm').reset();
+                document.getElementById('filePreviewName').textContent = '';
+                selectedFileData = null;
+                
+                Notification.success('{{ __('messages.draft_saved') }}');
             }
 
             function updateInitialApproval(id, action) {
