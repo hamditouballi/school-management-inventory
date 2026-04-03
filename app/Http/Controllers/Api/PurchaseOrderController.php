@@ -497,48 +497,20 @@ class PurchaseOrderController extends Controller
         return response()->json($suppliers);
     }
 
-    public function markDelivered(Request $request, PurchaseOrder $purchaseOrder)
+    public function markDelivered(PurchaseOrder $purchaseOrder)
     {
-        if ($purchaseOrder->status !== 'final_approved' && $purchaseOrder->status !== 'partially_delivered') {
-            return response()->json(['error' => 'Order must be approved before marking as delivered'], 400);
+        if ($purchaseOrder->status !== 'partially_delivered') {
+            return response()->json(['error' => 'Order must be partially delivered first'], 400);
         }
 
-        $validated = $request->validate([
-            'items' => 'required|array|min:1',
-            'items.*.purchase_order_item_id' => 'required|exists:purchase_order_items,id',
-            'items.*.final_quantity' => 'required|numeric|min:0',
-        ]);
+        $purchaseOrder->update(['status' => 'delivered']);
 
-        DB::beginTransaction();
-        try {
-            foreach ($validated['items'] as $itemData) {
-                $poItem = PurchaseOrderItem::find($itemData['purchase_order_item_id']);
-                $poItem->update([
-                    'final_quantity' => $itemData['final_quantity'],
-                    'state' => 'delivered',
-                ]);
-
-                $item = $poItem->item;
-                if ($item) {
-                    $item->increment('quantity', $itemData['final_quantity']);
-                }
-            }
-
-            $purchaseOrder->update(['status' => 'ordered']);
-
-            DB::commit();
-
-            return response()->json($purchaseOrder->load('purchaseOrderItems.item'));
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return response()->json($purchaseOrder);
     }
 
     public function destroy(PurchaseOrder $purchaseOrder)
     {
-        $nonDeletableStatuses = ['ordered', 'partially_delivered', 'delivered'];
+        $nonDeletableStatuses = ['partially_delivered', 'delivered'];
         if (in_array($purchaseOrder->status, $nonDeletableStatuses)) {
             return response()->json(['error' => 'Cannot delete delivered orders'], 400);
         }

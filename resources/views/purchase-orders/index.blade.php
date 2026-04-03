@@ -92,7 +92,6 @@
                     <option value="pending_final_approval">{{ __('messages.pending_final_approval') }}</option>
                     <option value="final_approved">{{ __('messages.final_approved') }}</option>
                     <option value="rejected">{{ __('messages.rejected') }}</option>
-                    <option value="ordered">{{ __('messages.ordered') }}</option>
                 </select>
             </div>
             <div>
@@ -444,10 +443,10 @@
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                            ` : isStockManager && po.status === 'final_approved' ? `
                                <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.bon_de_livraison') }}</button>
-                           ` : isStockManager && po.status === 'partially_delivered' ? `
+                             ` : isStockManager && po.status === 'partially_delivered' ? `
                                <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800 mr-2">{{ __('messages.view_delivery_notes') }}</button>
                                <button onclick="markDelivered(${po.id})" class="text-green-600 hover:text-green-800">{{ __('messages.mark_delivered') }}</button>
-                           ` : isStockManager && po.status === 'delivered' ? `
+                             ` : isStockManager && po.status === 'delivered' ? `
                                <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.view_delivery_notes') }}</button>
                            ` : isStockManager && isSplit ? `
                               <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.view') }}</button>
@@ -871,6 +870,16 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         };
 
                         const html = `
+                <!-- Tab Navigation -->
+                <div class="flex border-b mb-4 -mt-2">
+                    <button onclick="switchPOTab('details')" class="po-tab-btn px-4 py-2 border-b-2 border-blue-500 text-blue-600 font-semibold text-sm" data-tab="details">{{ __('messages.details') }}</button>
+                    <button onclick="switchPOTab('proposals')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="proposals">{{ __('messages.supplier_proposals') }}</button>
+                    <button onclick="switchPOTab('selection')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="selection">{{ __('messages.hr_selection') }}</button>
+                    <button onclick="switchPOTab('delivery')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="delivery">{{ __('messages.delivery_notes') }}</button>
+                </div>
+
+                <!-- Tab: Details -->
+                <div id="po-tab-details" class="po-tab-content">
                 <div class="border-b pb-4 mb-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -915,7 +924,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                                                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.item') }}</th>
                                                                                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.supplier') }}</th>
                                                                                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.unit') }}</th>
-                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.ordered') }}</th>
+                                                                                                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.qty_ordered') }}</th>
                                                                                                                     ${(po.status === 'partially_delivered' || po.status === 'delivered') ? `
                                                                                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.delivered') }}</th>
                                                                                                                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.remaining') }}</th>
@@ -952,10 +961,13 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                     </tr>
                                 `}).join('')}
                                                                                                             </tbody>
-                                                                                                        </table>
-                                                                                                    `}
+                                                                                                     </table>
+                                                                                                     `}
+                </div>
                 </div>
 
+                <!-- Tab: Supplier Proposals -->
+                <div id="po-tab-proposals" class="po-tab-content hidden">
                 <!-- Add Proposals Form for Stock Manager (Grouped Structure) -->
                 ${isStockManager && po.status === 'initial_approved' ? `
                     <div class="mt-6 pt-4 border-t">
@@ -973,8 +985,42 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             </div>
                         </form>
                     </div>
+                ` : (po.proposition_groups && po.proposition_groups.length > 0) ? `
+                    <div class="mt-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-green-600">{{ __('messages.submitted_proposals') }}</h4>
+                            <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded">${po.proposition_groups.length} {{ __('messages.proposal_groups') }}</span>
+                        </div>
+                        ${(() => {
+                            const selectedPropIds = (po.purchase_order_items || [])
+                                .map(item => item.proposition_id)
+                                .filter(Boolean);
+                            return po.proposition_groups.map(group => {
+                                const hasSelected = (group.propositions || []).some(prop => selectedPropIds.includes(prop.id));
+                                return `
+                                    <div class="border rounded-lg p-4 mb-3 ${hasSelected ? 'border-green-400 bg-green-50 border-l-4 border-l-green-500' : 'bg-gray-50'}">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="font-medium">{{ __('messages.item') }}: ${group.item?.designation || group.new_item_name || 'Item'}</span>
+                                            ${hasSelected ? '<span class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded font-medium">✓ {{ __('messages.selected') }}</span>' : ''}
+                                        </div>
+                                        <div class="space-y-2">
+                                            ${(group.propositions || []).map(prop => `
+                                                <div class="flex justify-between items-center p-2 bg-white rounded border">
+                                                    <span class="text-sm">${prop.supplier?.name || 'N/A'}</span>
+                                                    <span class="text-sm">${parseFloat(prop.quantity || 0).toFixed(2)} × {{ __('messages.currency') }} ${parseFloat(prop.unit_price || 0).toFixed(2)}</span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                        })()}
+                    </div>
                 ` : ''}
+                </div>
 
+                <!-- Tab: HR Selection -->
+                <div id="po-tab-selection" class="po-tab-content hidden">
                 <!-- Proposals for HR Manager to Select -->
                 ${isHRManager && po.status === 'pending_final_approval' ? `
                     <div class="mt-6 pt-4 border-t">
@@ -1000,22 +1046,74 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             </div>
                         </div>
                     </div>
-                ` : ''}
+                ` : po.status === 'final_approved' ? `
+                    <div class="pt-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-semibold text-green-600">{{ __('messages.selected_proposals') }}</h4>
+                            <span class="text-xs px-2 py-1 bg-green-100 text-green-800 rounded">{{ __('messages.ready_for_procurement') }}</span>
+                        </div>
+                        <div class="border rounded-lg overflow-hidden">
+                            <table class="min-w-full">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.item') }}</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.supplier') }}</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.quantity') }}</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.unit_price') }}</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.total') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    ${poItems.map(item => {
+                                        const supplier = item.proposition?.supplier?.name || '-';
+                                        const qty = parseFloat(item.proposition?.quantity || item.init_quantity || 0);
+                                        const price = parseFloat(item.proposition?.unit_price || item.unit_price || 0);
+                                        const total = qty * price;
+                                        return `
+                                            <tr>
+                                                <td class="px-4 py-2 text-sm">${item.item?.designation || item.new_item_name || 'Item'}</td>
+                                                <td class="px-4 py-2 text-sm">${supplier}</td>
+                                                <td class="px-4 py-2 text-sm">${qty.toFixed(2)}</td>
+                                                <td class="px-4 py-2 text-sm">{{ __('messages.currency') }} ${price.toFixed(2)}</td>
+                                                <td class="px-4 py-2 text-sm font-semibold">{{ __('messages.currency') }} ${total.toFixed(2)}</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                ` : `
+                    <div class="text-center py-8 text-gray-500">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p>{{ __('messages.waiting_for_hr_selection') }}</p>
+                    </div>
+                `}
+                </div>
 
-                <!-- Action Buttons -->
+                <!-- Tab: Delivery Notes -->
+                <div id="po-tab-delivery" class="po-tab-content hidden">
+                    <p class="text-sm text-gray-500 mb-4">{{ __('messages.delivery_notes') }}</p>
+                    <p class="text-xs text-gray-400">{{ __('messages.loading') }}...</p>
+                </div>
+
+                <!-- Action Buttons (always visible at bottom) -->
                 ${isHRManager && po.status === 'pending_initial_approval' ? `
                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
                         <button onclick="approveInitial(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.approve_initial') }}</button>
                         <button onclick="rejectInitial(${po.id})" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">{{ __('messages.reject') }}</button>
                     </div>
                 ` : ''}
-                ${isStockManager && po.status === 'final_approved' ? `
+                ${isStockManager && po.status === 'partially_delivered' ? `
                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
-                        <button onclick="markAsOrdered(${po.id})" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">{{ __('messages.mark_ordered') }}</button>
+                        <button onclick="markDelivered(${po.id})" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.mark_delivered') }}</button>
                     </div>
                 ` : ''}
             `;
                         document.getElementById('detailsContent').innerHTML = html;
+                        window.currentPOPoId = po.id;
                         
                         currentPOItems = po.purchase_order_items || [];
                         existingProposals = po.propositions || [];
@@ -1045,6 +1143,79 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         console.error('Error loading PO:', err);
                         document.getElementById('detailsContent').innerHTML =
                             '<p class="text-red-500 p-4">{{ __('messages.error_loading_details') }}: ' + err.message + '</p>';
+                    });
+            }
+
+            let currentPOTab = 'details';
+
+            function switchPOTab(tabName) {
+                currentPOTab = tabName;
+                document.querySelectorAll('.po-tab-content').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.po-tab-btn').forEach(el => {
+                    if (el.dataset.tab === tabName) {
+                        el.classList.add('border-blue-500', 'text-blue-600');
+                        el.classList.remove('border-transparent', 'text-gray-500');
+                    } else {
+                        el.classList.remove('border-blue-500', 'text-blue-600');
+                        el.classList.add('border-transparent', 'text-gray-500');
+                    }
+                });
+                const tabContent = document.getElementById('po-tab-' + tabName);
+                if (tabContent) {
+                    tabContent.classList.remove('hidden');
+                }
+                if (tabName === 'delivery' && window.currentPOPoId) {
+                    loadPODeliveryNotes(window.currentPOPoId);
+                }
+            }
+
+            window.currentPOPoId = null;
+
+            function loadPODeliveryNotes(poId) {
+                const container = document.getElementById('po-tab-delivery');
+                if (!container) return;
+                
+                container.innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}...</p>';
+                
+                fetch(`/api/purchase-orders/${poId}/bon-de-livraison`, { headers })
+                    .then(res => res.json())
+                    .then(notes => {
+                        if (!notes || notes.length === 0) {
+                            container.innerHTML = '<p class="text-gray-500">{{ __('messages.no_delivery_notes') }}</p>';
+                        } else {
+                            container.innerHTML = notes.map(note => {
+                                const items = note.items || [];
+                                const itemsHtml = items.map(item => `
+                                    <div class="flex justify-between text-sm">
+                                        <span>${item.purchase_order_item?.item?.designation || '-'}</span>
+                                        <span>${parseFloat(item.quantity || 0).toFixed(2)} ${item.purchase_order_item?.item?.unit || ''}</span>
+                                    </div>
+                                `).join('');
+                                const isImage = note.file_path && (note.file_path.endsWith('.jpg') || note.file_path.endsWith('.jpeg') || note.file_path.endsWith('.png') || note.file_path.endsWith('.gif') || note.file_path.endsWith('.webp'));
+                                return `
+                                    <div class="border rounded p-4 mb-3">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <p class="font-semibold">{{ __('messages.delivery_date') }}: ${new Date(note.date).toLocaleDateString()}</p>
+                                                <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="${note.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'}">${note.status === 'confirmed' ? '{{ __('messages.confirmed') }}' : '{{ __('messages.pending_confirmation') }}'}</span></p>
+                                            </div>
+                                            ${note.file_path ? (isImage ? `
+                                                <img src="/storage/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${note.file_path}')">
+                                            ` : `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
+                                        </div>
+                                        <div class="mt-2">${itemsHtml}</div>
+                                        ${note.status === 'pending' && note.id_responsible_stock === {{ auth()->id() }} ? `
+                                            <div class="mt-3 flex gap-2">
+                                                <button onclick="confirmDeliveryNote(${note.id}); loadPODeliveryNotes(${poId});" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm_delivery') }}</button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }).join('');
+                        }
+                    })
+                    .catch(err => {
+                        container.innerHTML = '<p class="text-red-500">{{ __('messages.error_loading') }}</p>';
                     });
             }
 
@@ -1769,28 +1940,28 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 }
             }
 
-            function markOrderedSimple(id) {
-                fetch(`/api/purchase-orders/${id}/status`, {
-                        method: 'PUT',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            status: 'partially_delivered'
-                        })
-                    })
-                    .then(res => {
-                        if (!res.ok) {
-                            throw new Error('Failed to mark as partially delivered');
-                        }
-                        return res.json();
-                    })
-                    .then(() => {
-                        loadPOs();
-                        Notification.success('{{ __('messages.po_marked_ordered') }}');
-                    })
-                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}: ' + err.message));
+            function markDelivered(id) {
+                if (!confirm('{{ __('messages.confirm_mark_delivered_warning') }}')) {
+                    return;
+                }
+                fetch(`/api/purchase-orders/${id}/mark-delivered`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Failed to mark as delivered');
+                    }
+                    return res.json();
+                })
+                .then(() => {
+                    loadPOs();
+                    Notification.success('{{ __('messages.po_marked_delivered') }}');
+                })
+                .catch(err => Notification.error('{{ __('messages.error_updating_status') }}: ' + err.message));
             }
 
             function showDeliveryNotesModal(poId) {
@@ -1830,6 +2001,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                         <span>${parseFloat(item.quantity || 0).toFixed(2)} ${item.purchase_order_item?.item?.unit || ''}</span>
                                     </div>
                                 `).join('');
+                                const isImage = note.file_path && (note.file_path.endsWith('.jpg') || note.file_path.endsWith('.jpeg') || note.file_path.endsWith('.png') || note.file_path.endsWith('.gif') || note.file_path.endsWith('.webp'));
                                 return `
                                     <div class="border rounded p-4">
                                         <div class="flex justify-between items-start mb-2">
@@ -1837,7 +2009,9 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                 <p class="font-semibold">{{ __('messages.delivery_date') }}: ${new Date(note.date).toLocaleDateString()}</p>
                                                 <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="${note.status === 'confirmed' ? 'text-green-600' : 'text-yellow-600'}">${note.status === 'confirmed' ? '{{ __('messages.confirmed') }}' : '{{ __('messages.pending_confirmation') }}'}</span></p>
                                             </div>
-                                            ${note.file_path ? `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>` : ''}
+                                            ${note.file_path ? (isImage ? `
+                                                <img src="/storage/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${note.file_path}')">
+                                            ` : `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
                                         </div>
                                         <div class="mt-2">${itemsHtml}</div>
                                         ${note.status === 'pending' && note.id_responsible_stock === {{ auth()->id() }} ? `
@@ -2021,54 +2195,6 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 .catch(err => Notification.error('{{ __('messages.error_confirming_delivery') }}: ' + err.message));
             }
 
-            function markDelivered(id) {
-                if (!confirm('{{ __('messages.confirm_mark_delivered') }}')) {
-                    return;
-                }
-                fetch(`/api/purchase-orders/${id}/status`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ status: 'delivered' })
-                })
-                .then(res => res.json())
-                .then(() => {
-                    loadPOs();
-                    Notification.success('{{ __('messages.po_marked_delivered') }}');
-                })
-                .catch(err => Notification.error('{{ __('messages.error_updating_status') }}: ' + err.message));
-            }
-
-            function markAsOrdered(id) {
-                const items = currentPOItems.map(item => ({
-                    purchase_order_item_id: item.id,
-                    final_quantity: parseFloat(item.final_quantity) || parseFloat(item.init_quantity)
-                }));
-
-                fetch(`/api/purchase-orders/${id}/mark-delivered`, {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ items })
-                    })
-                    .then(res => {
-                        if (!res.ok) {
-                            throw new Error('Failed to mark as ordered');
-                        }
-                        return res.json();
-                    })
-                    .then(() => {
-                        closeDetailsModal();
-                        loadPOs();
-                        Notification.success('{{ __('messages.po_marked_ordered') }}');
-                    })
-                    .catch(err => Notification.error('{{ __('messages.error_updating_status') }}: ' + err.message));
-            }
-
             function updateInitialApproval(id, action) {
                 fetch(`/api/purchase-orders/${id}/initial-approval`, {
                         method: 'POST',
@@ -2112,6 +2238,29 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 })
                 .catch(err => Notification.error(err.message));
             }
+
+            function openLightbox(imageUrl) {
+                document.getElementById('lightboxImage').src = imageUrl;
+                document.getElementById('imageLightbox').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                document.getElementById('deliveryNotesModal').style.zIndex = '1';
+            }
+
+            function closeLightbox() {
+                document.getElementById('imageLightbox').classList.add('hidden');
+                document.body.style.overflow = '';
+                document.getElementById('deliveryNotesModal').style.zIndex = '50';
+            }
         </script>
     @endpush
+
+    <!-- Image Lightbox Modal -->
+    <div id="imageLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] cursor-pointer" onclick="closeLightbox()">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        <img id="lightboxImage" src="" alt="Full size" class="max-w-[95vw] max-h-[95vh] object-contain">
+    </div>
 @endsection

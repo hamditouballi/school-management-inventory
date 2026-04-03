@@ -45,7 +45,7 @@ class PurchaseOrderPolicy
 
     public function delete(User $user, PurchaseOrder $purchaseOrder): bool
     {
-        $nonDeletableStatuses = ['ordered', 'partially_delivered', 'delivered'];
+        $nonDeletableStatuses = ['partially_delivered', 'delivered'];
 
         if (in_array($purchaseOrder->status, $nonDeletableStatuses)) {
             return false;
