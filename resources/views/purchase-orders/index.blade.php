@@ -72,6 +72,8 @@
                     <option value="pending_final_approval">{{ __('messages.pending_final_approval') }}</option>
                     <option value="final_approved">{{ __('messages.final_approved') }}</option>
                     <option value="rejected">{{ __('messages.rejected') }}</option>
+                    <option value="delivered">{{ __('messages.delivered') }}</option>
+                    <option value="invoiced">{{ __('messages.invoiced') }}</option>
                 </select>
             </div>
             <div>
@@ -335,6 +337,7 @@
                     rejected: 'bg-red-100 text-red-800',
                     partially_delivered: 'bg-purple-100 text-purple-800',
                     delivered: 'bg-teal-100 text-teal-800',
+                    invoiced: 'bg-cyan-100 text-cyan-800',
                     split: 'bg-indigo-100 text-indigo-800'
                 };
 
@@ -346,6 +349,7 @@
                     rejected: '{{ __('messages.rejected') }}',
                     partially_delivered: '{{ __('messages.partially_delivered') }}',
                     delivered: '{{ __('messages.delivered') }}',
+                    invoiced: '{{ __('messages.invoiced') }}',
                     split: '{{ __('messages.split') }}'
                 };
 
@@ -428,8 +432,11 @@
                                <button onclick="viewPODetails(${po.id}, 'delivery')" class="text-purple-600 hover:text-purple-800 mr-2">{{ __('messages.view_delivery_notes') }}</button>
                                <button onclick="markDelivered(${po.id})" class="text-green-600 hover:text-green-800">{{ __('messages.mark_delivered') }}</button>
                              ` : isStockManager && po.status === 'delivered' ? `
+                               <button onclick="viewPODetails(${po.id}, 'invoices')" class="text-green-600 hover:text-green-800 mr-2">{{ __('messages.view_invoices') }}</button>
                                <button onclick="viewPODetails(${po.id}, 'delivery')" class="text-purple-600 hover:text-purple-800">{{ __('messages.view_delivery_notes') }}</button>
-                            ` : isStockManager && isSplit ? `
+                             ` : isStockManager && po.status === 'invoiced' ? `
+                               <button onclick="viewPODetails(${po.id}, 'invoices')" class="text-green-600 hover:text-green-800">{{ __('messages.view_invoices') }}</button>
+                             ` : isStockManager && isSplit ? `
                               <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.view') }}</button>
                           ` : `
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
@@ -837,7 +844,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             approved_hr: 'bg-green-100 text-green-800',
                             rejected_hr: 'bg-red-100 text-red-800',
                             partially_delivered: 'bg-purple-100 text-purple-800',
-                            delivered: 'bg-teal-100 text-teal-800'
+                            delivered: 'bg-teal-100 text-teal-800',
+                            invoiced: 'bg-cyan-100 text-cyan-800'
                         };
 
                         const statusTranslations = {
@@ -847,7 +855,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             final_approved: '{{ __('messages.final_approved') }}',
                             rejected: '{{ __('messages.rejected') }}',
                             partially_delivered: '{{ __('messages.partially_delivered') }}',
-                            delivered: '{{ __('messages.delivered') }}'
+                            delivered: '{{ __('messages.delivered') }}',
+                            invoiced: '{{ __('messages.invoiced') }}'
                         };
 
                         const html = `
@@ -857,6 +866,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     <button onclick="switchPOTab('proposals')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="proposals">{{ __('messages.supplier_proposals') }}</button>
                     <button onclick="switchPOTab('selection')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="selection">{{ __('messages.hr_selection') }}</button>
                     <button onclick="switchPOTab('delivery')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="delivery">{{ __('messages.delivery_notes') }}</button>
+                    ${(po.status === 'delivered' || po.status === 'invoiced') ? `<button onclick="switchPOTab('invoices')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="invoices">{{ __('messages.invoices') }}</button>` : ''}
                 </div>
 
                 <!-- Tab: Details -->
@@ -1092,6 +1102,17 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     </div>
                 </div>
 
+                <!-- Tab: Invoices -->
+                <div id="po-tab-invoices" class="po-tab-content hidden">
+                    <p class="text-sm text-gray-500 mb-4">{{ __('messages.invoices') }}</p>
+                    <div id="invoicesListInTab"></div>
+                    <div id="uploadInvoiceSectionInTab" class="border-t pt-4 mt-4">
+                        <button onclick="openInvoiceModal()" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                            + {{ __('messages.upload_invoice') }}
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Action Buttons (always visible at bottom) -->
                 ${isHRManager && po.status === 'pending_initial_approval' ? `
                     <div class="mt-6 pt-4 border-t flex gap-3 justify-end">
@@ -1145,36 +1166,6 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             }
 
             let currentPOTab = 'details';
-
-            function switchPOTab(tabName) {
-                currentPOTab = tabName;
-                document.querySelectorAll('.po-tab-content').forEach(el => el.classList.add('hidden'));
-                document.querySelectorAll('.po-tab-btn').forEach(el => {
-                    if (el.dataset.tab === tabName) {
-                        el.classList.add('border-blue-500', 'text-blue-600');
-                        el.classList.remove('border-transparent', 'text-gray-500');
-                    } else {
-                        el.classList.remove('border-blue-500', 'text-blue-600');
-                        el.classList.add('border-transparent', 'text-gray-500');
-                    }
-                });
-                const tabContent = document.getElementById('po-tab-' + tabName);
-                if (tabContent) {
-                    tabContent.classList.remove('hidden');
-                }
-                if (tabName === 'delivery' && window.currentPOPoId) {
-                    loadPODeliveryNotes(window.currentPOPoId);
-                    const po = allPOs.find(p => p.id === window.currentPOPoId);
-                    const uploadSection = document.getElementById('uploadDeliverySectionInTab');
-                    if (uploadSection) {
-                        if (po && po.status === 'delivered') {
-                            uploadSection.classList.add('hidden');
-                        } else {
-                            uploadSection.classList.remove('hidden');
-                        }
-                    }
-                }
-            }
 
             window.currentPOPoId = null;
 
@@ -2625,8 +2616,465 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 document.body.style.overflow = '';
                 document.getElementById('deliveryNotesModal').style.zIndex = '50';
             }
+
+            // Invoice Modal Functions
+            function openInvoiceModal() {
+                const poId = window.currentPOPoId;
+                if (!poId) return;
+                
+                document.getElementById('invoiceModal').classList.remove('hidden');
+                document.getElementById('invoicePoId').value = poId;
+                loadBonDeLivraisonsForInvoice(poId);
+            }
+
+            function closeInvoiceModal() {
+                const poId = document.getElementById('invoicePoId').value;
+                const drafts = getInvoiceDrafts(poId);
+                
+                if (drafts.length > 0) {
+                    Notification.warning('{{ __('messages.invoice_draft_pending') }}');
+                    return;
+                }
+                
+                document.getElementById('invoiceModal').classList.add('hidden');
+                document.getElementById('bonDeLivraisonSelector').innerHTML = '';
+                document.getElementById('uploadInvoiceForm').reset();
+                document.getElementById('invoiceFilePreviewName').textContent = '';
+                window.invoiceSelectedFileData = null;
+            }
+
+            // LocalStorage helpers for invoice drafts
+            function getInvoiceDraftsKey(poId) {
+                return `invoice_drafts_${poId}`;
+            }
+
+            function getInvoiceDrafts(poId) {
+                const data = localStorage.getItem(getInvoiceDraftsKey(poId));
+                return data ? JSON.parse(data) : [];
+            }
+
+            function saveInvoiceDrafts(poId, drafts) {
+                localStorage.setItem(getInvoiceDraftsKey(poId), JSON.stringify(drafts));
+            }
+
+            function loadBonDeLivraisonsForInvoice(poId) {
+                const container = document.getElementById('bonDeLivraisonSelector');
+                container.innerHTML = '<p class="text-gray-500 text-sm">{{ __('messages.loading') }}...</p>';
+                
+                Promise.all([
+                    fetch(`/api/purchase-orders/${poId}/bon-de-livraison`, { headers }).then(res => res.json()),
+                    fetch(`/api/invoices?purchase_order_id=${poId}`, { headers }).then(res => res.json())
+                ])
+                    .then(([bonDeLivraisons, invoices]) => {
+                        // Collect already used BDL IDs and their sources
+                        const alreadyUsedMap = {};
+                        
+                        // From confirmed invoices
+                        (invoices || []).forEach(inv => {
+                            const ids = inv.bon_de_livraison_ids || [];
+                            ids.forEach(id => {
+                                alreadyUsedMap[id] = { source: 'invoice', invoiceId: inv.id };
+                            });
+                        });
+                        
+                        // From localStorage drafts
+                        const drafts = getInvoiceDrafts(poId);
+                        drafts.forEach((draft, idx) => {
+                            (draft.bon_de_livraison_ids || []).forEach(id => {
+                                if (!alreadyUsedMap[id]) {
+                                    alreadyUsedMap[id] = { source: 'draft', draftIndex: idx + 1 };
+                                }
+                            });
+                        });
+                        
+                        if (!bonDeLivraisons || bonDeLivraisons.length === 0) {
+                            container.innerHTML = '<p class="text-gray-500 text-sm">{{ __('messages.no_delivery_notes') }}</p>';
+                            return;
+                        }
+                        
+                        container.innerHTML = bonDeLivraisons.map(bdl => {
+                            const items = bdl.items || [];
+                            const totalQty = items.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
+                            const itemNames = items.map(item => item.purchase_order_item?.item?.designation || item.purchase_order_item?.new_item_name || 'Item').join(', ');
+                            const isImage = bdl.file_path && (bdl.file_path.endsWith('.jpg') || bdl.file_path.endsWith('.jpeg') || bdl.file_path.endsWith('.png'));
+                            const usage = alreadyUsedMap[bdl.id];
+                            const isInInvoice = usage?.source === 'invoice';
+                            const isInDraft = usage?.source === 'draft';
+                            
+                            let badge = '';
+                            if (isInInvoice) {
+                                badge = `<span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">{{ __('messages.already_invoiced') }}</span>`;
+                            } else if (isInDraft) {
+                                badge = `<span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">{{ __('messages.in_draft') }} #${usage.draftIndex}</span>`;
+                            }
+                            
+                            return `
+                                <div class="border rounded p-3 ${isInInvoice || isInDraft ? 'bg-gray-100 opacity-60' : 'bg-white cursor-pointer hover:bg-blue-50'} transition-colors" ${!(isInInvoice || isInDraft) ? `onclick="toggleBdlSelection(${bdl.id}, this)"` : ''}>
+                                    <div class="flex items-start gap-3">
+                                        <input type="checkbox" id="bdl_${bdl.id}" class="mt-1 bdl-checkbox" onchange="updateSelectedBdlCount()" ${isInInvoice || isInDraft ? 'disabled' : ''}>
+                                        <div class="flex-1">
+                                            <div class="flex justify-between items-start">
+                                                <div class="flex items-center gap-2">
+                                                    <p class="font-semibold">{{ __('messages.delivery_note') }} #${bdl.id}</p>
+                                                    ${badge}
+                                                </div>
+                                                ${bdl.file_path ? (isImage ? `
+                                                    <img src="/storage/${bdl.file_path}" alt="Delivery" class="h-16 w-16 object-cover rounded cursor-pointer hover:opacity-80" onclick="event.stopPropagation(); openLightbox('/storage/${bdl.file_path}')">
+                                                ` : `<a href="/storage/${bdl.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm" onclick="event.stopPropagation()">{{ __('messages.view_file') }}</a>`) : ''}
+                                            </div>
+                                            <div class="mt-1 text-sm text-gray-500">{{ __('messages.date') }}: ${new Date(bdl.date).toLocaleDateString()}</div>
+                                            <div class="mt-2 text-sm text-gray-600">
+                                                <p><strong>{{ __('messages.items') }}:</strong> ${itemNames || '-'}</p>
+                                                <p><strong>{{ __('messages.total_qty') }}:</strong> ${totalQty.toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        updateSelectedBdlCount();
+                    })
+                    .catch(err => {
+                        container.innerHTML = '<p class="text-red-500 text-sm">{{ __('messages.error_loading') }}</p>';
+                    });
+            }
+
+            function toggleBdlSelection(bdlId, element) {
+                const checkbox = element.querySelector('.bdl-checkbox');
+                checkbox.checked = !checkbox.checked;
+                element.classList.toggle('bg-blue-50', checkbox.checked);
+                element.classList.toggle('border-blue-400', checkbox.checked);
+                updateSelectedBdlCount();
+            }
+
+            function updateSelectedBdlCount() {
+                const checked = document.querySelectorAll('.bdl-checkbox:checked').length;
+                document.getElementById('selectedBdlCount').textContent = checked;
+            }
+
+            function getSelectedBdlIds() {
+                const checked = document.querySelectorAll('.bdl-checkbox:checked');
+                return Array.from(checked).map(cb => parseInt(cb.id.replace('bdl_', '')));
+            }
+
+            window.invoiceSelectedFileData = null;
+
+            function handleInvoiceFileSelect(input) {
+                const file = input.files[0];
+                if (!file) {
+                    window.invoiceSelectedFileData = null;
+                    document.getElementById('invoiceFilePreviewName').textContent = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    window.invoiceSelectedFileData = e.target.result;
+                    document.getElementById('invoiceFilePreviewName').textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function saveInvoiceDraft(e) {
+                e.preventDefault();
+                
+                const poId = document.getElementById('invoicePoId').value;
+                
+                if (!poId) {
+                    Notification.error('Missing PO ID');
+                    return;
+                }
+                
+                const date = document.getElementById('invoiceDate').value;
+                const notes = document.getElementById('invoiceNotes').value;
+                const selectedBdlIds = getSelectedBdlIds();
+                
+                if (selectedBdlIds.length === 0) {
+                    Notification.error('{{ __('messages.select_at_least_one_bdl') }}');
+                    return;
+                }
+                
+                const draft = {
+                    date: date,
+                    notes: notes,
+                    bon_de_livraison_ids: selectedBdlIds,
+                    fileData: window.invoiceSelectedFileData
+                };
+                
+                const drafts = getInvoiceDrafts(poId);
+                drafts.push(draft);
+                saveInvoiceDrafts(poId, drafts);
+                
+                document.getElementById('uploadInvoiceForm').reset();
+                document.getElementById('invoiceFilePreviewName').textContent = '';
+                document.getElementById('selectedBdlCount').textContent = '0';
+                window.invoiceSelectedFileData = null;
+                
+                // Uncheck all checkboxes
+                document.querySelectorAll('.bdl-checkbox').forEach(cb => cb.checked = false);
+                document.querySelectorAll('#bonDeLivraisonSelector > div').forEach(el => {
+                    el.classList.remove('bg-blue-50', 'border-blue-400');
+                });
+                
+                Notification.success('{{ __('messages.draft_saved') }}');
+                renderInvoiceDrafts(poId);
+                loadBonDeLivraisonsForInvoice(poId);
+            }
+
+            function renderInvoiceDrafts(poId) {
+                const container = document.getElementById('invoiceDraftsList');
+                if (!container) return;
+                
+                const drafts = getInvoiceDrafts(poId);
+                
+                if (drafts.length === 0) {
+                    container.innerHTML = '';
+                    return;
+                }
+                
+                container.innerHTML = drafts.map((draft, idx) => `
+                    <div class="border-2 border-yellow-400 rounded p-4 mb-3 bg-yellow-50" id="invoice-draft-${idx}">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <p class="font-semibold">{{ __('messages.invoice_date') }}: ${new Date(draft.date).toLocaleDateString()}</p>
+                                <p class="text-sm text-gray-600">{{ __('messages.linked_bdl') }}: ${(draft.bon_de_livraison_ids || []).length} {{ __('messages.delivery_notes') }}</p>
+                                <p class="text-sm text-yellow-700 font-medium">{{ __('messages.draft') }}</p>
+                            </div>
+                            ${draft.fileData ? `<span class="text-blue-600 text-sm">{{ __('messages.file_attached') }}</span>` : ''}
+                        </div>
+                        <div class="mt-3 flex gap-2">
+                            <button onclick="confirmInvoiceDraft(${idx})" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm') }}</button>
+                            <button onclick="deleteInvoiceDraft(${idx})" class="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700">{{ __('messages.delete') }}</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function confirmInvoiceDraft(idx) {
+                const poId = document.getElementById('invoicePoId').value;
+                const drafts = getInvoiceDrafts(poId);
+                const draft = drafts[idx];
+                
+                if (!draft) return;
+                
+                if (!token) {
+                    Notification.error('Authentication required');
+                    return;
+                }
+                
+                if (!draft.bon_de_livraison_ids || draft.bon_de_livraison_ids.length === 0) {
+                    Notification.error('{{ __('messages.select_at_least_one_bdl') }}');
+                    return;
+                }
+                
+                const formData = new FormData();
+                formData.append('date', draft.date);
+                formData.append('notes', draft.notes || '');
+                formData.append('bon_de_livraison_ids', JSON.stringify(draft.bon_de_livraison_ids));
+                formData.append('purchase_order_id', poId);
+                formData.append('type', 'incoming');
+                formData.append('supplier', '');
+                
+                if (draft.fileData) {
+                    const blob = dataURItoBlob(draft.fileData);
+                    const ext = draft.fileData.includes('png') ? '.png' : draft.fileData.includes('jpg') || draft.fileData.includes('jpeg') ? '.jpg' : '.pdf';
+                    formData.append('image', blob, 'invoice' + ext);
+                }
+                
+                fetch('/api/invoices', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async res => {
+                    const contentType = res.headers.get('content-type');
+                    let data;
+                    if (contentType && contentType.includes('application/json')) {
+                        data = await res.json();
+                    } else {
+                        const text = await res.text();
+                        throw new Error(`Server error (${res.status}): ${text.substring(0, 100)}`);
+                    }
+                    if (!res.ok) {
+                        throw new Error(data.error || `HTTP ${res.status}`);
+                    }
+                    return data;
+                })
+                .then(() => {
+                    drafts.splice(idx, 1);
+                    saveInvoiceDrafts(poId, drafts);
+                    renderInvoiceDrafts(poId);
+                    loadPOInvoices(poId);
+                    
+                    // Manually disable the BDLs that were just confirmed
+                    draft.bon_de_livraison_ids.forEach(bdlId => {
+                        const checkbox = document.getElementById(`bdl_${bdlId}`);
+                        const row = checkbox?.closest('.border.rounded');
+                        
+                        if (checkbox) {
+                            checkbox.disabled = true;
+                            checkbox.checked = false;
+                        }
+                        if (row) {
+                            row.classList.add('bg-gray-100', 'opacity-60');
+                            row.classList.remove('bg-white', 'hover:bg-blue-50', 'cursor-pointer');
+                            row.onclick = null;
+                            
+                            // Update badge to "Already invoiced"
+                            const badgeArea = row.querySelector('.flex.items-center.gap-2');
+                            if (badgeArea) {
+                                badgeArea.innerHTML = `
+                                    <p class="font-semibold">{{ __('messages.delivery_note') }} #${bdlId}</p>
+                                    <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">{{ __('messages.already_invoiced') }}</span>
+                                `;
+                            }
+                        }
+                    });
+                    
+                    loadPOs();
+                    Notification.success('{{ __('messages.invoice_created_success') }}');
+                })
+                .catch(err => {
+                    console.error('Invoice error:', err);
+                    Notification.error('{{ __('messages.error_creating_invoice') }}: ' + err.message);
+                });
+            }
+
+            function deleteInvoiceDraft(idx) {
+                const poId = document.getElementById('invoicePoId').value;
+                const drafts = getInvoiceDrafts(poId);
+                drafts.splice(idx, 1);
+                saveInvoiceDrafts(poId, drafts);
+                renderInvoiceDrafts(poId);
+                loadBonDeLivraisonsForInvoice(poId);
+                Notification.success('{{ __('messages.draft_deleted') }}');
+            }
+
+            function loadPOInvoices(poId) {
+                const container = document.getElementById('invoicesListInTab');
+                if (!container) return;
+                
+                container.innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}...</p>';
+                
+                fetch(`/api/invoices?purchase_order_id=${poId}`, { headers })
+                    .then(res => res.json())
+                    .then(invoices => {
+                        if (!invoices || invoices.length === 0) {
+                            container.innerHTML = '<p class="text-gray-500">{{ __('messages.no_invoices_found') }}</p>';
+                        } else {
+                            container.innerHTML = invoices.map(inv => {
+                                const isImage = inv.image_path && (inv.image_path.endsWith('.jpg') || inv.image_path.endsWith('.jpeg') || inv.image_path.endsWith('.png'));
+                                return `
+                                    <div class="border rounded p-4 mb-3">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div>
+                                                <p class="font-semibold">{{ __('messages.invoice_date') }}: ${new Date(inv.date).toLocaleDateString()}</p>
+                                                <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
+                                            </div>
+                                            ${inv.image_path ? (isImage ? `
+                                                <img src="/storage/${inv.image_path}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${inv.image_path}')">
+                                            ` : `<a href="/storage/${inv.image_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('');
+                        }
+                    })
+                    .catch(err => {
+                        container.innerHTML = '<p class="text-red-500">{{ __('messages.error_loading') }}</p>';
+                    });
+            }
+
+            function switchPOTab(tabName) {
+                currentPOTab = tabName;
+                document.querySelectorAll('.po-tab-content').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.po-tab-btn').forEach(el => {
+                    if (el.dataset.tab === tabName) {
+                        el.classList.add('border-blue-500', 'text-blue-600');
+                        el.classList.remove('border-transparent', 'text-gray-500');
+                    } else {
+                        el.classList.remove('border-blue-500', 'text-blue-600');
+                        el.classList.add('border-transparent', 'text-gray-500');
+                    }
+                });
+                const tabContent = document.getElementById('po-tab-' + tabName);
+                if (tabContent) {
+                    tabContent.classList.remove('hidden');
+                }
+                if (tabName === 'delivery' && window.currentPOPoId) {
+                    loadPODeliveryNotes(window.currentPOPoId);
+                    const po = allPOs.find(p => p.id === window.currentPOPoId);
+                    const uploadSection = document.getElementById('uploadDeliverySectionInTab');
+                    if (uploadSection) {
+                        if (po && po.status === 'delivered') {
+                            uploadSection.classList.add('hidden');
+                        } else {
+                            uploadSection.classList.remove('hidden');
+                        }
+                    }
+                }
+                if (tabName === 'invoices' && window.currentPOPoId) {
+                    loadPOInvoices(window.currentPOPoId);
+                    renderInvoiceDrafts(window.currentPOPoId);
+                }
+            }
         </script>
     @endpush
+
+    <!-- Invoice Modal -->
+    <div id="invoiceModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-xl font-bold">{{ __('messages.invoices') }}</p>
+                <button onclick="closeInvoiceModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div id="invoiceDraftsList" class="mb-6"></div>
+
+            <div class="border-t pt-4">
+                <h4 class="font-semibold mb-3">{{ __('messages.add_invoice') }}</h4>
+                <form id="uploadInvoiceForm" onsubmit="saveInvoiceDraft(event)">
+                    <input type="hidden" id="invoicePoId" value="">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.invoice_date') }} *</label>
+                            <input type="date" id="invoiceDate" required class="w-full px-3 py-2 border rounded" value="{{ date('Y-m-d') }}">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.select_bon_de_livraison') }} *</label>
+                            <p class="text-xs text-gray-500 mb-2">{{ __('messages.select_bdl_for_invoice') }}</p>
+                            <div id="bonDeLivraisonSelector" class="space-y-3 max-h-64 overflow-y-auto border rounded p-3 bg-gray-50">
+                                <p class="text-gray-500 text-sm">{{ __('messages.loading') }}...</p>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-1">{{ __('messages.selected_count') }}: <span id="selectedBdlCount">0</span></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.upload_file') }}</label>
+                            <input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleInvoiceFileSelect(this)">
+                            <p id="invoiceFilePreviewName" class="text-sm text-gray-500 mt-1"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">{{ __('messages.notes') }}</label>
+                            <textarea id="invoiceNotes" rows="2" class="w-full px-3 py-2 border rounded"></textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button type="button" onclick="closeInvoiceModal()"
+                            class="px-4 py-2 border rounded hover:bg-gray-100">{{ __('messages.cancel') }}</button>
+                        <button type="submit" id="saveInvoiceBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.save_draft') }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <!-- Image Lightbox Modal -->
     <div id="imageLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] cursor-pointer" onclick="closeLightbox()">

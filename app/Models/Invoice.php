@@ -9,7 +9,7 @@ class Invoice extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type', 'supplier', 'date', 'id_responsible_finance', 'id_purchase_order', 'id_purchase_order_item', 'file_path', 'image_path'];
+    protected $fillable = ['type', 'supplier', 'date', 'id_responsible_finance', 'id_purchase_order', 'id_purchase_order_item', 'file_path', 'image_path', 'bon_de_livraison_ids'];
 
     protected $appends = ['total_amount'];
 
@@ -20,6 +20,7 @@ class Invoice extends Model
 
     protected $casts = [
         'date' => 'date',
+        'bon_de_livraison_ids' => 'array',
     ];
 
     public function responsibleFinance()
@@ -40,5 +41,24 @@ class Invoice extends Model
     public function invoiceItems()
     {
         return $this->hasMany(InvoiceItem::class);
+    }
+
+    public function getBonDeLivraisonsAttribute()
+    {
+        if (empty($this->attributes['bon_de_livraison_ids'])) {
+            return collect([]);
+        }
+
+        $ids = is_string($this->attributes['bon_de_livraison_ids'])
+            ? json_decode($this->attributes['bon_de_livraison_ids'], true)
+            : $this->attributes['bon_de_livraison_ids'];
+
+        if (empty($ids)) {
+            return collect([]);
+        }
+
+        return BonDeLivraison::with('items.purchaseOrderItem.item')
+            ->whereIn('id', $ids)
+            ->get();
     }
 }

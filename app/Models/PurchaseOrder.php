@@ -31,8 +31,6 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-
-
     public function propositions()
     {
         return $this->hasMany(Proposition::class);
@@ -46,6 +44,11 @@ class PurchaseOrder extends Model
     public function bonDeLivraisons()
     {
         return $this->hasMany(BonDeLivraison::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'id_purchase_order');
     }
 
     public function getTotalAmountAttribute(): float

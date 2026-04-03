@@ -121,6 +121,7 @@ class PurchaseOrderController extends Controller
             'propositions',
             'propositionGroups.propositions.supplier',
             'propositionGroups.item',
+            'invoices',
         ]));
     }
 
