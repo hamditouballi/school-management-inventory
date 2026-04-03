@@ -168,6 +168,7 @@ return [
     'add_proposal' => '+ Ajouter une proposition',
     'submit_proposals' => 'Soumettre les propositions',
     'proposal' => 'Proposition',
+    'proposition' => 'Proposition',
     'quantity_needed' => 'Quantité nécessaire',
     'no_proposals_for_item' => 'Aucune proposition pour cet article',
     'approve_all_proposals' => 'Tout approuver',

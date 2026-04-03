@@ -165,6 +165,7 @@ return [
     'add_proposal' => '+ Add Proposal',
     'submit_proposals' => 'Submit Proposals',
     'proposal' => 'Proposal',
+    'proposition' => 'Proposition',
     'quantity_needed' => 'Quantity needed',
     'no_proposals_for_item' => 'No proposals for this item yet',
     'approve_all_proposals' => 'Approve All',

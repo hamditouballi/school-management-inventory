@@ -172,6 +172,7 @@ return [
     'add_proposal' => '+ إضافة عرض',
     'submit_proposals' => 'إرسال العروض',
     'proposal' => 'العرض',
+    'proposition' => 'اقتراح',
     'quantity_needed' => 'الكمية المطلوبة',
     'no_proposals_for_item' => 'لا توجد عروض لهذه المادة بعد',
     'approve_all_proposals' => 'الموافقة على الكل',
