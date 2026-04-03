@@ -15,7 +15,7 @@ class BonDeLivraisonController extends Controller
     public function index(PurchaseOrder $purchaseOrder)
     {
         $bonDeLivraisons = $purchaseOrder->bonDeLivraisons()
-            ->with(['items.purchaseOrderItem.item', 'responsibleStock'])
+            ->with(['items.purchaseOrderItem.item', 'items.purchaseOrderItem.proposition.supplier', 'responsibleStock'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -93,7 +93,7 @@ class BonDeLivraisonController extends Controller
     public function show(BonDeLivraison $bonDeLivraison)
     {
         return response()->json(
-            $bonDeLivraison->load(['items.purchaseOrderItem.item', 'responsibleStock', 'purchaseOrder'])
+            $bonDeLivraison->load(['items.purchaseOrderItem.item', 'items.purchaseOrderItem.proposition.supplier', 'responsibleStock'])
         );
     }
 

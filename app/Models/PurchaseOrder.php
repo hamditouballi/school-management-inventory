@@ -51,6 +51,16 @@ class PurchaseOrder extends Model
         return $this->hasMany(Invoice::class, 'id_purchase_order');
     }
 
+    public function children()
+    {
+        return $this->hasMany(PurchaseOrder::class, 'parent_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(PurchaseOrder::class, 'parent_id');
+    }
+
     public function getTotalAmountAttribute(): float
     {
         return $this->purchaseOrderItems->sum(function ($item) {

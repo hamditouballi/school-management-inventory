@@ -1190,11 +1190,14 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                     </div>
                                 `).join('');
                                 const isImage = note.file_path && (note.file_path.endsWith('.jpg') || note.file_path.endsWith('.jpeg') || note.file_path.endsWith('.png') || note.file_path.endsWith('.gif') || note.file_path.endsWith('.webp'));
+                                const supplierNames = [...new Set((note.items || []).map(i => i.purchase_order_item?.proposition?.supplier?.name).filter(Boolean))];
+                                const supplierName = supplierNames.length ? supplierNames.join(', ') : '-';
                                 return `
                                     <div class="border rounded p-4 mb-3">
                                         <div class="flex justify-between items-start mb-2">
                                             <div>
                                                 <p class="font-semibold">{{ __('messages.delivery_date') }}: ${new Date(note.date).toLocaleDateString()}</p>
+                                                <p class="text-sm text-gray-500">{{ __('messages.supplier') }}: ${supplierName}</p>
                                                 <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
                                             </div>
                                             ${note.file_path ? (isImage ? `
@@ -2108,11 +2111,14 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                     </div>
                                 `).join('');
                                 const isImage = note.file_path && (note.file_path.endsWith('.jpg') || note.file_path.endsWith('.jpeg') || note.file_path.endsWith('.png') || note.file_path.endsWith('.gif') || note.file_path.endsWith('.webp'));
+                                const supplierNames = [...new Set((note.items || []).map(i => i.purchase_order_item?.proposition?.supplier?.name).filter(Boolean))];
+                                const supplierName = supplierNames.length ? supplierNames.join(', ') : '-';
                                 return `
                                     <div class="border rounded p-4 mb-3">
                                         <div class="flex justify-between items-start mb-2">
                                             <div>
                                                 <p class="font-semibold">{{ __('messages.delivery_date') }}: ${new Date(note.date).toLocaleDateString()}</p>
+                                                <p class="text-sm text-gray-500">{{ __('messages.supplier') }}: ${supplierName}</p>
                                                 <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
                                             </div>
                                             ${note.file_path ? (isImage ? `
@@ -2614,8 +2620,117 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             function closeLightbox() {
                 document.getElementById('imageLightbox').classList.add('hidden');
                 document.body.style.overflow = '';
+                // IMPORTANT: This line restores the z-index of the delivery notes modal after closing the lightbox.
+                // Without this, the delivery notes modal will appear behind the main modal and become inaccessible.
+                // DO NOT REMOVE THIS LINE.
                 document.getElementById('deliveryNotesModal').style.zIndex = '50';
+                zoomReset();
             }
+
+            let currentZoom = 1;
+            let isDragging = false;
+            let dragStartX = 0;
+            let dragStartY = 0;
+            let dragStartOffsetX = 0;
+            let dragStartOffsetY = 0;
+            let imageOffsetX = 0;
+            let imageOffsetY = 0;
+
+            function zoomReset() {
+                currentZoom = 1;
+                imageOffsetX = 0;
+                imageOffsetY = 0;
+                const img = document.getElementById('lightboxImage');
+                if (img) {
+                    img.style.transform = 'scale(1) translate(0px, 0px)';
+                }
+            }
+
+            function applyZoom() {
+                const img = document.getElementById('lightboxImage');
+                if (img) {
+                    img.style.transform = `scale(${currentZoom}) translate(${imageOffsetX}px, ${imageOffsetY}px)`;
+                }
+            }
+
+            // Mouse wheel zoom
+            document.addEventListener('DOMContentLoaded', function() {
+                const lightbox = document.getElementById('imageLightbox');
+                if (lightbox) {
+                    lightbox.addEventListener('wheel', function(e) {
+                        if (!lightbox.classList.contains('hidden')) {
+                            e.preventDefault();
+                            const img = document.getElementById('lightboxImage');
+                            if (!img) return;
+
+                            const oldZoom = currentZoom;
+                            const zoomStep = 0.25;
+                            const minZoom = 0.5;
+                            const maxZoom = 3;
+
+                            if (e.deltaY < 0) {
+                                currentZoom = Math.min(currentZoom + zoomStep, maxZoom);
+                            } else {
+                                currentZoom = Math.max(currentZoom - zoomStep, minZoom);
+                            }
+
+                            if (e && oldZoom !== currentZoom) {
+                                const rect = img.getBoundingClientRect();
+                                const mouseX = e.clientX - rect.left;
+                                const mouseY = e.clientY - rect.top;
+
+                                const zoomDelta = currentZoom - oldZoom;
+                                const offsetX = (mouseX - rect.width / 2) * (Math.abs(zoomDelta) / oldZoom);
+                                const offsetY = (mouseY - rect.height / 2) * (Math.abs(zoomDelta) / oldZoom);
+
+                                if (zoomDelta > 0) {
+                                    imageOffsetX = imageOffsetX - offsetX;
+                                    imageOffsetY = imageOffsetY - offsetY;
+                                } else {
+                                    imageOffsetX = imageOffsetX + offsetX;
+                                    imageOffsetY = imageOffsetY + offsetY;
+                                }
+                            }
+
+                            applyZoom();
+                        }
+                    }, { passive: false });
+                }
+
+                // Drag to pan
+                const container = document.getElementById('lightboxImageContainer');
+                if (container) {
+                    container.addEventListener('mousedown', (e) => {
+                        if (currentZoom > 1) {
+                            isDragging = true;
+                            dragStartX = e.clientX;
+                            dragStartY = e.clientY;
+                            dragStartOffsetX = imageOffsetX;
+                            dragStartOffsetY = imageOffsetY;
+                            container.style.cursor = 'grabbing';
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                
+                imageOffsetX = dragStartOffsetX + (e.clientX - dragStartX);
+                imageOffsetY = dragStartOffsetY + (e.clientY - dragStartY);
+                
+                const img = document.getElementById('lightboxImage');
+                if (img) {
+                    img.style.transform = `scale(${currentZoom}) translate(${imageOffsetX}px, ${imageOffsetY}px)`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                const container = document.getElementById('lightboxImageContainer');
+                if (container) container.style.cursor = 'grab';
+            });
 
             // Invoice Modal Functions
             function openInvoiceModal() {
@@ -2692,7 +2807,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             return;
                         }
                         
-                        container.innerHTML = bonDeLivraisons.map(bdl => {
+                            container.innerHTML = bonDeLivraisons.map(bdl => {
                             const items = bdl.items || [];
                             const totalQty = items.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
                             const itemNames = items.map(item => item.purchase_order_item?.item?.designation || item.purchase_order_item?.new_item_name || 'Item').join(', ');
@@ -2700,6 +2815,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             const usage = alreadyUsedMap[bdl.id];
                             const isInInvoice = usage?.source === 'invoice';
                             const isInDraft = usage?.source === 'draft';
+                            const supplierNames = [...new Set((bdl.items || []).map(i => i.purchase_order_item?.proposition?.supplier?.name).filter(Boolean))];
+                            const supplierName = supplierNames.length ? supplierNames.join(', ') : '-';
                             
                             let badge = '';
                             if (isInInvoice) {
@@ -2723,6 +2840,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                 ` : `<a href="/storage/${bdl.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm" onclick="event.stopPropagation()">{{ __('messages.view_file') }}</a>`) : ''}
                                             </div>
                                             <div class="mt-1 text-sm text-gray-500">{{ __('messages.date') }}: ${new Date(bdl.date).toLocaleDateString()}</div>
+                                            <div class="mt-1 text-sm text-gray-600">{{ __('messages.supplier') }}: ${supplierName}</div>
                                             <div class="mt-2 text-sm text-gray-600">
                                                 <p><strong>{{ __('messages.items') }}:</strong> ${itemNames || '-'}</p>
                                                 <p><strong>{{ __('messages.total_qty') }}:</strong> ${totalQty.toFixed(2)}</p>
@@ -3077,12 +3195,15 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
     </div>
 
     <!-- Image Lightbox Modal -->
-    <div id="imageLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999] cursor-pointer" onclick="closeLightbox()">
-        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-10">
+    <div id="imageLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999]">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-20">
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
-        <img id="lightboxImage" src="" alt="Full size" class="max-w-[95vw] max-h-[95vh] object-contain">
+        
+        <div id="lightboxImageContainer" class="flex items-center justify-center w-full h-full overflow-auto cursor-grab">
+            <img id="lightboxImage" src="" alt="Full size" class="max-w-[95vw] max-h-[95vh] object-contain transition-transform origin-center" style="transform: scale(1);">
+        </div>
     </div>
 @endsection

@@ -36,4 +36,17 @@ class BonDeLivraison extends Model
     {
         return $this->hasMany(BonDeLivraisonItem::class);
     }
+
+    public function getSuppliersAttribute(): ?string
+    {
+        $suppliers = $this->items()
+            ->with('purchaseOrderItem.proposition.supplier')
+            ->get()
+            ->pluck('purchaseOrderItem.proposition.supplier.name')
+            ->filter()
+            ->unique()
+            ->values();
+
+        return $suppliers->isEmpty() ? null : $suppliers->implode(', ');
+    }
 }
