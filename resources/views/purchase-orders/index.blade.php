@@ -865,7 +865,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     <button onclick="switchPOTab('details')" class="po-tab-btn px-4 py-2 border-b-2 border-blue-500 text-blue-600 font-semibold text-sm" data-tab="details">{{ __('messages.details') }}</button>
                     <button onclick="switchPOTab('proposals')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="proposals">{{ __('messages.supplier_proposals') }}</button>
                     <button onclick="switchPOTab('selection')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="selection">{{ __('messages.hr_selection') }}</button>
-                    <button onclick="switchPOTab('delivery')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="delivery">{{ __('messages.delivery_notes') }}</button>
+                    ${['final_approved', 'partially_delivered', 'delivered', 'invoiced'].includes(po.status) ? `<button onclick="switchPOTab('delivery')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="delivery">{{ __('messages.delivery_notes') }}</button>` : ''}
                     ${(po.status === 'delivered' || po.status === 'invoiced') ? `<button onclick="switchPOTab('invoices')" class="po-tab-btn px-4 py-2 border-b-2 border-transparent text-gray-500 hover:text-gray-700 text-sm" data-tab="invoices">{{ __('messages.invoices') }}</button>` : ''}
                 </div>
 
