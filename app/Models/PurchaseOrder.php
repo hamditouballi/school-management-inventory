@@ -9,7 +9,7 @@ class PurchaseOrder extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date', 'id_responsible_stock', 'status', 'supplier', 'total_amount', 'parent_id', 'supplier_id'];
+    protected $fillable = ['date', 'id_responsible_stock', 'status', 'supplier', 'total_amount'];
 
     protected $casts = [
         'date' => 'date',
@@ -31,15 +31,7 @@ class PurchaseOrder extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function parent()
-    {
-        return $this->belongsTo(PurchaseOrder::class, 'parent_id');
-    }
 
-    public function children()
-    {
-        return $this->hasMany(PurchaseOrder::class, 'parent_id');
-    }
 
     public function propositions()
     {

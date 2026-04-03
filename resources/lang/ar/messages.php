@@ -314,6 +314,9 @@ return [
     'success_message' => 'تمت العملية بنجاح!',
     'error_message' => 'حدث خطأ. يرجى المحاولة مرة أخرى.',
     'confirm_delete' => 'هل أنت متأكد من حذف :item هذا؟',
+    'confirm_delete_po' => 'هل أنت متأكد من حذف أمر الشراء هذا؟',
+    'po_deleted_success' => 'تم حذف أمر الشراء بنجاح!',
+    'error_deleting_po' => 'خطأ في حذف أمر الشراء',
 
     // Purchase Orders specific
     'purchase_order_details' => 'تفاصيل أمر الشراء',

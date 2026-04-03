@@ -428,11 +428,20 @@
                               <button dusk="initial-reject-btn-${po.id}" onclick="rejectInitial(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.reject') }}</button>
                           ` : isHRManager && po.status === 'pending_final_approval' ? `
                               <button dusk="select-supplier-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.select_final') }}</button>
-                          ` : isStockManager && po.status === 'pending_initial_approval' ? `
+                           ` : isStockManager && po.status === 'pending_initial_approval' ? `
                               <button onclick="editPO(${po.id})" class="text-blue-600 hover:text-blue-800 mr-2">{{ __('messages.edit') }}</button>
+                              <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
                               <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                           ` : isStockManager && po.status === 'initial_approved' ? `
-                              <button dusk="add-proposals-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800">{{ __('messages.add_proposals') }}</button>
+                              <button dusk="add-proposals-btn-${po.id}" onclick="viewPODetails(${po.id})" class="text-orange-600 hover:text-orange-800 mr-2">{{ __('messages.add_proposals') }}</button>
+                              <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
+                              <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
+                           ` : isStockManager && po.status === 'pending_final_approval' ? `
+                              <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
+                              <button onclick="viewPODetails(${po.id})" class="text-blue-600 hover:text-blue-800">{{ __('messages.view') }}</button>
+                           ` : isStockManager && po.status === 'rejected' ? `
+                              <button onclick="deletePO(${po.id})" class="text-red-600 hover:text-red-800 mr-2">{{ __('messages.delete') }}</button>
+                              <button onclick="viewPODetails(${po.id})" class="text-green-600 hover:text-indigo-800">{{ __('messages.view') }}</button>
                            ` : isStockManager && po.status === 'final_approved' ? `
                                <button onclick="showDeliveryNotesModal(${po.id})" class="text-purple-600 hover:text-purple-800">{{ __('messages.bon_de_livraison') }}</button>
                            ` : isStockManager && po.status === 'partially_delivered' ? `
@@ -2077,6 +2086,31 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         Notification.success(action === 'approve' ? '{{ __('messages.po_approved') }}' : '{{ __('messages.po_rejected') }}');
                     })
                     .catch(err => Notification.error('{{ __('messages.error_updating_status') }}'));
+            }
+
+            function deletePO(id) {
+                if (!confirm('{{ __('messages.confirm_delete_po') }}')) {
+                    return;
+                }
+                fetch(`/api/purchase-orders/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async res => {
+                    if (!res.ok) {
+                        const data = await res.json();
+                        throw new Error(data.error || '{{ __('messages.error_deleting_po') }}');
+                    }
+                    return res.json();
+                })
+                .then(() => {
+                    loadPOs();
+                    Notification.success('{{ __('messages.po_deleted_success') }}');
+                })
+                .catch(err => Notification.error(err.message));
             }
         </script>
     @endpush

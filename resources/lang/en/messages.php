@@ -313,6 +313,9 @@ return [
     'success_message' => 'Operation completed successfully!',
     'error_message' => 'An error occurred. Please try again.',
     'confirm_delete' => 'Are you sure you want to delete this :item?',
+    'confirm_delete_po' => 'Are you sure you want to delete this purchase order?',
+    'po_deleted_success' => 'Purchase order deleted successfully!',
+    'error_deleting_po' => 'Error deleting purchase order',
 
     // Purchase Orders specific
     'purchase_order_details' => 'Purchase Order Details',

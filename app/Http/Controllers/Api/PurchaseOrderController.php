@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Invoice;
+use App\Models\Item;
 use App\Models\Proposition;
 use App\Models\PropositionGroup;
 use App\Models\PurchaseOrder;
@@ -14,6 +16,7 @@ use App\Notifications\PurchaseOrderInitialApproved;
 use App\Notifications\PurchaseOrderInitialRejected;
 use App\Notifications\PurchaseOrderNeedsFinalApproval;
 use App\Notifications\PurchaseOrderNeedsInitialApproval;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -28,8 +31,6 @@ class PurchaseOrderController extends Controller
             'purchaseOrderItems.approver',
             'responsibleStock',
             'supplier',
-            'parent',
-            'children.supplier',
             'propositions.supplier',
             'propositions.item',
             'propositionGroups.propositions.supplier',
@@ -496,90 +497,6 @@ class PurchaseOrderController extends Controller
         return response()->json($suppliers);
     }
 
-    public function split(Request $request, PurchaseOrder $purchaseOrder)
-    {
-        if ($purchaseOrder->status !== 'initial_approved') {
-            return response()->json(['error' => 'Order must be initially approved before splitting'], 400);
-        }
-
-        if ($purchaseOrder->children()->exists()) {
-            return response()->json(['error' => 'This order has already been split'], 400);
-        }
-
-        $validated = $request->validate([
-            'assignments' => 'required|array|min:1',
-            'assignments.*.supplier_id' => 'required|exists:suppliers,id',
-            'assignments.*.items' => 'required|array|min:1',
-            'assignments.*.items.*.item_id' => 'required|exists:items,id',
-            'assignments.*.items.*.quantity' => 'required|numeric|min:0.01',
-        ]);
-
-        $allItemIds = collect($validated['assignments'])->flatMap(function ($assignment) {
-            return collect($assignment['items'])->pluck('item_id');
-        });
-
-        $poItemIds = $purchaseOrder->purchaseOrderItems()->pluck('item_id');
-
-        $missingItems = $poItemIds->diff($allItemIds);
-        if ($missingItems->isNotEmpty()) {
-            $items = \App\Models\Item::whereIn('id', $missingItems)->pluck('designation')->toArray();
-
-            return response()->json(['error' => 'All items must be assigned to a supplier. Missing: '.implode(', ', $items)], 400);
-        }
-
-        DB::beginTransaction();
-        try {
-            $newPOs = [];
-
-            foreach ($validated['assignments'] as $assignment) {
-                $supplier = Supplier::find($assignment['supplier_id']);
-                $items = $assignment['items'];
-
-                $newPO = PurchaseOrder::create([
-                    'date' => $purchaseOrder->date,
-                    'id_responsible_stock' => $purchaseOrder->id_responsible_stock,
-                    'status' => 'pending_initial_approval',
-                    'parent_id' => $purchaseOrder->id,
-                    'supplier' => $supplier->name,
-                ]);
-
-                foreach ($items as $itemData) {
-                    PurchaseOrderItem::create([
-                        'purchase_order_id' => $newPO->id,
-                        'item_id' => $itemData['item_id'],
-                        'init_quantity' => $itemData['quantity'],
-                        'unit_price' => 0,
-                        'state' => 'pending',
-                    ]);
-                }
-
-                $newPOs[] = $newPO;
-            }
-
-            $purchaseOrder->update(['status' => 'split']);
-
-            $hrManagers = User::where('role', 'hr_manager')->get();
-            if ($hrManagers->isNotEmpty()) {
-                foreach ($newPOs as $po) {
-                    Notification::send($hrManagers, new PurchaseOrderNeedsInitialApproval($po));
-                }
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'message' => 'Purchase order split successfully',
-                'original_po' => $purchaseOrder->fresh(),
-                'new_purchase_orders' => PurchaseOrder::with(['purchaseOrderItems.item', 'supplier', 'responsibleStock'])
-                    ->whereIn('id', collect($newPOs)->pluck('id'))->get(),
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
     public function markDelivered(Request $request, PurchaseOrder $purchaseOrder)
     {
         if ($purchaseOrder->status !== 'final_approved' && $purchaseOrder->status !== 'partially_delivered') {
@@ -621,12 +538,43 @@ class PurchaseOrderController extends Controller
 
     public function destroy(PurchaseOrder $purchaseOrder)
     {
-        if ($purchaseOrder->status !== 'pending_initial_approval') {
-            return response()->json(['error' => 'Cannot delete approved/rejected orders'], 400);
+        $nonDeletableStatuses = ['ordered', 'partially_delivered', 'delivered'];
+        if (in_array($purchaseOrder->status, $nonDeletableStatuses)) {
+            return response()->json(['error' => 'Cannot delete delivered orders'], 400);
         }
 
-        $purchaseOrder->delete();
+        DB::beginTransaction();
+        try {
+            $status = $purchaseOrder->status;
 
-        return response()->json(['message' => 'Purchase order deleted successfully']);
+            // Reverse inventory for final_approved POs (where items were received)
+            if ($status === 'final_approved') {
+                $purchaseOrder->items()
+                    ->where('state', 'approved')
+                    ->where('final_quantity', '>', 0)
+                    ->each(function ($item) {
+                        $poItem = PurchaseOrderItem::find($item->pivot->id);
+                        if ($poItem) {
+                            Item::where('id', $poItem->item_id)
+                                ->decrement('quantity', $poItem->final_quantity);
+                        }
+                    });
+            }
+
+            // Delete related records
+            Invoice::where('id_purchase_order', $purchaseOrder->id)->delete();
+            DB::table('notifications')->whereJsonContains('data->purchase_order_id', $purchaseOrder->id)->delete();
+
+            // Delete PO (cascade handles purchase_order_items, propositions, proposition_groups)
+            $purchaseOrder->delete();
+
+            DB::commit();
+
+            return response()->json(['message' => 'Purchase order deleted successfully']);
+        } catch (Exception $e) {
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

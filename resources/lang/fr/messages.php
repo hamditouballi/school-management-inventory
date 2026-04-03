@@ -291,6 +291,9 @@ return [
     'success_message' => 'Opération effectuée avec succès!',
     'error_message' => 'Une erreur est survenue. Veuillez réessayer.',
     'confirm_delete' => 'Êtes-vous sûr de vouloir supprimer cet(te) :item ?',
+    'confirm_delete_po' => 'Êtes-vous sûr de vouloir supprimer ce bon de commande ?',
+    'po_deleted_success' => 'Bon de commande supprimé avec succès !',
+    'error_deleting_po' => 'Erreur lors de la suppression du bon de commande',
     'remove' => 'Supprimer',
     'item' => 'Article',
 

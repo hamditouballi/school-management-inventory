@@ -44,7 +44,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/purchase-orders/{purchaseOrder}/suppliers-for-items', [PurchaseOrderController::class, 'getSuppliersForPOItems']);
     Route::post('/purchase-orders/{purchaseOrder}/final-approval', [PurchaseOrderController::class, 'finalApproval']);
     Route::post('/purchase-orders/{purchaseOrder}/proposals/reject', [PurchaseOrderController::class, 'rejectPropositions']);
-    Route::post('/purchase-orders/{purchaseOrder}/split', [PurchaseOrderController::class, 'split']);
     Route::post('/purchase-orders/{purchaseOrder}/mark-delivered', [PurchaseOrderController::class, 'markDelivered']);
     Route::apiResource('purchase-orders', PurchaseOrderController::class);
 

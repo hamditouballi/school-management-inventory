@@ -1,0 +1,2 @@
+- UI , no PO deletion 
+- when proposing many proposition from different suppliers , on supplier td it shows all the proposed suppliers instead of the accepted suppliers
