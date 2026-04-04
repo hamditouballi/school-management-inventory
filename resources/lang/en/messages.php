@@ -147,6 +147,7 @@ return [
     'invoice_id' => 'Invoice ID',
     'finance_manager' => 'Finance Manager',
     'invoice_image' => 'Invoice Image',
+    'invoice_file' => 'Invoice File',
 
     // Supplier Proposals
     'supplier_proposals' => 'Supplier Proposals',
@@ -559,4 +560,5 @@ return [
     'pricing_audit' => 'Pricing Audit',
     'compare_prices' => 'Compare Prices',
     'back' => 'Back',
+    'file_attached' => 'File attached',
 ];

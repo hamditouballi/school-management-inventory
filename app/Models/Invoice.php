@@ -57,8 +57,36 @@ class Invoice extends Model
             return collect([]);
         }
 
-        return BonDeLivraison::with('items.purchaseOrderItem.item')
+        return BonDeLivraison::with('items.purchaseOrderItem.item', 'items.purchaseOrderItem.proposition.supplier')
             ->whereIn('id', $ids)
             ->get();
+    }
+
+    public function getSupplierAttribute(): ?string
+    {
+        if (! empty($this->attributes['supplier'])) {
+            return $this->attributes['supplier'];
+        }
+
+        $bdlIds = is_string($this->attributes['bon_de_livraison_ids'] ?? '[]')
+            ? json_decode($this->attributes['bon_de_livraison_ids'] ?? '[]', true)
+            : ($this->attributes['bon_de_livraison_ids'] ?? []);
+
+        if (empty($bdlIds)) {
+            return null;
+        }
+
+        $bdls = BonDeLivraison::with('items.purchaseOrderItem.proposition.supplier')
+            ->whereIn('id', $bdlIds)
+            ->get();
+
+        $suppliers = $bdls->flatMap(function ($bdl) {
+            return $bdl->items
+                ->pluck('purchaseOrderItem.proposition.supplier.name')
+                ->filter()
+                ->unique();
+        })->values();
+
+        return $suppliers->isEmpty() ? null : $suppliers->implode(', ');
     }
 }

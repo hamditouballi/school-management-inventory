@@ -150,6 +150,7 @@ return [
     'invoice_id' => 'ID de la facture',
     'finance_manager' => 'Responsable financier',
     'invoice_image' => 'Image de la facture',
+    'invoice_file' => 'Fichier de la facture',
 
     // Supplier Proposals
     'supplier_proposals' => 'Propositions des fournisseurs',
@@ -267,6 +268,9 @@ return [
     'administrative_login_btn' => 'Connexion Administrative',
     'all_statuses' => 'Tous les statuts',
     'stock_manager' => 'Responsable Stock',
+    'submit_proposals_first' => 'Soumettez d\'abord les propositions depuis l\'onglet Propositions des fournisseurs',
+    'demo' => 'Démo',
+    'confirming' => 'Confirmation',
     'school_name' => 'Complexe Scolaire',
     'school_name_short' => 'AL AMINE',
 
@@ -552,4 +556,5 @@ return [
     'pricing_audit' => 'Audit des prix',
     'compare_prices' => 'Comparer les prix',
     'back' => 'Retour',
+    'file_attached' => 'Fichier joint',
 ];

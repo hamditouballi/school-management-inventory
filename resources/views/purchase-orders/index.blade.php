@@ -2162,7 +2162,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     if (isImage) {
                         filePreview = `<img src="${draft.fileData}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${draft.fileData}')">`;
                     } else {
-                        filePreview = `<span class="text-blue-600 text-sm">File attached</span>`;
+                        filePreview = `<span class="text-blue-600 text-sm">{{ __('messages.file_attached') }}</span>`;
                     }
                 }
                 
@@ -3085,7 +3085,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             container.innerHTML = '<p class="text-gray-500">{{ __('messages.no_invoices_found') }}</p>';
                         } else {
                             container.innerHTML = invoices.map(inv => {
-                                const isImage = inv.image_path && (inv.image_path.endsWith('.jpg') || inv.image_path.endsWith('.jpeg') || inv.image_path.endsWith('.png'));
+                                const isImage = inv.image_path && (inv.image_path.endsWith('.jpg') || inv.image_path.endsWith('.jpeg') || inv.image_path.endsWith('.png') || inv.image_path.endsWith('.gif') || inv.image_path.endsWith('.webp'));
                                 return `
                                     <div class="border rounded p-4 mb-3">
                                         <div class="flex justify-between items-start mb-2">

@@ -154,6 +154,7 @@ return [
     'error_saving' => 'خطأ في الحفظ',
     'error_deleting' => 'خطأ في الحذف',
     'invoice_image' => 'صورة الفاتورة',
+    'invoice_file' => 'ملف الفاتورة',
 
     // Supplier Proposals
     'supplier_proposals' => 'عروض الموردين',
@@ -594,4 +595,5 @@ return [
     'pricing_audit' => 'مراجعة الأسعار',
     'compare_prices' => 'مقارنة الأسعار',
     'back' => 'رجوع',
+    'file_attached' => 'ملف مرفق',
 ];

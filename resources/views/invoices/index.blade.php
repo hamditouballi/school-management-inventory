@@ -260,17 +260,25 @@
                 tbody.innerHTML = allInvoices.map(inv => {
                     const items = inv.invoice_items || [];
                     const displayImage = inv.image_path || items.find(item => item.image_path)?.image_path;
+                    const isImage = displayImage && (displayImage.endsWith('.jpg') || displayImage.endsWith('.jpeg') || displayImage.endsWith('.png') || displayImage.endsWith('.gif') || displayImage.endsWith('.webp'));
                     const itemsCount = items.length;
                     const totalQty = items.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
                     const total = inv.total_amount || 0;
+                    let imageCell = '';
+                    if (displayImage) {
+                        if (isImage) {
+                            imageCell = `<img src="/storage/${displayImage}" alt="Invoice" class="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onclick="event.stopPropagation(); openLightbox('/storage/${displayImage}')" onerror="this.src='/images/placeholder.png'">`;
+                        } else {
+                            imageCell = `<a href="/storage/${displayImage}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`;
+                        }
+                    } else {
+                        imageCell = `<img src="/images/placeholder.png" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">`;
+                    }
 
                     return `
         <tr class="hover:bg-gray-50">
             <td class="px-6 py-4">
-                <img src="${displayImage ? '/storage/' + displayImage : '/images/placeholder.png'}" 
-                     class="w-12 h-12 object-cover rounded cursor-pointer" 
-                     onclick="viewInvoiceDetails(${inv.id})"
-                     onerror="this.src='/images/placeholder.png'">
+                ${imageCell}
             </td>
             <td class="px-6 py-4">#${inv.id}</td>
             <td class="px-6 py-4">
@@ -820,12 +828,20 @@ const message = isEdit ? '{{ __('messages.invoice_updated') }}' :
                         const total = inv.total_amount || 0;
                         const html = `
                 <div class="space-y-4">
-                    ${inv.image_path ? `
-                                                                                    <div class="mb-4">
-                                                                                        <p class="text-sm text-gray-500 mb-2">{{ __('messages.invoice_image') }}</p>
-                                                                                        <img src="/storage/${inv.image_path}" class="w-full max-w-md rounded border">
-                                                                                    </div>
-                                                                                ` : ''}
+                    ${inv.image_path ? (() => {
+                        const isImage = inv.image_path.endsWith('.jpg') || inv.image_path.endsWith('.jpeg') || inv.image_path.endsWith('.png') || inv.image_path.endsWith('.gif') || inv.image_path.endsWith('.webp');
+                        return isImage ? `
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500 mb-2">{{ __('messages.invoice_image') }}</p>
+                                <img src="/storage/${inv.image_path}" class="w-full max-w-md rounded border cursor-pointer hover:opacity-80" onclick="openLightbox('/storage/${inv.image_path}')">
+                            </div>
+                        ` : `
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500 mb-2">{{ __('messages.invoice_file') }}</p>
+                                <a href="/storage/${inv.image_path}" target="_blank" class="text-blue-600 hover:underline">{{ __('messages.view_file') }}</a>
+                            </div>
+                        `;
+                    })() : ''}
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <p class="text-sm text-gray-500">{{ __('messages.invoice_id') }}</p>
@@ -901,6 +917,29 @@ const message = isEdit ? '{{ __('messages.invoice_updated') }}' :
             function closeDetailsModal() {
                 document.getElementById('detailsModal').classList.add('hidden');
             }
+
+            function openLightbox(imageUrl) {
+                document.getElementById('lightboxImage').src = imageUrl;
+                document.getElementById('imageLightbox').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                document.getElementById('imageLightbox').classList.add('hidden');
+                document.body.style.overflow = '';
+            }
         </script>
+
+        <!-- Image Lightbox Modal -->
+        <div id="imageLightbox" class="hidden fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-[9999]">
+            <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white hover:text-gray-300 z-20">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            <div class="flex items-center justify-center w-full h-full overflow-auto">
+                <img id="lightboxImage" src="" alt="Full size" class="max-w-[95vw] max-h-[95vh] object-contain">
+            </div>
+        </div>
     @endpush
 @endsection
