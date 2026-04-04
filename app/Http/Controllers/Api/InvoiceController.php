@@ -83,6 +83,46 @@ class InvoiceController extends Controller
                     'already_used_ids' => array_values(array_unique($alreadyUsed)),
                 ], 422);
             }
+
+            // Validate quantities match BDL quantities
+            if (! empty($bonDeLivraisonIds) && ! empty($items)) {
+                $bonDeLivraisons = \App\Models\BonDeLivraison::with('items.purchaseOrderItem.item')
+                    ->whereIn('id', $bonDeLivraisonIds)->get();
+
+                $bdlQuantities = [];
+                foreach ($bonDeLivraisons as $bdl) {
+                    foreach ($bdl->items as $bdlItem) {
+                        $itemName = $bdlItem->purchaseOrderItem?->item?->designation
+                            ?? $bdlItem->purchaseOrderItem?->new_item_name
+                            ?? 'Unknown Item';
+                        $bdlQuantities[$itemName] = ($bdlQuantities[$itemName] ?? 0) + floatval($bdlItem->quantity);
+                    }
+                }
+
+                $mismatches = [];
+                foreach ($items as $itemData) {
+                    $itemName = $itemData['item_name'] ?? 'Unknown Item';
+                    $invoiceQty = floatval($itemData['quantity'] ?? 0);
+                    $bdlQty = $bdlQuantities[$itemName] ?? 0;
+
+                    if (abs($invoiceQty - $bdlQty) >= 0.001) {
+                        $mismatches[] = [
+                            'item' => $itemName,
+                            'bdl_quantity' => $bdlQty,
+                            'invoice_quantity' => $invoiceQty,
+                            'difference' => $invoiceQty - $bdlQty,
+                        ];
+                    }
+                }
+
+                if (! empty($mismatches)) {
+                    return response()->json([
+                        'error' => 'quantities_mismatch_error',
+                        'message' => __('messages.quantities_mismatch_error'),
+                        'mismatches' => $mismatches,
+                    ], 422);
+                }
+            }
         }
 
         \DB::beginTransaction();
@@ -309,5 +349,220 @@ class InvoiceController extends Controller
         $invoice->delete();
 
         return response()->json(['message' => 'Invoice deleted successfully']);
+    }
+
+    public function reconciliationPreview(Request $request)
+    {
+        $bonDeLivraisonIds = $request->input('bon_de_livraison_ids');
+
+        if (empty($bonDeLivraisonIds)) {
+            return response()->json([
+                'has_mismatch' => false,
+                'comparison' => [],
+                'source' => 'manual',
+            ]);
+        }
+
+        // Handle both array and JSON string
+        if (is_string($bonDeLivraisonIds)) {
+            $bonDeLivraisonIds = json_decode($bonDeLivraisonIds, true);
+        }
+
+        if (! is_array($bonDeLivraisonIds)) {
+            return response()->json([
+                'has_mismatch' => false,
+                'comparison' => [],
+                'source' => 'manual',
+            ]);
+        }
+
+        $items = $request->input('items');
+        if (is_string($items)) {
+            $items = json_decode($items, true);
+        }
+        $items = $items ?: [];
+
+        if (empty($bonDeLivraisonIds)) {
+            return response()->json([
+                'has_mismatch' => false,
+                'comparison' => [],
+                'source' => 'manual',
+            ]);
+        }
+
+        $bonDeLivraisons = \App\Models\BonDeLivraison::with([
+            'items.purchaseOrderItem.item',
+            'items.purchaseOrderItem.proposition.supplier',
+        ])->whereIn('id', $bonDeLivraisonIds)->get();
+
+        $bdlItems = [];
+        foreach ($bonDeLivraisons as $bdl) {
+            foreach ($bdl->items as $bdlItem) {
+                $itemName = $bdlItem->purchaseOrderItem?->item?->designation
+                    ?? $bdlItem->purchaseOrderItem?->new_item_name
+                    ?? 'Unknown Item';
+
+                if (! isset($bdlItems[$itemName])) {
+                    $bdlItems[$itemName] = [
+                        'item_name' => $itemName,
+                        'bdl_quantity' => 0,
+                        'unit' => $bdlItem->purchaseOrderItem?->item?->unit ?? 'unit',
+                        'unit_price' => $bdlItem->purchaseOrderItem?->unit_price ?? 0,
+                        'bdl_ids' => [],
+                    ];
+                }
+                $bdlItems[$itemName]['bdl_quantity'] += floatval($bdlItem->quantity);
+                $bdlItems[$itemName]['bdl_ids'][] = $bdl->id;
+            }
+        }
+
+        $comparison = [];
+        $hasMismatch = false;
+
+        if (! empty($items)) {
+            foreach ($items as $itemData) {
+                $itemName = $itemData['item_name'] ?? 'Unknown Item';
+                $invoiceQty = floatval($itemData['quantity'] ?? 0);
+
+                $bdlQty = $bdlItems[$itemName]['bdl_quantity'] ?? 0;
+                $difference = $invoiceQty - $bdlQty;
+
+                $status = abs($difference) < 0.001 ? 'match' : 'mismatch';
+                if ($status === 'mismatch') {
+                    $hasMismatch = true;
+                }
+
+                $comparison[] = [
+                    'item_name' => $itemName,
+                    'bdl_quantity' => $bdlQty,
+                    'invoice_quantity' => $invoiceQty,
+                    'difference' => $difference,
+                    'unit' => $bdlItems[$itemName]['unit'] ?? $itemData['unit'] ?? 'unit',
+                    'unit_price' => $bdlItems[$itemName]['unit_price'] ?? floatval($itemData['unit_price'] ?? 0),
+                    'status' => $status,
+                ];
+            }
+        } else {
+            foreach ($bdlItems as $itemName => $bdlItem) {
+                $comparison[] = [
+                    'item_name' => $itemName,
+                    'bdl_quantity' => $bdlItem['bdl_quantity'],
+                    'invoice_quantity' => $bdlItem['bdl_quantity'],
+                    'difference' => 0,
+                    'unit' => $bdlItem['unit'],
+                    'unit_price' => $bdlItem['unit_price'],
+                    'status' => 'match',
+                ];
+            }
+        }
+
+        return response()->json([
+            'has_mismatch' => $hasMismatch,
+            'comparison' => array_values($comparison),
+            'source' => 'bdl',
+        ]);
+    }
+
+    public function reconciliation(Invoice $invoice)
+    {
+        $invoice->load(['invoiceItems']);
+
+        $bonDeLivraisons = $invoice->bonDeLivraisons; // Use the accessor
+
+        $bdlItems = [];
+        foreach ($bonDeLivraisons as $bdl) {
+            foreach ($bdl->items as $bdlItem) {
+                $itemName = $bdlItem->purchaseOrderItem?->item?->designation
+                    ?? $bdlItem->purchaseOrderItem?->new_item_name
+                    ?? 'Unknown Item';
+
+                if (! isset($bdlItems[$itemName])) {
+                    $bdlItems[$itemName] = [
+                        'item_name' => $itemName,
+                        'bdl_quantity' => 0,
+                        'unit' => $bdlItem->purchaseOrderItem?->item?->unit ?? 'unit',
+                        'unit_price' => $bdlItem->purchaseOrderItem?->unit_price ?? 0,
+                        'bdl_ids' => [],
+                    ];
+                }
+                $bdlItems[$itemName]['bdl_quantity'] += floatval($bdlItem->quantity);
+                $bdlItems[$itemName]['bdl_ids'][] = $bdl->id;
+            }
+        }
+
+        $comparison = [];
+        $hasMismatch = false;
+
+        foreach ($invoice->invoiceItems as $invItem) {
+            $itemName = $invItem->item_name;
+            $invoiceQty = floatval($invItem->quantity);
+
+            $bdlQty = $bdlItems[$itemName]['bdl_quantity'] ?? 0;
+            $difference = $invoiceQty - $bdlQty;
+
+            $status = abs($difference) < 0.001 ? 'match' : 'mismatch';
+            if ($status === 'mismatch') {
+                $hasMismatch = true;
+            }
+
+            $comparison[] = [
+                'item_name' => $itemName,
+                'bdl_quantity' => $bdlQty,
+                'invoice_quantity' => $invoiceQty,
+                'difference' => $difference,
+                'unit' => $bdlItems[$itemName]['unit'] ?? $invItem->unit,
+                'unit_price' => $bdlItems[$itemName]['unit_price'] ?? $invItem->unit_price,
+                'status' => $status,
+                'invoice_item_id' => $invItem->id,
+            ];
+        }
+
+        foreach ($bdlItems as $itemName => $bdlItem) {
+            $hasInvoiceItem = collect($comparison)->contains('item_name', $itemName);
+            if (! $hasInvoiceItem) {
+                $comparison[] = [
+                    'item_name' => $itemName,
+                    'bdl_quantity' => $bdlItem['bdl_quantity'],
+                    'invoice_quantity' => 0,
+                    'difference' => -$bdlItem['bdl_quantity'],
+                    'unit' => $bdlItem['unit'],
+                    'unit_price' => $bdlItem['unit_price'],
+                    'status' => 'mismatch',
+                    'invoice_item_id' => null,
+                ];
+                $hasMismatch = true;
+            }
+        }
+
+        return response()->json([
+            'invoice' => $invoice,
+            'comparison' => array_values($comparison),
+            'has_mismatch' => $hasMismatch,
+        ]);
+    }
+
+    public function updateReconciliation(Request $request, Invoice $invoice)
+    {
+        $items = $request->has('items') && is_string($request->input('items'))
+            ? json_decode($request->input('items'), true)
+            : $request->input('items');
+
+        if (empty($items)) {
+            return response()->json(['error' => 'No items provided'], 422);
+        }
+
+        foreach ($items as $itemData) {
+            $invoiceItemId = $itemData['invoice_item_id'] ?? null;
+            $quantity = floatval($itemData['quantity'] ?? 0);
+
+            if ($invoiceItemId) {
+                $invoiceItem = \App\Models\InvoiceItem::find($invoiceItemId);
+                if ($invoiceItem && $invoiceItem->invoice_id === $invoice->id) {
+                    $invoiceItem->update(['quantity' => $quantity]);
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Invoice quantities updated successfully']);
     }
 }

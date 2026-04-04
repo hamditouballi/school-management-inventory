@@ -62,7 +62,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/suppliers/{supplier}/items/{itemId}', [SupplierController::class, 'removeItem']);
     Route::get('/suppliers/{supplier}/stats', [SupplierController::class, 'stats']);
 
-    // Invoices
+    // Invoices - Custom routes must come BEFORE apiResource to avoid {invoice} capturing them
+    Route::get('/invoices/reconciliation-preview', [InvoiceController::class, 'reconciliationPreview']);
+    Route::get('/invoices/{invoice}/reconciliation', [InvoiceController::class, 'reconciliation']);
+    Route::put('/invoices/{invoice}/reconciliation', [InvoiceController::class, 'updateReconciliation']);
     Route::apiResource('invoices', InvoiceController::class);
 
     // Statistics & Dashboard

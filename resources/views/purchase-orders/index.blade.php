@@ -2840,7 +2840,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                 ` : `<a href="/storage/${bdl.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm" onclick="event.stopPropagation()">{{ __('messages.view_file') }}</a>`) : ''}
                                             </div>
                                             <div class="mt-1 text-sm text-gray-500">{{ __('messages.date') }}: ${new Date(bdl.date).toLocaleDateString()}</div>
-                                            <div class="mt-1 text-sm text-gray-600">{{ __('messages.supplier') }}: ${supplierName}</div>
+                                            <div class="mt-1 text-sm text-gray-600" data-supplier="${supplierName}">{{ __('messages.supplier') }}: ${supplierName}</div>
                                             <div class="mt-2 text-sm text-gray-600">
                                                 <p><strong>{{ __('messages.items') }}:</strong> ${itemNames || '-'}</p>
                                                 <p><strong>{{ __('messages.total_qty') }}:</strong> ${totalQty.toFixed(2)}</p>
@@ -2867,8 +2867,182 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
             }
 
             function updateSelectedBdlCount() {
-                const checked = document.querySelectorAll('.bdl-checkbox:checked').length;
-                document.getElementById('selectedBdlCount').textContent = checked;
+                const checked = document.querySelectorAll('.bdl-checkbox:checked');
+                const checkedCount = checked.length;
+                document.getElementById('selectedBdlCount').textContent = checkedCount;
+                
+                // Get ALL selected suppliers
+                const selectedSuppliers = new Set();
+                checked.forEach(cb => {
+                    const row = cb.closest('.border.rounded');
+                    const supplierEl = row?.querySelector('[data-supplier]');
+                    if (supplierEl) {
+                        selectedSuppliers.add(supplierEl.getAttribute('data-supplier'));
+                    }
+                });
+                
+                // Disable BDLs not matching selected suppliers
+                document.querySelectorAll('#bonDeLivraisonSelector .border.rounded').forEach(row => {
+                    const checkbox = row.querySelector('.bdl-checkbox');
+                    const rowSupplierEl = row.querySelector('[data-supplier]');
+                    const rowSupplier = rowSupplierEl?.getAttribute('data-supplier') || '-';
+                    const rowBdlId = checkbox ? parseInt(checkbox.id.replace('bdl_', '')) : 0;
+                    
+                    // Check if BDL is already in draft or invoice (has bg-gray-100 class)
+                    const isAlreadyDisabled = row.classList.contains('bg-gray-100');
+                    
+                    // If already disabled (in draft/invoice), keep it disabled
+                    if (isAlreadyDisabled) {
+                        if (checkbox) checkbox.disabled = true;
+                        return;
+                    }
+                    
+                    // If there are selected suppliers and this row's supplier is not in the set
+                    if (selectedSuppliers.size > 0 && !selectedSuppliers.has(rowSupplier)) {
+                        if (checkbox) checkbox.disabled = true;
+                        row.classList.add('opacity-50', 'cursor-not-allowed');
+                        row.classList.remove('cursor-pointer', 'hover:bg-blue-50');
+                        row.removeAttribute('onclick');
+                    } else {
+                        if (checkbox) checkbox.disabled = false;
+                        row.classList.remove('opacity-50', 'cursor-not-allowed');
+                        row.classList.add('cursor-pointer', 'hover:bg-blue-50');
+                        row.setAttribute('onclick', `toggleBdlSelection(${rowBdlId}, this)`);
+                    }
+                });
+                
+                const selectedIds = getSelectedBdlIds();
+                if (selectedIds.length > 0) {
+                    loadReconciliationPreview(selectedIds);
+                } else {
+                    document.getElementById('reconciliationSection').classList.add('hidden');
+                }
+            }
+
+            function loadReconciliationPreview(bdlIds) {
+                const section = document.getElementById('reconciliationSection');
+                const tableContainer = document.getElementById('reconciliationTable');
+                const statusEl = document.getElementById('reconciliationStatus');
+                
+                if (bdlIds.length === 0) {
+                    section.classList.add('hidden');
+                    return;
+                }
+                
+                section.classList.remove('hidden');
+                tableContainer.innerHTML = '<p class="text-gray-500 text-sm">{{ __('messages.loading') }}...</p>';
+                statusEl.textContent = '';
+                
+                fetch(`/api/invoices/reconciliation-preview?bon_de_livraison_ids=${JSON.stringify(bdlIds)}`, { headers })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.comparison || data.comparison.length === 0) {
+                            tableContainer.innerHTML = '<p class="text-gray-500 text-sm">{{ __('messages.no_data_found') }}</p>';
+                            return;
+                        }
+                        
+                        let html = `
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-2 py-2 text-left">{{ __('messages.items') }}</th>
+                                        <th class="px-2 py-2 text-right">{{ __('messages.bdl_quantity') }}</th>
+                                        <th class="px-2 py-2 text-right">{{ __('messages.invoice_quantity') }}</th>
+                                        <th class="px-2 py-2 text-right">{{ __('messages.difference') }}</th>
+                                        <th class="px-2 py-2 text-center">{{ __('messages.status') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                        `;
+                        
+                        window.reconciliationData = data.comparison;
+                        let hasMismatch = false;
+                        
+                        data.comparison.forEach((item, idx) => {
+                            const isMatch = item.status === 'match';
+                            const rowClass = isMatch ? 'bg-green-50' : 'bg-red-50';
+                            const statusBadge = isMatch 
+                                ? '<span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{{ __("messages.match") }}</span>'
+                                : '<span class="text-xs bg-red-200 text-red-800 px-2 py-1 rounded">{{ __("messages.mismatch") }}</span>';
+                            
+                            if (!isMatch) hasMismatch = true;
+                            
+                            html += `
+                                <tr id="reconcile_row_${idx}" class="${rowClass}">
+                                    <td class="px-2 py-2">${item.item_name}</td>
+                                    <td class="px-2 py-2 text-right">${item.bdl_quantity.toFixed(2)} ${item.unit}</td>
+                                    <td class="px-2 py-2 text-right">
+                                        <input type="number" 
+                                            id="reconcile_qty_${idx}" 
+                                            value="${item.invoice_quantity.toFixed(2)}" 
+                                            step="0.01" 
+                                            min="0"
+                                            class="w-20 px-2 py-1 border rounded text-right"
+                                            oninput="updateReconciliationItem(${idx}, this.value)">
+                                        ${item.unit}
+                                    </td>
+                                    <td id="diff_cell_${idx}" class="px-2 py-2 text-right ${item.difference !== 0 ? 'text-red-600 font-semibold' : 'text-green-600'}">
+                                        ${item.difference >= 0 ? '+' : ''}${item.difference.toFixed(2)}
+                                    </td>
+                                    <td id="status_cell_${idx}" class="px-2 py-2 text-center">${statusBadge}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += '</tbody></table>';
+                        
+                        tableContainer.innerHTML = html;
+                        
+                        if (hasMismatch) {
+                            statusEl.innerHTML = '<span class="text-red-600">{{ __("messages.quantity_mismatch") }}</span>';
+                            document.getElementById('saveInvoiceBtn').disabled = true;
+                            document.getElementById('saveInvoiceBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                        } else {
+                            statusEl.innerHTML = '<span class="text-green-600">{{ __("messages.quantities_match") }}</span>';
+                            document.getElementById('saveInvoiceBtn').disabled = false;
+                            document.getElementById('saveInvoiceBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Reconciliation error:', err);
+                        tableContainer.innerHTML = '<p class="text-red-500 text-sm">{{ __("messages.error_loading") }}</p>';
+                    });
+            }
+
+            function updateReconciliationItem(idx, newQty) {
+                if (window.reconciliationData) {
+                    window.reconciliationData[idx].invoice_quantity = parseFloat(newQty);
+                    window.reconciliationData[idx].difference = parseFloat(newQty) - window.reconciliationData[idx].bdl_quantity;
+                    window.reconciliationData[idx].status = Math.abs(window.reconciliationData[idx].difference) < 0.001 ? 'match' : 'mismatch';
+                    
+                    // Update the row in the table
+                    const diffCell = document.getElementById(`diff_cell_${idx}`);
+                    const statusCell = document.getElementById(`status_cell_${idx}`);
+                    const row = document.getElementById(`reconcile_row_${idx}`);
+                    
+                    if (diffCell && statusCell && row) {
+                        const item = window.reconciliationData[idx];
+                        diffCell.textContent = (item.difference >= 0 ? '+' : '') + item.difference.toFixed(2);
+                        diffCell.className = item.difference !== 0 ? 'px-2 py-2 text-right text-red-600 font-semibold' : 'px-2 py-2 text-right text-green-600';
+                        statusCell.innerHTML = item.status === 'match' 
+                            ? '<span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{{ __("messages.match") }}</span>'
+                            : '<span class="text-xs bg-red-200 text-red-800 px-2 py-1 rounded">{{ __("messages.mismatch") }}</span>';
+                        row.className = item.status === 'match' ? 'bg-green-50' : 'bg-red-50';
+                    }
+                    
+                    const hasMismatch = window.reconciliationData.some(item => item.status === 'mismatch');
+                    const statusEl = document.getElementById('reconciliationStatus');
+                    
+                    if (hasMismatch) {
+                        statusEl.innerHTML = '<span class="text-red-600">{{ __("messages.quantity_mismatch") }}</span>';
+                        document.getElementById('saveInvoiceBtn').disabled = true;
+                        document.getElementById('saveInvoiceBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                    } else {
+                        statusEl.innerHTML = '<span class="text-green-600">{{ __("messages.quantities_match") }}</span>';
+                        document.getElementById('saveInvoiceBtn').disabled = false;
+                        document.getElementById('saveInvoiceBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+                    }
+                }
             }
 
             function getSelectedBdlIds() {
@@ -2883,12 +3057,35 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 if (!file) {
                     window.invoiceSelectedFileData = null;
                     document.getElementById('invoiceFilePreviewName').textContent = '';
+                    const preview = document.getElementById('invoiceImagePreview');
+                    if (preview) {
+                        preview.classList.add('hidden');
+                    }
                     return;
                 }
                 
+                const isImage = file.type.startsWith('image/');
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     window.invoiceSelectedFileData = e.target.result;
+                    
+                    if (isImage) {
+                        let preview = document.getElementById('invoiceImagePreview');
+                        if (!preview) {
+                            const previewContainer = document.createElement('div');
+                            previewContainer.id = 'invoiceImagePreviewContainer';
+                            previewContainer.className = 'mt-2';
+                            input.parentNode.appendChild(previewContainer);
+                            preview = document.createElement('img');
+                            preview.id = 'invoiceImagePreview';
+                            preview.className = 'h-20 w-20 object-cover rounded border cursor-pointer';
+                            preview.onclick = function() { openLightbox(e.target.result); };
+                            previewContainer.appendChild(preview);
+                        }
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    }
+                    
                     document.getElementById('invoiceFilePreviewName').textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
                 };
                 reader.readAsDataURL(file);
@@ -2986,6 +3183,15 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     return;
                 }
                 
+                // Check reconciliation - use adjusted quantities if available
+                const adjustedItems = window.reconciliationData || [];
+                const hasMismatch = adjustedItems.some(item => item.status === 'mismatch');
+                
+                if (hasMismatch && adjustedItems.length > 0) {
+                    Notification.error('{{ __('messages.block_invoice_mismatch') }}');
+                    return;
+                }
+                
                 const formData = new FormData();
                 formData.append('date', draft.date);
                 formData.append('notes', draft.notes || '');
@@ -2993,6 +3199,17 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 formData.append('purchase_order_id', poId);
                 formData.append('type', 'incoming');
                 formData.append('supplier', '');
+                
+                // Add adjusted items if reconciliation was done
+                if (adjustedItems.length > 0) {
+                    const itemsPayload = adjustedItems.map(item => ({
+                        item_name: item.item_name,
+                        quantity: item.invoice_quantity,
+                        unit: item.unit,
+                        unit_price: item.unit_price
+                    }));
+                    formData.append('items', JSON.stringify(itemsPayload));
+                }
                 
                 if (draft.fileData) {
                     const blob = dataURItoBlob(draft.fileData);
@@ -3092,6 +3309,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                             <div>
                                                 <p class="font-semibold">{{ __('messages.invoice_date') }}: ${new Date(inv.date).toLocaleDateString()}</p>
                                                 <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
+                                                <button onclick="viewInvoiceReconciliation(${inv.id})" class="text-blue-600 hover:text-blue-800 text-sm mt-1">{{ __('messages.reconcile') }}</button>
                                             </div>
                                             ${inv.image_path ? (isImage ? `
                                                 <img src="/storage/${inv.image_path}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${inv.image_path}')">
@@ -3105,6 +3323,134 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     .catch(err => {
                         container.innerHTML = '<p class="text-red-500">{{ __('messages.error_loading') }}</p>';
                     });
+            }
+
+            function viewInvoiceReconciliation(invoiceId) {
+                document.getElementById('reconciliationModal').classList.remove('hidden');
+                document.getElementById('reconciliationModalContent').innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}...</p>';
+                
+                fetch(`/api/invoices/${invoiceId}/reconciliation`, { headers })
+                    .then(res => res.json())
+                    .then(data => {
+                        const comparison = data.comparison || [];
+                        
+                        if (comparison.length === 0) {
+                            document.getElementById('reconciliationModalContent').innerHTML = '<p class="text-gray-500">{{ __('messages.no_data_found') }}</p>';
+                            return;
+                        }
+                        
+                        let html = `
+                            <div class="mb-4 ${data.has_mismatch ? 'bg-red-50 border border-red-200 p-3 rounded' : 'bg-green-50 border border-green-200 p-3 rounded'}">
+                                <p class="font-semibold ${data.has_mismatch ? 'text-red-700' : 'text-green-700'}">
+                                    ${data.has_mismatch ? '{{ __("messages.quantity_mismatch") }}' : '{{ __("messages.quantities_match") }}'}
+                                </p>
+                            </div>
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-2 py-2 text-left">{{ __('messages.items') }}</th>
+                                        <th class="px-2 py-2 text-right">{{ __('messages.bdl_quantity') }}</th>
+                                        <th class="px-2 py-2 text-right">{{ __('messages.invoice_quantity') }}</th>
+                                        <th class="px-2 py-2 text-right">{{ __('messages.difference') }}</th>
+                                        <th class="px-2 py-2 text-center">{{ __('messages.status') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y">
+                        `;
+                        
+                        window.existingInvoiceReconciliation = comparison;
+                        window.currentReconcileInvoiceId = invoiceId;
+                        
+                        comparison.forEach((item, idx) => {
+                            const isMatch = item.status === 'match';
+                            const rowClass = isMatch ? 'bg-green-50' : 'bg-red-50';
+                            const statusBadge = isMatch 
+                                ? '<span class="text-xs bg-green-200 text-green-800 px-2 py-1 rounded">{{ __("messages.match") }}</span>'
+                                : '<span class="text-xs bg-red-200 text-red-800 px-2 py-1 rounded">{{ __("messages.mismatch") }}</span>';
+                            
+                            html += `
+                                <tr class="${rowClass}">
+                                    <td class="px-2 py-2">${item.item_name}</td>
+                                    <td class="px-2 py-2 text-right">${item.bdl_quantity.toFixed(2)} ${item.unit}</td>
+                                    <td class="px-2 py-2 text-right">
+                                        ${item.invoice_item_id ? `
+                                            <input type="number" 
+                                                id="existing_reconcile_qty_${idx}" 
+                                                value="${item.invoice_quantity.toFixed(2)}" 
+                                                step="0.01" 
+                                                min="0"
+                                                class="w-20 px-2 py-1 border rounded text-right"
+                                                onchange="updateExistingReconciliationItem(${idx}, this.value)">
+                                        ` : '-'}
+                                        ${item.unit}
+                                    </td>
+                                    <td class="px-2 py-2 text-right ${item.difference !== 0 ? 'text-red-600 font-semibold' : 'text-green-600'}">
+                                        ${item.difference >= 0 ? '+' : ''}${item.difference.toFixed(2)}
+                                    </td>
+                                    <td class="px-2 py-2 text-center">${statusBadge}</td>
+                                </tr>
+                            `;
+                        });
+                        
+                        html += '</tbody></table>';
+                        
+                        if (comparison.some(item => item.status === 'mismatch')) {
+                            html += `
+                                <div class="mt-4 flex justify-end">
+                                    <button onclick="saveExistingReconciliation()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                                        {{ __('messages.save') }}
+                                    </button>
+                                </div>
+                            `;
+                        }
+                        
+                        document.getElementById('reconciliationModalContent').innerHTML = html;
+                    })
+                    .catch(err => {
+                        console.error('Reconciliation error:', err);
+                        document.getElementById('reconciliationModalContent').innerHTML = '<p class="text-red-500">{{ __('messages.error_loading') }}</p>';
+                    });
+            }
+
+            function updateExistingReconciliationItem(idx, newQty) {
+                if (window.existingInvoiceReconciliation) {
+                    window.existingInvoiceReconciliation[idx].invoice_quantity = parseFloat(newQty);
+                    window.existingInvoiceReconciliation[idx].difference = parseFloat(newQty) - window.existingInvoiceReconciliation[idx].bdl_quantity;
+                    window.existingInvoiceReconciliation[idx].status = Math.abs(window.existingInvoiceReconciliation[idx].difference) < 0.001 ? 'match' : 'mismatch';
+                    viewInvoiceReconciliation(window.currentReconcileInvoiceId);
+                }
+            }
+
+            function saveExistingReconciliation() {
+                if (!window.existingInvoiceReconciliation || !window.currentReconcileInvoiceId) return;
+                
+                const itemsPayload = window.existingInvoiceReconciliation
+                    .filter(item => item.invoice_item_id)
+                    .map(item => ({
+                        invoice_item_id: item.invoice_item_id,
+                        quantity: item.invoice_quantity
+                    }));
+                
+                fetch(`/api/invoices/${window.currentReconcileInvoiceId}/reconciliation`, {
+                    method: 'PUT',
+                    headers: {
+                        ...headers,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ items: itemsPayload })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    Notification.success('{{ __('messages.saved_successfully') }}');
+                    closeReconciliationModal();
+                })
+                .catch(err => {
+                    Notification.error('{{ __('messages.error_saving') }}');
+                });
+            }
+
+            function closeReconciliationModal() {
+                document.getElementById('reconciliationModal').classList.add('hidden');
             }
 
             function switchPOTab(tabName) {
@@ -3174,6 +3520,13 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             </div>
                             <p class="text-xs text-gray-600 mt-1">{{ __('messages.selected_count') }}: <span id="selectedBdlCount">0</span></p>
                         </div>
+                        <div id="reconciliationSection" class="hidden mt-4 border-t pt-4">
+                            <h4 class="font-semibold mb-3 text-orange-600">{{ __('messages.reconciliation_preview') }}</h4>
+                            <div id="reconciliationTable" class="overflow-x-auto">
+                                <p class="text-gray-500 text-sm">{{ __('messages.loading') }}...</p>
+                            </div>
+                            <p id="reconciliationStatus" class="text-sm mt-2 font-semibold"></p>
+                        </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.upload_file') }}</label>
                             <input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleInvoiceFileSelect(this)">
@@ -3190,6 +3543,23 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         <button type="submit" id="saveInvoiceBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">{{ __('messages.save_draft') }}</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reconciliation Modal -->
+    <div id="reconciliationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-xl font-bold">{{ __('messages.reconciliation') }}</p>
+                <button onclick="closeReconciliationModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="reconciliationModalContent">
+                <p class="text-gray-500">{{ __('messages.loading') }}...</p>
             </div>
         </div>
     </div>
