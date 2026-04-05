@@ -15,6 +15,7 @@
     <script src="{{ asset('js/alpine.js') }}" defer></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
     <script src="{{ asset('js/notifications-inbox.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 
 
     @if (config('app.available_locales')[app()->getLocale()]['dir'] === 'rtl')

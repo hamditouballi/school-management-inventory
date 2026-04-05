@@ -163,6 +163,17 @@ return [
     'confirm_quantities' => 'Confirm Quantities',
     'quantities_mismatch_error' => 'Invoice quantities must match BDL quantities',
     'reconciliation_preview' => 'Reconciliation Preview',
+    'upload_from_phone' => 'Upload from Phone',
+    'upload_image_from_phone' => 'Upload Image from Phone',
+    'tap_to_take_photo' => 'Tap to take photo or select file',
+    'invoice_item_image' => 'Invoice Item Image',
+    'waiting_for_upload' => 'Waiting for phone to upload...',
+    'image_received' => 'Image received!',
+    'use_image' => 'Use Image',
+    'discard' => 'Discard',
+    'image_uploaded_success' => 'Image uploaded successfully',
+    'scan_qr_or_enter_url' => 'Scan QR code with your phone or open the URL',
+    'or_open_url' => 'Or open this URL directly:',
 
     // Supplier Proposals
     'supplier_proposals' => 'Supplier Proposals',

@@ -210,7 +210,12 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.upload_file') }}</label>
-                            <input type="file" id="deliveryFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleFileSelect(this)">
+                            <div class="flex gap-2">
+                                <input type="file" id="deliveryFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleFileSelect(this)">
+                                <button type="button" onclick="showPhoneUploadModal('bdl_image', 0)" class="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm whitespace-nowrap">
+                                    📱 {{ __('messages.upload_from_phone') }}
+                                </button>
+                            </div>
                             <p id="filePreviewName" class="text-sm text-gray-500 mt-1"></p>
                         </div>
                         <div>
@@ -237,7 +242,8 @@
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             };
             let allPOs = [];
             let filteredPOs = [];
@@ -256,6 +262,139 @@
                     loadItemsForPO();
                 }
             });
+
+            // Phone Upload Modal
+            window.currentPhoneUploadContext = null;
+            window.currentPhoneUploadTargetId = null;
+            window.phoneUploadPollingInterval = null;
+
+            function showPhoneUploadModal(context, targetId) {
+                window.currentPhoneUploadContext = context;
+                window.currentPhoneUploadTargetId = targetId;
+                const modal = document.getElementById('phoneUploadModal');
+                const qrContainer = document.getElementById('phoneUploadQR');
+                const statusEl = document.getElementById('phoneUploadStatus');
+                const imageContainer = document.getElementById('phoneUploadImageContainer');
+                
+                modal.classList.remove('hidden');
+                qrContainer.innerHTML = '<p class="text-gray-500">{{ __('messages.loading') }}...</p>';
+                statusEl.innerHTML = '';
+                imageContainer.classList.add('hidden');
+                
+                fetch('{{ url("/api/server-ip") }}', { headers })
+                    .then(res => res.json())
+                    .then(data => {
+                        const localIp = data.ip || 'localhost';
+                        const sessionKey = '{{ session()->getId() }}';
+                        const uploadUrl = `http://${localIp}:8000/phone-upload/${context}/${targetId}?session=${sessionKey}`;
+                        
+                        try {
+                            const canvas = document.createElement('canvas');
+                            new QRious({
+                                element: canvas,
+                                value: uploadUrl,
+                                size: 200,
+                                level: 'M'
+                            });
+                            const img = document.createElement('img');
+                            img.src = canvas.toDataURL();
+                            img.className = 'mx-auto border-2 border-gray-300 rounded-lg';
+                            qrContainer.innerHTML = '';
+                            qrContainer.appendChild(img);
+                            qrContainer.innerHTML += `<p class="text-xs text-gray-500 mt-2">{{ __('messages.or_open_url') }}</p><p class="text-xs text-blue-600 break-all font-mono bg-gray-50 p-1 rounded mt-1">${uploadUrl}</p>`;
+                        } catch(e) {
+                            qrContainer.innerHTML = `<p class="text-sm text-gray-600">${uploadUrl}</p>`;
+                        }
+                        
+                        statusEl.innerHTML = '<p class="text-blue-600 text-sm">{{ __("messages.waiting_for_upload") }}</p>';
+                        
+                        if (window.phoneUploadPollingInterval) {
+                            clearInterval(window.phoneUploadPollingInterval);
+                        }
+                        window.phoneUploadPollingInterval = setInterval(() => pollPhoneUploads(sessionKey), 3000);
+                    })
+                    .catch(err => {
+                        qrContainer.innerHTML = `<p class="text-red-500">Error getting IP</p>`;
+                    });
+            }
+
+            function pollPhoneUploads(sessionKey) {
+                fetch(`/phone-uploads/${sessionKey}`, { headers })
+                    .then(res => res.json())
+                    .then(data => {
+                        const imageContainer = document.getElementById('phoneUploadImageContainer');
+                        const statusEl = document.getElementById('phoneUploadStatus');
+                        
+                        if (data.uploads && data.uploads.length > 0) {
+                            const upload = data.uploads[0];
+                            imageContainer.innerHTML = `
+                                <img src="${upload.url}" data-upload-id="${upload.id}" class="max-h-48 rounded border mx-auto">
+                                <div class="flex gap-2 mt-3 justify-center">
+                                    <button onclick="usePhoneImageForDelivery('${upload.url}', '${upload.id}')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                        {{ __('messages.use_image') }}
+                                    </button>
+                                    <button onclick="discardPhoneImage('${upload.id}', '${sessionKey}')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
+                                        {{ __('messages.discard') }}
+                                    </button>
+                                </div>
+                            `;
+                            imageContainer.classList.remove('hidden');
+                            statusEl.innerHTML = '<p class="text-green-600 text-sm">{{ __("messages.image_received") }}</p>';
+                        }
+                    })
+                    .catch(err => console.error('Poll error:', err));
+            }
+
+            function usePhoneImageForDelivery(url, uploadId) {
+                const sessionKey = '{{ session()->getId() }}';
+                
+                // First promote the image to main storage
+                fetch('/phone-uploads/promote', {
+                    method: 'POST',
+                    headers: {
+                        ...headers,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        upload_id: uploadId,
+                        session_key: sessionKey,
+                        context: 'bdl_image'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Set the file path for the form submission
+                        document.getElementById('deliveryFile').dataset.phoneUploadPath = data.file_path;
+                        document.getElementById('filePreviewName').textContent = data.file_path.split('/').pop();
+                        
+                        closePhoneUploadModal();
+                        Notification.success('{{ __("messages.image_uploaded_success") }}');
+                    } else {
+                        throw new Error(data.error || 'Failed to promote image');
+                    }
+                })
+                .catch(err => {
+                    console.error('Promote error:', err);
+                    Notification.error('Failed to process image');
+                });
+            }
+
+            function discardPhoneImage(uploadId, sessionKey) {
+                fetch(`/phone-uploads/${uploadId}/received?session_key=${sessionKey}`, { method: 'POST', headers })
+                    .then(() => {
+                        document.getElementById('phoneUploadImageContainer').classList.add('hidden');
+                        document.getElementById('phoneUploadStatus').innerHTML = '<p class="text-blue-600 text-sm">{{ __("messages.waiting_for_upload") }}</p>';
+                    });
+            }
+
+            function closePhoneUploadModal() {
+                document.getElementById('phoneUploadModal').classList.add('hidden');
+                if (window.phoneUploadPollingInterval) {
+                    clearInterval(window.phoneUploadPollingInterval);
+                    window.phoneUploadPollingInterval = null;
+                }
+            }
 
             function loadPOs() {
                 fetch('/api/purchase-orders', {
@@ -2164,6 +2303,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     } else {
                         filePreview = `<span class="text-blue-600 text-sm">{{ __('messages.file_attached') }}</span>`;
                     }
+                } else if (draft.phoneUploadPath) {
+                    filePreview = `<img src="/storage/${draft.phoneUploadPath}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${draft.phoneUploadPath}')">`;
                 }
                 
                 return `
@@ -2302,6 +2443,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     const blob = dataURItoBlob(draft.fileData);
                     const ext = draft.fileData.includes('png') ? '.png' : draft.fileData.includes('jpg') || draft.fileData.includes('jpeg') ? '.jpg' : '.pdf';
                     formData.append('file', blob, 'delivery_note' + ext);
+                } else if (draft.phoneUploadPath) {
+                    formData.append('phone_upload_path', draft.phoneUploadPath);
                 }
                 
                 const url = `/api/purchase-orders/${poId}/bon-de-livraison`;
@@ -2431,8 +2574,17 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 formData.append('date', document.getElementById('deliveryDate').value);
                 
                 const fileInput = document.getElementById('deliveryFile');
+                console.log('deliveryFile.files.length:', fileInput.files.length);
+                console.log('deliveryFile.dataset:', fileInput.dataset);
+                console.log('deliveryFile.dataset.phoneUploadPath:', fileInput.dataset.phoneUploadPath);
                 if (fileInput.files.length > 0) {
                     formData.append('file', fileInput.files[0]);
+                    console.log('Appending file from input');
+                } else if (fileInput.dataset.phoneUploadPath) {
+                    formData.append('phone_upload_path', fileInput.dataset.phoneUploadPath);
+                    console.log('Appending phone_upload_path:', fileInput.dataset.phoneUploadPath);
+                } else {
+                    console.log('No file found - neither files[0] nor phoneUploadPath');
                 }
                 
                 const notes = document.getElementById('deliveryNotes').value;
@@ -2553,7 +2705,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     date: date,
                     notes: notes,
                     items: items,
-                    fileData: selectedFileData
+                    fileData: selectedFileData,
+                    phoneUploadPath: document.getElementById('deliveryFile')?.dataset?.phoneUploadPath || null
                 };
                 
                 addDraftNote(poId, draft);
@@ -2561,6 +2714,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 // Reset form
                 document.getElementById('uploadDeliveryNoteForm').reset();
                 document.getElementById('filePreviewName').textContent = '';
+                document.getElementById('deliveryFile').dataset.phoneUploadPath = '';
                 selectedFileData = null;
                 
                 Notification.success('{{ __('messages.draft_saved') }}');
@@ -3574,6 +3728,26 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
         
         <div id="lightboxImageContainer" class="flex items-center justify-center w-full h-full overflow-auto cursor-grab">
             <img id="lightboxImage" src="" alt="Full size" class="max-w-[95vw] max-h-[95vh] object-contain transition-transform origin-center" style="transform: scale(1);">
+        </div>
+    </div>
+
+    <!-- Phone Upload Modal -->
+    <div id="phoneUploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">{{ __('messages.upload_from_phone') }}</h3>
+                <button onclick="closePhoneUploadModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="phoneUploadQR" class="flex justify-center mb-4"></div>
+            <p id="phoneUploadStatus" class="text-center text-sm mb-4"></p>
+            <div id="phoneUploadImageContainer" class="hidden text-center"></div>
+            <p class="text-xs text-gray-500 text-center mt-4">
+                {{ __('messages.scan_qr_or_enter_url') }}
+            </p>
         </div>
     </div>
 @endsection

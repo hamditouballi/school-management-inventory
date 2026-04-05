@@ -165,6 +165,18 @@ return [
     'invoice_quantity' => 'Qté Facture',
     'confirm_quantities' => 'Confirmer les quantités',
     'quantities_mismatch_error' => 'Les quantités de la facture doivent correspondre aux quantités des BDL',
+    'reconciliation_preview' => 'Aperçu de la réconciliation',
+    'upload_from_phone' => 'Télécharger depuis le téléphone',
+    'upload_image_from_phone' => 'Télécharger une image depuis le téléphone',
+    'tap_to_take_photo' => 'Appuyez pour prendre une photo ou sélectionner un fichier',
+    'invoice_item_image' => 'Image de l\'article de facture',
+    'waiting_for_upload' => 'En attente du téléchargement...',
+    'image_received' => 'Image reçue!',
+    'use_image' => 'Utiliser l\'image',
+    'discard' => 'Ignorer',
+    'image_uploaded_success' => 'Image téléchargée avec succès',
+    'scan_qr_or_enter_url' => 'Scannez le code QR avec votre téléphone ou ouvrez l\'URL',
+    'or_open_url' => 'Ou ouvrez cette URL directement:',
 
     // Supplier Proposals
     'supplier_proposals' => 'Propositions des fournisseurs',

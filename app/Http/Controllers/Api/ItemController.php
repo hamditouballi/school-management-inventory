@@ -37,6 +37,8 @@ class ItemController extends Controller
 
         if ($request->hasFile('image')) {
             $validated['image_path'] = $request->file('image')->store('items', 'public');
+        } elseif ($request->has('phone_upload_path')) {
+            $validated['image_path'] = $request->input('phone_upload_path');
         }
         unset($validated['image']);
 
@@ -69,6 +71,12 @@ class ItemController extends Controller
                 \Storage::disk('public')->delete($item->image_path);
             }
             $validated['image_path'] = $request->file('image')->store('items', 'public');
+        } elseif ($request->has('phone_upload_path')) {
+            // Delete old image if exists
+            if ($item->image_path && \Storage::disk('public')->exists($item->image_path)) {
+                \Storage::disk('public')->delete($item->image_path);
+            }
+            $validated['image_path'] = $request->input('phone_upload_path');
         }
         unset($validated['image']);
 
