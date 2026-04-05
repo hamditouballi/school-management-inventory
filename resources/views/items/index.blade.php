@@ -702,7 +702,6 @@
                     Notification.error('Failed to process image');
                 });
             }
-            }
 
             function discardPhoneImage(uploadId, sessionKey) {
                 fetch(`/phone-uploads/${uploadId}/received?session_key=${sessionKey}`, { method: 'POST', headers })

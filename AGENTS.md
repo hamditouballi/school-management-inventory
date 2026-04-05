@@ -111,6 +111,12 @@ RTL support is configured in `config/app.php` under `available_locales`. The lay
 | `POST /api/login` | AuthController | API login |
 | `POST /api/logout` | AuthController | API logout |
 | `GET /api/me` | AuthController | Get current user |
+| `GET /api/server-ip` | - | Get server local IP for QR |
+| `GET /phone-upload/{context}/{targetId}` | PhoneUploadController | Show phone upload page |
+| `POST /phone-upload` | PhoneUploadController | Handle phone upload |
+| `GET /phone-uploads/{sessionKey}` | PhoneUploadController | Poll for uploads |
+| `POST /phone-uploads/{uploadId}/received` | PhoneUploadController | Mark as received |
+| `POST /phone-uploads/promote` | PhoneUploadController | Copy to main storage |
 
 ---
 

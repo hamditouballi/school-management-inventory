@@ -67,6 +67,8 @@
 - **Multi-language**: English, French, Arabic (RTL support)
 - **Notifications**: 11 notification types for workflow events
 - **Demo Data**: 30+ items, 4 departments, 5+ users
+- **BDL-Invoice Reconciliation**: Verify quantities match between BDL and invoice
+- **Phone Camera Upload**: Upload images via phone QR code (100% local)
 
 ## 🔌 API Testing
 

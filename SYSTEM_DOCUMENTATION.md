@@ -47,6 +47,22 @@ A production-ready Laravel 11 inventory management system for schools with compr
     - Link to Purchase Order Items
     - Auto stock update from incoming invoices
     - File/image upload support
+    - Link invoices to Bon de Livraisons (BDL)
+    - **BDL-Invoice Reconciliation**: Verify invoice quantities match BDL quantities
+    - **Supplier Validation**: Only BDLs from same supplier can be linked to one invoice
+
+- **Bon de Livraison (BDL)**
+    - Create delivery notes from confirmed purchase orders
+    - Track delivered quantities per item
+    - Link BDLs to invoices for reconciliation
+    - File/image upload support
+
+- **Phone Camera Upload**
+    - Upload images via phone camera (100% local, no internet)
+    - QR code generation for each upload context
+    - Polling system to receive images on PC
+    - Supports items, BDL, and invoice images
+    - Image is copied to main storage when used
 
 - **Dashboard & Analytics**
     - Interactive Chart.js visualizations
@@ -168,14 +184,15 @@ PUT    /api/invoices/{id}  - Update invoice
 DELETE /api/invoices/{id}  - Delete invoice
 ```
 
-#### Bon de Sortie
+#### Bon de Livraison
 
 ```
-GET    /api/bon-sortie     - List all Bon de Sorties
-POST   /api/bon-sortie     - Create Bon de Sortie
-GET    /api/bon-sortie/{id} - Get details
-PUT    /api/bon-sortie/{id} - Update
-DELETE /api/bon-sortie/{id} - Delete
+GET    /api/purchase-orders/{po}/bon-de-livraison     - List BDLs for PO
+POST   /api/purchase-orders/{po}/bon-de-livraison     - Create BDL
+GET    /api/bon-de-livraison/{id}                      - Get BDL details
+PUT    /api/bon-de-livraison/{id}                      - Update BDL
+DELETE /api/bon-de-livraison/{id}                      - Delete BDL
+POST   /api/bon-de-livraison/{id}/confirm              - Confirm BDL
 ```
 
 #### Statistics & Dashboard
@@ -194,6 +211,17 @@ GET    /api/stats/low-stock                  - Low-stock alerts
 ```
 GET    /api/reports/consumed-materials       - Export consumed materials
 GET    /api/reports/department-consumption    - Export department consumption
+```
+
+#### Phone Camera Upload
+
+```
+GET    /api/server-ip                         - Get server local IP for QR code
+GET    /phone-upload/{context}/{targetId}     - Show phone upload page
+POST   /phone-upload                          - Handle phone upload
+GET    /phone-uploads/{sessionKey}            - Poll for received uploads
+POST   /phone-uploads/{uploadId}/received     - Mark upload as received
+POST   /phone-uploads/promote                 - Copy upload to main storage
 ```
 
 ### ✅ Web Interface
@@ -451,9 +479,11 @@ school-management-inventory/
 │   │   │   ├── Api/                # API Controllers
 │   │   │   │   ├── AuthController.php
 │   │   │   │   ├── BonDeSortieController.php
+│   │   │   │   ├── BonDeLivraisonController.php
 │   │   │   │   ├── CategoryController.php
 │   │   │   │   ├── InvoiceController.php
 │   │   │   │   ├── ItemController.php
+│   │   │   │   ├── PhoneUploadController.php
 │   │   │   │   ├── PurchaseOrderController.php
 │   │   │   │   ├── ReportController.php
 │   │   │   │   ├── RequestController.php
@@ -543,7 +573,7 @@ school-management-inventory/
 
 ---
 
-**Version**: 2.0.0  
+**Version**: 3.0.0  
 **Laravel**: 11.x  
 **PHP**: 8.2+  
-**Last Updated**: March 31, 2026
+**Last Updated**: April 5, 2026
