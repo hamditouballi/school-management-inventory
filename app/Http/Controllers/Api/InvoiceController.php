@@ -127,6 +127,14 @@ class InvoiceController extends Controller
 
         \DB::beginTransaction();
         try {
+            // Handle file upload or phone upload path
+            $filePath = null;
+            if ($request->hasFile('file')) {
+                $filePath = $request->file('file')->store('invoices', 'public');
+            } elseif ($request->has('phone_upload_path')) {
+                $filePath = $request->input('phone_upload_path');
+            }
+
             $invoiceData = [
                 'type' => $validated['type'],
                 'supplier' => $validated['supplier'] ?? null,
@@ -134,7 +142,7 @@ class InvoiceController extends Controller
                 'id_responsible_finance' => $request->user()->id,
                 'id_purchase_order' => $validated['purchase_order_id'] ?? null,
                 'id_purchase_order_item' => $validated['id_purchase_order_item'] ?? null,
-                'file_path' => $validated['file_path'] ?? null,
+                'image_path' => $filePath,
             ];
 
             // Store bon de livraison IDs

@@ -327,10 +327,11 @@
                         
                         if (data.uploads && data.uploads.length > 0) {
                             const upload = data.uploads[0];
+                            const useFunction = window.currentPhoneUploadContext === 'invoice_image' ? 'usePhoneImageForInvoice' : 'usePhoneImageForDelivery';
                             imageContainer.innerHTML = `
                                 <img src="${upload.url}" data-upload-id="${upload.id}" class="max-h-48 rounded border mx-auto">
                                 <div class="flex gap-2 mt-3 justify-center">
-                                    <button onclick="usePhoneImageForDelivery('${upload.url}', '${upload.id}')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                    <button onclick="${useFunction}('${upload.url}', '${upload.id}')" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                                         {{ __('messages.use_image') }}
                                     </button>
                                     <button onclick="discardPhoneImage('${upload.id}', '${sessionKey}')" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
@@ -367,6 +368,41 @@
                         // Set the file path for the form submission
                         document.getElementById('deliveryFile').dataset.phoneUploadPath = data.file_path;
                         document.getElementById('filePreviewName').textContent = data.file_path.split('/').pop();
+                        
+                        closePhoneUploadModal();
+                        Notification.success('{{ __("messages.image_uploaded_success") }}');
+                    } else {
+                        throw new Error(data.error || 'Failed to promote image');
+                    }
+                })
+                .catch(err => {
+                    console.error('Promote error:', err);
+                    Notification.error('Failed to process image');
+                });
+            }
+
+            function usePhoneImageForInvoice(url, uploadId) {
+                const sessionKey = '{{ session()->getId() }}';
+                
+                // First promote the image to main storage
+                fetch('/phone-uploads/promote', {
+                    method: 'POST',
+                    headers: {
+                        ...headers,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        upload_id: uploadId,
+                        session_key: sessionKey,
+                        context: 'invoice_image'
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Set the file path for the form submission
+                        document.getElementById('invoiceFile').dataset.phoneUploadPath = data.file_path;
+                        document.getElementById('invoiceFilePreviewName').textContent = data.file_path.split('/').pop();
                         
                         closePhoneUploadModal();
                         Notification.success('{{ __("messages.image_uploaded_success") }}');
@@ -2574,15 +2610,10 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 formData.append('date', document.getElementById('deliveryDate').value);
                 
                 const fileInput = document.getElementById('deliveryFile');
-                console.log('deliveryFile.files.length:', fileInput.files.length);
-                console.log('deliveryFile.dataset:', fileInput.dataset);
-                console.log('deliveryFile.dataset.phoneUploadPath:', fileInput.dataset.phoneUploadPath);
                 if (fileInput.files.length > 0) {
                     formData.append('file', fileInput.files[0]);
-                    console.log('Appending file from input');
                 } else if (fileInput.dataset.phoneUploadPath) {
                     formData.append('phone_upload_path', fileInput.dataset.phoneUploadPath);
-                    console.log('Appending phone_upload_path:', fileInput.dataset.phoneUploadPath);
                 } else {
                     console.log('No file found - neither files[0] nor phoneUploadPath');
                 }
@@ -3268,7 +3299,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     date: date,
                     notes: notes,
                     bon_de_livraison_ids: selectedBdlIds,
-                    fileData: window.invoiceSelectedFileData
+                    fileData: window.invoiceSelectedFileData,
+                    phoneUploadPath: document.getElementById('invoiceFile')?.dataset?.phoneUploadPath || null
                 };
                 
                 const drafts = getInvoiceDrafts(poId);
@@ -3279,6 +3311,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                 document.getElementById('invoiceFilePreviewName').textContent = '';
                 document.getElementById('selectedBdlCount').textContent = '0';
                 window.invoiceSelectedFileData = null;
+                document.getElementById('invoiceFile').dataset.phoneUploadPath = '';
                 
                 // Uncheck all checkboxes
                 document.querySelectorAll('.bdl-checkbox').forEach(cb => cb.checked = false);
@@ -3310,7 +3343,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                 <p class="text-sm text-gray-600">{{ __('messages.linked_bdl') }}: ${(draft.bon_de_livraison_ids || []).length} {{ __('messages.delivery_notes') }}</p>
                                 <p class="text-sm text-yellow-700 font-medium">{{ __('messages.draft') }}</p>
                             </div>
-                            ${draft.fileData ? `<span class="text-blue-600 text-sm">{{ __('messages.file_attached') }}</span>` : ''}
+                            ${draft.fileData ? `<img src="${draft.fileData}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${draft.fileData}')">` : ''}
+                            ${draft.phoneUploadPath ? `<img src="/storage/${draft.phoneUploadPath}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${draft.phoneUploadPath}')">` : ''}
                         </div>
                         <div class="mt-3 flex gap-2">
                             <button onclick="confirmInvoiceDraft(${idx})" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm') }}</button>
@@ -3369,6 +3403,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     const blob = dataURItoBlob(draft.fileData);
                     const ext = draft.fileData.includes('png') ? '.png' : draft.fileData.includes('jpg') || draft.fileData.includes('jpeg') ? '.jpg' : '.pdf';
                     formData.append('image', blob, 'invoice' + ext);
+                } else if (draft.phoneUploadPath) {
+                    formData.append('phone_upload_path', draft.phoneUploadPath);
                 }
                 
                 fetch('/api/invoices', {
@@ -3683,7 +3719,12 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">{{ __('messages.upload_file') }}</label>
-                            <input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleInvoiceFileSelect(this)">
+                            <div class="flex gap-2">
+                                <input type="file" id="invoiceFile" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" class="w-full px-3 py-2 border rounded" onchange="handleInvoiceFileSelect(this)">
+                                <button type="button" onclick="showPhoneUploadModal('invoice_image', 0)" class="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 text-sm whitespace-nowrap">
+                                    📱 {{ __('messages.upload_from_phone') }}
+                                </button>
+                            </div>
                             <p id="invoiceFilePreviewName" class="text-sm text-gray-500 mt-1"></p>
                         </div>
                         <div>

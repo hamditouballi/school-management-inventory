@@ -41,16 +41,12 @@ class BonDeLivraisonController extends Controller
 
         DB::beginTransaction();
         try {
-            \Log::info('BDL Store Request all:', $request->all());
-
             $filePath = null;
             if ($request->hasFile('file')) {
                 $filePath = $request->file('file')->store('bon-de-livraisons', 'public');
             } elseif ($request->has('phone_upload_path')) {
                 $filePath = $request->input('phone_upload_path');
             }
-
-            \Log::info('BDL filePath resolved:', ['filePath' => $filePath]);
 
             $bonDeLivraison = BonDeLivraison::create([
                 'purchase_order_id' => $purchaseOrder->id,
