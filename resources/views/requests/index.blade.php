@@ -68,9 +68,6 @@
                             {{ __('messages.items') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                            {{ __('messages.total_price') }}
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.status') }}</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                             {{ __('messages.date') }}</th>
@@ -195,6 +192,7 @@
 
     @push('scripts')
         <script>
+            let STORAGE_URL = null;
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
@@ -213,7 +211,19 @@
             let cart = {};
             let currentTab = 'all'; // { itemId: { item: itemData, quantity: number } }
 
-            document.addEventListener('DOMContentLoaded', () => {
+            async function initStorageUrl() {
+                try {
+                    const res = await fetch('{{ url("/api/server-ip") }}', { headers });
+                    const data = await res.json();
+                    const localIp = data.ip || 'localhost';
+                    STORAGE_URL = `http://${localIp}:8000/storage`;
+                } catch {
+                    STORAGE_URL = '/storage';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                await initStorageUrl();
                 loadRequests();
                 loadItemsForSelect();
                 loadUnconfirmedCount();
@@ -422,7 +432,6 @@
                         ${requestItems.length} {{ __('messages.items') }}
                     </button>
                 </td>
-                <td class="px-6 py-4">{{ __('messages.currency') }} ${totalPrice.toFixed(2)}</td>
                 <td class="px-6 py-4">
                     <span class="px-2 py-1 text-xs rounded ${statusColors[req.status] || 'bg-gray-100 text-gray-800'}">${
                         req.status == "pending" 
@@ -517,7 +526,7 @@
                     select.innerHTML = '<option value="">{{ __('messages.select_item') }}</option>' +
                         allItems.map(item => {
                             const imgIcon = item.image_path ? '🖼️ ' : '';
-                            return `<option value="${item.id}" data-image="${item.image_path || ''}">${imgIcon}${item.designation} - {{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</option>`;
+                            return `<option value="${item.id}" data-image="${item.image_path || ''}">${imgIcon}${item.designation}</option>`;
                         }).join('');
                 });
             }
@@ -741,7 +750,6 @@
                                                                                                                                                                                         <tr>
                                                                                                                                                                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.image') }}</th>
                                                                                                                                                                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.item') }}</th>
-                                                                                                                                                                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.price') }}</th>
                                                                                                                                                                                             <th class="px-4 py-2 text-left text-xs font-medium text-gray-500">{{ __('messages.quantity') }}</th>
                                                                                                                                                                                         </tr>
                                                                                                                                                                                     </thead>
@@ -752,12 +760,11 @@
                                     <tr>
                                         <td class="px-4 py-2">
                                             ${item.image_path ? 
-                                                `<img src="/storage/${item.image_path}" class="w-12 h-12 object-cover rounded">` : 
+                                                `<img src="${STORAGE_URL}/${item.image_path}" class="w-12 h-12 object-cover rounded">` : 
                                                 '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                                             }
                                         </td>
                                         <td class="px-4 py-2">${item.designation || '{{ __('messages.unknown_item') }}'}</td>
-                                        <td class="px-4 py-2">{{ __('messages.currency') }} ${item.price ? parseFloat(item.price).toFixed(2) : 'N/A'}</td>
                                         <td class="px-4 py-2">${ri.quantity_requested}</td>
                                     </tr>
                                 `
@@ -814,13 +821,12 @@
             <div class="border rounded-lg p-3 hover:shadow-md transition ${inCart ? 'ring-2 ring-indigo-500' : ''}">
                 <div class="aspect-square mb-2 overflow-hidden rounded">
                     ${item.image_path ? 
-                        `<img src="/storage/${item.image_path}" class="w-full h-full object-cover">` : 
+                        `<img src="${STORAGE_URL}/${item.image_path}" class="w-full h-full object-cover">` : 
                         '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">{{ __('messages.no_image') }}</div>'
                     }
                 </div>
                 <h4 class="font-semibold text-sm mb-1 truncate" title="${item.designation}">${item.designation}</h4>
                 <p class="text-xs text-gray-500 mb-2">{{ __('messages.available') }}: ${parseFloat(item.quantity).toFixed(2)}</p>
-                <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
                                                                                                                                                                             <div class="flex items-center gap-2">
                                                                                                                                                                                 <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
@@ -856,13 +862,12 @@
             <div class="border rounded-lg p-3 hover:shadow-md transition ${inCart ? 'ring-2 ring-indigo-500' : ''}">
                 <div class="aspect-square mb-2 overflow-hidden rounded">
                     ${item.image_path ? 
-                        `<img src="/storage/${item.image_path}" loading="lazy" class="w-full h-full object-cover">` : 
+                        `<img src="${STORAGE_URL}/${item.image_path}" loading="lazy" class="w-full h-full object-cover">` : 
                         '<div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400">{{ __('messages.no_image') }}</div>'
                     }
                 </div>
                 <h4 class="font-semibold text-sm mb-1 truncate" title="${item.designation}">${item.designation}</h4>
                 <p class="text-xs text-gray-500 mb-2">{{ __('messages.available') }}: ${parseFloat(item.quantity).toFixed(2)}</p>
-                <p class="text-sm font-bold text-green-600 mb-2">{{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
                 ${inCart ? `
                                                                                                                                                                             <div class="flex items-center gap-2">
                                                                                                                                                                                 <button onclick="decreaseQuantity(${item.id})" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
@@ -943,12 +948,12 @@
         <div class="flex items-center justify-between bg-gray-50 p-2 rounded">
             <div class="flex items-center gap-2">
                 ${item.image_path ? 
-                    `<img src="/storage/${item.image_path}" class="w-10 h-10 object-cover rounded">` : 
+                    `<img src="${STORAGE_URL}/${item.image_path}" class="w-10 h-10 object-cover rounded">` : 
                     '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                 }
                 <div>
                     <p class="text-sm font-semibold">${item.designation}</p>
-                    <p class="text-xs text-gray-500">{{ __('messages.qty') }}: ${quantity} × {{ __('messages.currency') }} ${parseFloat(item.price).toFixed(2)}</p>
+                    <p class="text-xs text-gray-500">{{ __('messages.qty') }}: ${quantity}</p>
                 </div>
             </div>
             <button onclick="removeFromCart(${item.id})" class="text-red-600 hover:text-red-800 text-sm">×</button>

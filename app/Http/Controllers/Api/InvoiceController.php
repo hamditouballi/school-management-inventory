@@ -197,13 +197,6 @@ class InvoiceController extends Controller
                             'unit_price' => $poItem?->unit_price ?? 0,
                             'image_path' => $item?->image_path ?? null,
                         ]);
-
-                        // Add/update item in items table (only for incoming type)
-                        if ($validated['type'] === 'incoming' && $item) {
-                            $item->increment('quantity', $bdlItem->quantity);
-                        } elseif ($validated['type'] === 'return' && $item) {
-                            $item->decrement('quantity', $bdlItem->quantity);
-                        }
                     }
                 }
             } else {

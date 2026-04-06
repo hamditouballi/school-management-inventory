@@ -130,6 +130,7 @@
 
     @push('scripts')
         <script>
+            let STORAGE_URL = null;
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
@@ -141,7 +142,19 @@
             let invoiceItemCounter = 0;
             let selectedPOId = null;
 
-            document.addEventListener('DOMContentLoaded', () => {
+            async function initStorageUrl() {
+                try {
+                    const res = await fetch('{{ url("/api/server-ip") }}', { headers });
+                    const data = await res.json();
+                    const localIp = data.ip || 'localhost';
+                    STORAGE_URL = `http://${localIp}:8000/storage`;
+                } catch {
+                    STORAGE_URL = '/storage';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                await initStorageUrl();
                 loadInvoices();
                 loadInventoryItems();
                 @if (auth()->user()->role === 'finance_manager')
@@ -267,9 +280,9 @@
                     let imageCell = '';
                     if (displayImage) {
                         if (isImage) {
-                            imageCell = `<img src="/storage/${displayImage}" alt="Invoice" class="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onclick="event.stopPropagation(); openLightbox('/storage/${displayImage}')" onerror="this.src='/images/placeholder.png'">`;
+                            imageCell = `<img src="${STORAGE_URL}/${displayImage}" alt="Invoice" class="w-12 h-12 object-cover rounded cursor-pointer hover:opacity-80" onclick="event.stopPropagation(); openLightbox('${STORAGE_URL}/${displayImage}')" onerror="this.src='/images/placeholder.png'">`;
                         } else {
-                            imageCell = `<a href="/storage/${displayImage}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`;
+                            imageCell = `<a href="${STORAGE_URL}/${displayImage}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`;
                         }
                     } else {
                         imageCell = `<img src="/images/placeholder.png" class="w-12 h-12 object-cover rounded" onerror="this.style.display='none'">`;
@@ -372,7 +385,7 @@
 
                         // Show existing invoice image if available
                         if (inv.image_path) {
-                            document.getElementById('invoiceImagePreview').src = `/storage/${inv.image_path}`;
+                            document.getElementById('invoiceImagePreview').src = `${STORAGE_URL}/${inv.image_path}`;
                             document.getElementById('invoiceImagePreview').classList.remove('hidden');
                         }
 
@@ -403,7 +416,7 @@
                                 const existingImageInput = document.getElementById(`item_existing_image_${index}`);
 
                                 if (item.image_path) {
-                                    preview.src = `/storage/${item.image_path}`;
+                                    preview.src = `${STORAGE_URL}/${item.image_path}`;
                                     if (existingImageInput) existingImageInput.value = item.image_path;
                                 } else {
                                     preview.src = '/images/placeholder.png';
@@ -470,7 +483,7 @@
                     <input type="hidden" id="item_existing_image_${currentIndex}" name="items[${currentIndex}][image_path]" value="${poItem.item?.image_path || ''}">
                     <input type="file" id="item_image_${currentIndex}" accept="image/*" class="w-full px-3 py-1 border rounded text-xs" onchange="previewInvoiceItemImage(${currentIndex})">
                     <img id="item_image_preview_${currentIndex}" 
-                         src="${poItem.item?.image_path ? '/storage/' + poItem.item.image_path : '/images/placeholder.png'}" 
+                         src="${poItem.item?.image_path ? STORAGE_URL + '/' + poItem.item.image_path : '/images/placeholder.png'}" 
                          class="mt-2 w-20 h-20 object-cover rounded border"
                          onerror="this.src='/images/placeholder.png'">
                 </div>
@@ -656,7 +669,7 @@
                 const hiddenImageInput = document.getElementById(`item_existing_image_${index}`);
 
                 if (item.image_path) {
-                    preview.src = `/storage/${item.image_path}`;
+                    preview.src = `${STORAGE_URL}/${item.image_path}`;
                     preview.classList.remove('hidden');
                     if (hiddenImageInput) hiddenImageInput.value = item.image_path;
                 } else {
@@ -833,12 +846,12 @@ const message = isEdit ? '{{ __('messages.invoice_updated') }}' :
                         return isImage ? `
                             <div class="mb-4">
                                 <p class="text-sm text-gray-500 mb-2">{{ __('messages.invoice_image') }}</p>
-                                <img src="/storage/${inv.image_path}" class="w-full max-w-md rounded border cursor-pointer hover:opacity-80" onclick="openLightbox('/storage/${inv.image_path}')">
+                                <img src="${STORAGE_URL}/${inv.image_path}" class="w-full max-w-md rounded border cursor-pointer hover:opacity-80" onclick="openLightbox('${STORAGE_URL}/${inv.image_path}')">
                             </div>
                         ` : `
                             <div class="mb-4">
                                 <p class="text-sm text-gray-500 mb-2">{{ __('messages.invoice_file') }}</p>
-                                <a href="/storage/${inv.image_path}" target="_blank" class="text-blue-600 hover:underline">{{ __('messages.view_file') }}</a>
+                                <a href="${STORAGE_URL}/${inv.image_path}" target="_blank" class="text-blue-600 hover:underline">{{ __('messages.view_file') }}</a>
                             </div>
                         `;
                     })() : ''}
@@ -884,7 +897,7 @@ const message = isEdit ? '{{ __('messages.invoice_updated') }}' :
                                                                                             ${items.map(item => `
                                         <tr>
                                             <td class="px-4 py-2">
-                                                <img src="${item.image_path ? '/storage/' + item.image_path : '/images/placeholder.png'}" 
+                                                <img src="${item.image_path ? STORAGE_URL + '/' + item.image_path : '/images/placeholder.png'}" 
                                                      class="w-16 h-16 object-cover rounded" 
                                                      onerror="this.src='/images/placeholder.png'">
                                             </td>

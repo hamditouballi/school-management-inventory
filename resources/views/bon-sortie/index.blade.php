@@ -115,6 +115,7 @@
 
     @push('scripts')
         <script>
+            let STORAGE_URL = null;
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
@@ -123,7 +124,19 @@
             const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
             let allBonSorties = [];
 
-            document.addEventListener('DOMContentLoaded', function() {
+            async function initStorageUrl() {
+                try {
+                    const res = await fetch('{{ url("/api/server-ip") }}', { headers });
+                    const data = await res.json();
+                    const localIp = data.ip || 'localhost';
+                    STORAGE_URL = `http://${localIp}:8000/storage`;
+                } catch {
+                    STORAGE_URL = '/storage';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async function() {
+                await initStorageUrl();
                 loadBonSorties();
                 if (isStockManager) {
                     loadRequestsForSelect();
@@ -158,7 +171,7 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4">
                             ${bs.item?.image_path ? 
-                                `<img src="/storage/${bs.item.image_path}" class="w-12 h-12 object-cover rounded" onerror="this.src='/images/placeholder.png'">` : 
+                                `<img src="${STORAGE_URL}/${bs.item.image_path}" class="w-12 h-12 object-cover rounded" onerror="this.src='/images/placeholder.png'">` : 
                                 '<div class="w-12 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'}
                         </td>
                         <td class="px-6 py-4">#${bs.id}</td>

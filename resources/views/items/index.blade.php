@@ -197,7 +197,7 @@
 
     @push('scripts')
         <script>
-            const STORAGE_URL = "{{ asset('storage') }}";
+            let STORAGE_URL = null;
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
@@ -210,7 +210,19 @@
             let currentPage = 1;
             const itemsPerPage = 10;
 
-            document.addEventListener('DOMContentLoaded', () => {
+            async function initStorageUrl() {
+                try {
+                    const res = await fetch('{{ url("/api/server-ip") }}', { headers });
+                    const data = await res.json();
+                    const localIp = data.ip || 'localhost';
+                    STORAGE_URL = `http://${localIp}:8000/storage`;
+                } catch {
+                    STORAGE_URL = '{{ asset('storage') }}';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                await initStorageUrl();
                 loadItems();
                 loadCategories();
             });

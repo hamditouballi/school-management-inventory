@@ -239,6 +239,7 @@
 
     @push('scripts')
         <script>
+            let STORAGE_URL = null;
             const token = '{{ session('api_token') }}';
             const headers = {
                 'Authorization': `Bearer ${token}`,
@@ -255,7 +256,19 @@
             const isHRManager = {{ auth()->user()->role === 'hr_manager' ? 'true' : 'false' }};
             const isStockManager = {{ auth()->user()->role === 'stock_manager' ? 'true' : 'false' }};
 
-            document.addEventListener('DOMContentLoaded', () => {
+            async function initStorageUrl() {
+                try {
+                    const res = await fetch('{{ url("/api/server-ip") }}', { headers });
+                    const data = await res.json();
+                    const localIp = data.ip || 'localhost';
+                    STORAGE_URL = `http://${localIp}:8000/storage`;
+                } catch {
+                    STORAGE_URL = '/storage';
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', async () => {
+                await initStorageUrl();
                 loadPOs();
                 loadSuppliers();
                 if (isStockManager) {
@@ -547,7 +560,7 @@
                 <td class="px-6 py-4">
                     ${isSplit ? `<button onclick="toggleChildren(${po.id})" class="text-blue-600 font-bold text-lg">▶</button>` : `
                     <div class="flex items-center cursor-pointer" onclick="viewPODetails(${po.id})">
-                        ${itemsWithImages.length > 0 ? itemsWithImages.slice(0, 2).map((img, idx) => `<img src="/storage/${img}" class="w-10 h-10 object-cover rounded-full border-2 border-white ${idx > 0 ? '-ml-3' : ''}">`).join('') : `<div class="w-10 h-10 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>`}
+                        ${itemsWithImages.length > 0 ? itemsWithImages.slice(0, 2).map((img, idx) => `<img src="${STORAGE_URL}/${img}" class="w-10 h-10 object-cover rounded-full border-2 border-white ${idx > 0 ? '-ml-3' : ''}">`).join('') : `<div class="w-10 h-10 bg-gray-200 rounded-full border-2 border-white flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>`}
                         ${extraCount > 0 ? `<div class="w-10 h-10 rounded-full bg-gray-500 border-2 border-white flex items-center justify-center text-white text-xs font-bold -ml-3">+${extraCount}</div>` : ''}
                     </div>`}
                 </td>
@@ -628,7 +641,7 @@
                                 const childFirstImage = childItems.find(item => item.item?.image_path)?.item?.image_path;
                                 childRows += `
             <tr id="child-${po.id}-${child.id}" class="hidden bg-white">
-                <td class="px-6 py-3 pl-12">${childFirstImage ? `<img src="/storage/${childFirstImage}" class="w-10 h-10 object-cover rounded">` : '<div class="w-10 h-10 bg-gray-200 rounded"></div>'}</td>
+                <td class="px-6 py-3 pl-12">${childFirstImage ? `<img src="${STORAGE_URL}/${childFirstImage}" class="w-10 h-10 object-cover rounded">` : '<div class="w-10 h-10 bg-gray-200 rounded"></div>'}</td>
                 <td class="px-6 py-3 pl-8">#${child.id}</td>
                 <td class="px-6 py-3 text-blue-600 font-medium">${child.supplier?.name || '-'}</td>
                 <td class="px-6 py-3">${childItems.length} {{ __('messages.items') }}</td>
@@ -838,7 +851,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     render: {
                         option: function(data, escape) {
                             console.log('Rendering option:', data);
-                            const image = data.imagePath ? `<img src="/storage/${data.imagePath}" alt="" class="w-10 h-10 object-cover rounded border border-gray-200">` : '<div class="w-10 h-10 rounded border border-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xs">N/A</div>';
+                            const image = data.imagePath ? `<img src="${STORAGE_URL}/${data.imagePath}" alt="" class="w-10 h-10 object-cover rounded border border-gray-200">` : '<div class="w-10 h-10 rounded border border-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 text-xs">N/A</div>';
                             const categoryName = data.categoryName || '';
                             const price = data.price ? parseFloat(data.price).toFixed(2) : '';
                             return `<div class="flex items-center gap-3 p-2">
@@ -851,7 +864,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                             </div>`;
                         },
                         item: function(data, escape) {
-                            const image = data.imagePath ? `<img src="/storage/${data.imagePath}" alt="" class="w-6 h-6 object-cover rounded">` : '';
+                            const image = data.imagePath ? `<img src="${STORAGE_URL}/${data.imagePath}" alt="" class="w-6 h-6 object-cover rounded">` : '';
                             return `<div class="flex items-center gap-2">${image}<span>${escape(data.text)}</span></div>`;
                         }
                     },
@@ -1109,7 +1122,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                     <tr>
                                         <td class="px-4 py-2">
                                             ${item.item?.image_path ? 
-                                                `<img src="/storage/${item.item.image_path}" class="w-16 h-16 object-cover rounded">` : 
+                                                `<img src="${STORAGE_URL}/${item.item.image_path}" class="w-16 h-16 object-cover rounded">` : 
                                                 '<div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">{{ __('messages.no_image') }}</div>'
                                             }
                                         </td>
@@ -1376,8 +1389,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                 <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
                                             </div>
                                             ${note.file_path ? (isImage ? `
-                                                <img src="/storage/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${note.file_path}')">
-                                            ` : `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
+                                                <img src="${STORAGE_URL}/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${STORAGE_URL}/${note.file_path}')">
+                                            ` : `<a href="${STORAGE_URL}/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
                                         </div>
                                         <div class="mt-2">${itemsHtml}</div>
                                     </div>
@@ -1764,7 +1777,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                     
                     html += '<div class="flex items-center gap-3 mb-4 pb-3 border-b">';
                     if (itemImage) {
-                        html += '<img src="/storage/' + itemImage + '" class="w-10 h-10 object-cover rounded">';
+                        html += '<img src="' + STORAGE_URL + '/' + itemImage + '" class="w-10 h-10 object-cover rounded">';
                     } else {
                         html += '<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center text-xs">N/A</div>';
                     }
@@ -2297,8 +2310,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                 <p class="text-sm text-gray-500">{{ __('messages.status') }}: <span class="text-green-600">{{ __('messages.confirmed') }}</span></p>
                                             </div>
                                             ${note.file_path ? (isImage ? `
-                                                <img src="/storage/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${note.file_path}')">
-                                            ` : `<a href="/storage/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
+                                                <img src="${STORAGE_URL}/${note.file_path}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${STORAGE_URL}/${note.file_path}')">
+                                            ` : `<a href="${STORAGE_URL}/${note.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
                                         </div>
                                         <div class="mt-2">${itemsHtml}</div>
                                     </div>
@@ -2340,7 +2353,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                         filePreview = `<span class="text-blue-600 text-sm">{{ __('messages.file_attached') }}</span>`;
                     }
                 } else if (draft.phoneUploadPath) {
-                    filePreview = `<img src="/storage/${draft.phoneUploadPath}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${draft.phoneUploadPath}')">`;
+                    filePreview = `<img src="${STORAGE_URL}/${draft.phoneUploadPath}" alt="Delivery document" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${STORAGE_URL}/${draft.phoneUploadPath}')">`;
                 }
                 
                 return `
@@ -3021,8 +3034,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                     ${badge}
                                                 </div>
                                                 ${bdl.file_path ? (isImage ? `
-                                                    <img src="/storage/${bdl.file_path}" alt="Delivery" class="h-16 w-16 object-cover rounded cursor-pointer hover:opacity-80" onclick="event.stopPropagation(); openLightbox('/storage/${bdl.file_path}')">
-                                                ` : `<a href="/storage/${bdl.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm" onclick="event.stopPropagation()">{{ __('messages.view_file') }}</a>`) : ''}
+                                                    <img src="${STORAGE_URL}/${bdl.file_path}" alt="Delivery" class="h-16 w-16 object-cover rounded cursor-pointer hover:opacity-80" onclick="event.stopPropagation(); openLightbox('${STORAGE_URL}/${bdl.file_path}')">
+                                                ` : `<a href="${STORAGE_URL}/${bdl.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm" onclick="event.stopPropagation()">{{ __('messages.view_file') }}</a>`) : ''}
                                             </div>
                                             <div class="mt-1 text-sm text-gray-500">{{ __('messages.date') }}: ${new Date(bdl.date).toLocaleDateString()}</div>
                                             <div class="mt-1 text-sm text-gray-600" data-supplier="${supplierName}">{{ __('messages.supplier') }}: ${supplierName}</div>
@@ -3344,7 +3357,7 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                 <p class="text-sm text-yellow-700 font-medium">{{ __('messages.draft') }}</p>
                             </div>
                             ${draft.fileData ? `<img src="${draft.fileData}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${draft.fileData}')">` : ''}
-                            ${draft.phoneUploadPath ? `<img src="/storage/${draft.phoneUploadPath}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${draft.phoneUploadPath}')">` : ''}
+                            ${draft.phoneUploadPath ? `<img src="${STORAGE_URL}/${draft.phoneUploadPath}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${STORAGE_URL}/${draft.phoneUploadPath}')">` : ''}
                         </div>
                         <div class="mt-3 flex gap-2">
                             <button onclick="confirmInvoiceDraft(${idx})" class="px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700">{{ __('messages.confirm') }}</button>
@@ -3502,8 +3515,8 @@ document.getElementById('modalTitle').textContent = '{{ __('messages.edit') }} {
                                                 <button onclick="viewInvoiceReconciliation(${inv.id})" class="text-blue-600 hover:text-blue-800 text-sm mt-1">{{ __('messages.reconcile') }}</button>
                                             </div>
                                             ${inv.image_path ? (isImage ? `
-                                                <img src="/storage/${inv.image_path}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('/storage/${inv.image_path}')">
-                                            ` : `<a href="/storage/${inv.image_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
+                                                <img src="${STORAGE_URL}/${inv.image_path}" alt="Invoice" class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity border" onclick="openLightbox('${STORAGE_URL}/${inv.image_path}')">
+                                            ` : `<a href="${STORAGE_URL}/${inv.image_path}" target="_blank" class="text-blue-600 hover:underline text-sm">{{ __('messages.view_file') }}</a>`) : ''}
                                         </div>
                                     </div>
                                 `;
